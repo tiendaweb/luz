@@ -240,3 +240,13 @@ Espacio de encuentro donde se abordan temas de Psicología, Psicosocial y Salud 
 | **Entregables** | No mencionados | Lista de archivos esperados |
 
 ---
+
+### **SISTEMA DE ESTILOS BASE (IMPLEMENTADO)**
+
+Se incorporó una base reusable para acelerar la maqueta:
+
+- `styles.css` con variables globales de color, tipografía, spacing, radios y sombras.
+- Componentes mínimos: botones CTA, cards, tablas, badges de cupos, inputs y alerts.
+- Enfoque de contraste/legibilidad orientado a WCAG 2.1 AA.
+- Breakpoints mobile-first para móvil/tablet/desktop.
+- Guía de clases utilitarias en `docs/guia-componentes.md` para evitar CSS duplicado.
