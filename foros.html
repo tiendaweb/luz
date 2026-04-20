@@ -24,25 +24,107 @@
         <h1 class="section__title">Agenda e inscripción</h1>
         <p class="u-m-0 u-text-muted">Selecciona tu segmento y completa tu inscripción para reservar cupo.</p>
 
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr><th>Segmento</th><th>Fecha clave</th><th>Horario AR</th><th>Acción</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>Profesionales · Colombia</td><td>Sábado 9 de mayo de 2026</td><td>10:00–11:00</td><td><a class="btn btn--secondary" href="#inscripcion">Inscribirse</a></td></tr>
-              <tr><td>Estudiantes · México</td><td>Sábado 16 de mayo de 2026</td><td>11:00–12:00</td><td><a class="btn btn--secondary" href="#inscripcion">Inscribirse</a></td></tr>
-              <tr><td>Profesionales · Ecuador/Bolivia</td><td>Lunes 25 de mayo de 2026</td><td>21:00–22:00</td><td><a class="btn btn--secondary" href="#inscripcion">Inscribirse</a></td></tr>
-            </tbody>
-          </table>
-        </div>
+        <section class="card stack" aria-labelledby="foro-descripcion-title">
+          <h2 id="foro-descripcion-title" class="card__title">Descripción del foro</h2>
+          <p class="u-m-0 u-text-muted">
+            El Foro LATAM 2026 PSME es un espacio virtual de encuentro sobre psicología, salud mental y dimensión psicosocial.
+            Integra experiencias, teoría aplicada y reflexión profesional para fortalecer la práctica en comunidad.
+          </p>
+          <h3 class="u-m-0">Objetivos del foro</h3>
+          <ul class="list u-m-0">
+            <li>Compartir conocimiento y experiencias entre participantes de distintos países.</li>
+            <li>Discutir temas relevantes de bienestar emocional y relaciones interpersonales.</li>
+            <li>Aprender en red con acompañamiento y enfoque práctico.</li>
+            <li>Conectar con una comunidad profesional y estudiantil en toda LATAM.</li>
+          </ul>
+        </section>
 
-        <section id="inscripcion" class="card">
-          <h2 class="card__title">Bloque de inscripción</h2>
-          <p class="card__meta">CTA validado: este bloque recibe las acciones de inscripción desde landing y agenda.</p>
-          <a class="btn btn--cta u-mt-4" href="foros.html#inscripcion">Continuar con inscripción</a>
+        <section class="stack" aria-labelledby="horarios-title">
+          <h2 id="horarios-title" class="section__title">Horarios de mayo 2026</h2>
+
+          <article class="table-block">
+            <h3 class="table-block__title">Profesionales</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Zona</th><th>Fechas</th><th>Horario AR</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Colombia</td><td>Sábados 9, 16, 23, 30</td><td>10:00–11:00</td></tr>
+                  <tr><td>Ecuador/Bolivia</td><td>Lunes 4, 11, 18, 25</td><td>21:00–22:00</td></tr>
+                  <tr><td>México</td><td>Sábados 9, 16, 23, 30</td><td>19:00–20:00</td></tr>
+                  <tr><td>Ecuador</td><td>Martes 5, 12, 19, 26</td><td>20:00–21:00</td></tr>
+                  <tr><td>Guatemala</td><td>Miércoles 6, 13, 20, 27</td><td>20:00–21:00</td></tr>
+                  <tr><td>Perú</td><td>Miércoles 6, 13, 20, 27</td><td>21:00–22:00</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="table-block">
+            <h3 class="table-block__title">Estudiantes</h3>
+            <div class="table-wrap">
+              <table class="table">
+                <thead>
+                  <tr><th>Zona</th><th>Fechas</th><th>Horario AR</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Colombia</td><td>Sábados 9, 16, 23, 30</td><td>11:00–12:00</td></tr>
+                  <tr><td>México</td><td>Sábados 9, 16, 23, 30</td><td>11:00–12:00</td></tr>
+                  <tr><td>Guatemala</td><td>Miércoles 6, 13, 20, 27</td><td>11:00–12:00</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="card stack" aria-labelledby="selector-title">
+          <h2 id="selector-title" class="card__title">Calendario y selector visual (mayo 2026)</h2>
+          <p class="u-m-0 u-text-muted">
+            Selecciona una fecha para ver turnos disponibles. Estado de cupos simulado: disponible, últimos cupos o agotado.
+          </p>
+
+          <div class="calendar" id="calendar" aria-label="Calendario de mayo 2026"></div>
+
+          <div class="event-panel stack">
+            <h3 class="u-m-0">Turnos del día seleccionado</h3>
+            <p id="selected-date" class="u-m-0 u-text-muted">Selecciona una fecha en el calendario.</p>
+            <div id="events-list" class="events-list" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section id="formulario-inscripcion" class="card stack" aria-labelledby="inscripcion-title">
+          <h2 id="inscripcion-title" class="card__title">Formulario de inscripción (simulado)</h2>
+          <p class="card__meta">Bloque de inscripción para todos los eventos. No guarda datos.</p>
+
+          <form class="grid grid--2-cols" onsubmit="event.preventDefault()">
+            <label class="field">
+              <span class="field__label">Fecha y turno seleccionado</span>
+              <input id="turnoSeleccionado" class="input" type="text" placeholder="Ej: 9 de mayo · Profesionales Colombia" readonly />
+            </label>
+            <label class="field">
+              <span class="field__label">Rol</span>
+              <select class="select">
+                <option>Profesional</option>
+                <option>Estudiante</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Nombre completo</span>
+              <input class="input" type="text" placeholder="Tu nombre y apellidos" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Documento</span>
+              <input class="input" type="text" placeholder="DNI / Cédula" required />
+            </label>
+            <div>
+              <button class="btn btn--cta" type="submit">Enviar inscripción (simulado)</button>
+            </div>
+          </form>
         </section>
       </div>
     </main>
+
+    <script src="script.js"></script>
   </body>
 </html>
