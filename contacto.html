@@ -26,19 +26,56 @@
         <p class="u-m-0 u-text-muted">Estoy a disposición para resolver dudas sobre inscripciones, horarios y modalidad del foro.</p>
 
         <section class="card" aria-labelledby="canales-contacto">
-          <h2 id="canales-contacto" class="card__title">Canales disponibles</h2>
-          <ul class="list u-text-muted">
+          <h2 id="canales-contacto" class="card__title">Accesos rápidos</h2>
+          <p class="u-m-0 u-text-muted">Elige el canal que mejor se adapte a tu consulta.</p>
+          <div class="quick-actions u-mt-4">
+            <a class="btn btn--cta" href="https://wa.me/5491155936719" target="_blank" rel="noopener noreferrer">WhatsApp directo</a>
+            <a class="btn btn--secondary" href="mailto:contacto@forolatampsme.com">Email</a>
+            <a class="btn btn--secondary" href="foros.html">Ver próximos foros</a>
+            <a class="btn btn--secondary" href="tel:+5491155936719">Llamar</a>
+          </div>
+          <ul class="list u-text-muted u-mt-4">
             <li>WhatsApp: <a href="https://wa.me/5491155936719" target="_blank" rel="noopener noreferrer">(+54) 9 11 5593-6719</a></li>
             <li>Email: <a href="mailto:contacto@forolatampsme.com">contacto@forolatampsme.com</a></li>
             <li>Respuesta habitual: dentro de 24 a 48 horas hábiles.</li>
           </ul>
-          <div class="hero__actions u-mt-4">
-            <a class="btn btn--cta" href="foros.html">Inscribirme al Foro</a>
-            <a class="btn btn--secondary" href="index.html">Volver al Inicio</a>
-          </div>
+        </section>
+
+        <section class="card" aria-labelledby="formulario-contacto">
+          <h2 id="formulario-contacto" class="card__title">Formulario de contacto</h2>
+          <p class="u-m-0 u-text-muted">Envío simulado sin persistencia. Para probar error simulado, escribe la palabra <strong>error</strong> en el mensaje.</p>
+
+          <form id="contacto-form" class="grid grid--2-cols u-mt-4" novalidate>
+            <label class="field">
+              <span class="field__label">Nombre</span>
+              <input id="contacto-nombre" class="input" type="text" name="nombre" autocomplete="name" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Email</span>
+              <input id="contacto-email" class="input" type="email" name="email" autocomplete="email" required />
+            </label>
+
+            <label class="field field--full">
+              <span class="field__label">Mensaje</span>
+              <textarea id="contacto-mensaje" class="textarea" name="mensaje" rows="6" required></textarea>
+            </label>
+
+            <div class="field field--full">
+              <button id="contacto-submit" class="btn btn--cta" type="submit">Enviar mensaje</button>
+            </div>
+          </form>
+
+          <div id="contacto-feedback" class="alert alert--info u-hidden u-mt-4" role="status" aria-live="polite"></div>
+        </section>
+
+        <section id="ubicacion-card" class="card u-hidden" aria-labelledby="ubicacion-titulo" data-location-card>
+          <h2 id="ubicacion-titulo" class="card__title">Ubicación de referencia</h2>
+          <p id="ubicacion-texto" class="u-m-0 u-text-muted" data-location-text></p>
+          <div class="map-embed u-mt-4" data-location-map aria-label="Mapa de ubicación"></div>
         </section>
       </div>
     </main>
-      <script src="script.js"></script>
+    <script src="script.js"></script>
   </body>
 </html>
