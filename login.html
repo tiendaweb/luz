@@ -60,41 +60,7 @@
       </div>
     </main>
 
-    <script>
-      (() => {
-        const form = document.getElementById('login-form');
-        const roleField = document.getElementById('role');
-        const emailField = document.getElementById('email');
-        const feedback = document.getElementById('login-feedback');
+        <script src="script.js"></script>
 
-        const routesByRole = {
-          admin: 'dashboard-admin.html',
-          asociado: 'dashboard-admin.html?modo=asociado#panel-asociados',
-          usuario: 'dashboard-usuario.html'
-        };
-
-        const roleByEmail = {
-          'admin@psme.test': 'admin',
-          'asociado@psme.test': 'asociado',
-          'usuario@psme.test': 'usuario'
-        };
-
-        form.addEventListener('submit', (event) => {
-          event.preventDefault();
-
-          const email = emailField.value.trim().toLowerCase();
-          const selectedRole = roleField.value || roleByEmail[email] || '';
-
-          if (!selectedRole || !routesByRole[selectedRole]) {
-            feedback.textContent = 'Selecciona un rol válido o utiliza un email dummy conocido para continuar.';
-            feedback.classList.remove('u-hidden');
-            return;
-          }
-
-          feedback.classList.add('u-hidden');
-          window.location.href = routesByRole[selectedRole];
-        });
-      })();
-    </script>
   </body>
 </html>

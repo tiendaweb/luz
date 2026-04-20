@@ -156,3 +156,22 @@ Checklist operativo:
 - [ ] Header/footer consistentes en páginas públicas.
 - [ ] Login simulado con redirección por rol.
 
+
+---
+
+## 6) Puntos de extensión para integración backend (preparado)
+
+La capa frontend mantiene `vanilla JS` y separa la lógica por bloques para facilitar migración incremental.
+
+- **Navegación (`NavigationBlock`)**
+  - Extensión sugerida: consumir permisos por rol desde sesión backend y ocultar/mostrar ítems del menú.
+- **Calendario (`CalendarBlock`)**
+  - Extensión sugerida: reemplazar `scheduleByDate` por respuesta de API (`GET /foros/agenda`) y mapear estados de cupo.
+- **Formulario (`FormsBlock`)**
+  - Extensión sugerida: enviar payload de inscripción mediante `fetch` (`POST /inscripciones`) y renderizar respuesta/errores del servidor.
+- **Login simulado (`LoginBlock`)**
+  - Extensión sugerida: intercambiar validación local por autenticación real (`POST /auth/login`) y persistencia de token/sesión.
+- **Widgets (`DashboardWidgetsBlock`)**
+  - Extensión sugerida: consultar métricas por rol (`GET /dashboard/:rol/metrics`) con fallback visual en caso de error.
+
+> Recomendación: mantener la interfaz de utilidades (`Utils`) como contrato estable para validación/renderizado y desacoplar la fuente de datos en una capa `services` cuando se conecte backend.
