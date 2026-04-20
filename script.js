@@ -344,6 +344,108 @@
     }
   };
 
+
+  // ========================================
+  // Bloque: contacto simulado (sin persistencia)
+  // ========================================
+  const ContactBlock = {
+    init() {
+      this.form = document.getElementById("contacto-form");
+      this.feedback = document.getElementById("contacto-feedback");
+      this.submitBtn = document.getElementById("contacto-submit");
+      this.locationCard = document.querySelector("[data-location-card]");
+      this.locationText = document.querySelector("[data-location-text]");
+      this.locationMap = document.querySelector("[data-location-map]");
+
+      this.renderLocation();
+      if (!this.form) return;
+
+      const nombre = document.getElementById("contacto-nombre");
+      const email = document.getElementById("contacto-email");
+      const mensaje = document.getElementById("contacto-mensaje");
+
+      this.form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const errors = [];
+        if (!Utils.isRequiredFilled(nombre?.value)) {
+          errors.push("Completa tu nombre.");
+        }
+        if (!Utils.isRequiredFilled(email?.value) || !Utils.isEmail(email?.value)) {
+          errors.push("Ingresa un email válido.");
+        }
+        if (!Utils.isRequiredFilled(mensaje?.value)) {
+          errors.push("Escribe tu mensaje antes de enviar.");
+        }
+
+        if (errors.length > 0) {
+          Utils.renderState(this.feedback, {
+            message: errors.join(" "),
+            variant: "warning",
+            hidden: false
+          });
+          return;
+        }
+
+        if (this.submitBtn) {
+          this.submitBtn.disabled = true;
+          this.submitBtn.textContent = "Enviando...";
+        }
+
+        Utils.renderState(this.feedback, {
+          message: "Envío simulado en proceso...",
+          variant: "info",
+          hidden: false
+        });
+
+        await new Promise((resolve) => window.setTimeout(resolve, 900));
+
+        const shouldFail = String(mensaje.value).toLowerCase().includes("error");
+
+        if (shouldFail) {
+          Utils.renderState(this.feedback, {
+            message: "No se pudo enviar el mensaje (simulación). Verifica los datos e intenta nuevamente.",
+            variant: "danger",
+            hidden: false
+          });
+        } else {
+          Utils.renderState(this.feedback, {
+            message: "Mensaje enviado correctamente (simulación). Te responderé a la brevedad por el medio indicado.",
+            variant: "success",
+            hidden: false
+          });
+          this.form.reset();
+        }
+
+        if (this.submitBtn) {
+          this.submitBtn.disabled = false;
+          this.submitBtn.textContent = "Enviar mensaje";
+        }
+      });
+    },
+
+    renderLocation() {
+      const physicalReference = {
+        name: "",
+        mapQuery: ""
+      };
+
+      const hasRealReference = Utils.isRequiredFilled(physicalReference.name) && Utils.isRequiredFilled(physicalReference.mapQuery);
+      if (!hasRealReference || !this.locationCard || !this.locationText || !this.locationMap) return;
+
+      this.locationCard.classList.remove("u-hidden");
+      this.locationText.textContent = physicalReference.name;
+      this.locationMap.innerHTML = `
+        <iframe
+          title="Mapa de referencia"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=${encodeURIComponent(physicalReference.mapQuery)}&output=embed">
+        </iframe>
+      `;
+    }
+  };
+
   // ========================================
   // Bloque: widgets de dashboard (simulados)
   // ========================================
@@ -374,6 +476,7 @@
     CalendarBlock.init();
     FormsBlock.init();
     LoginBlock.init();
+    ContactBlock.init();
     DashboardWidgetsBlock.init();
   }
 
