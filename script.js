@@ -187,5 +187,256 @@ function selectDate(dateKey) {
   });
 }
 
+function setupFormValidation() {
+  const form = document.getElementById("inscripcionForm");
+  if (!form) return;
+
+  const certificado = document.getElementById("certificado");
+  const linkPagoField = document.getElementById("linkPagoField");
+  const linkPagoInput = document.getElementById("linkPago");
+  const comprobanteInput = document.getElementById("comprobante");
+  const comprobanteEstado = document.getElementById("comprobanteEstado");
+  const feedback = document.getElementById("formFeedback");
+  const success = document.getElementById("formSuccess");
+
+  const hasValue = (value) => String(value || "").trim().length > 0;
+  const showError = (message) => {
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.classList.remove("is-hidden");
+  };
+
+  const clearError = () => {
+    if (!feedback) return;
+    feedback.textContent = "";
+    feedback.classList.add("is-hidden");
+  };
+
+  const showSuccess = (message) => {
+    if (!success) return;
+    success.innerHTML = message;
+    success.classList.remove("is-hidden");
+  };
+
+  const clearSuccess = () => {
+    if (!success) return;
+    success.textContent = "";
+    success.classList.add("is-hidden");
+  };
+
+  const toggleLinkPago = () => {
+    const needsPaymentLink = certificado && certificado.value === "si";
+
+    if (!linkPagoField || !linkPagoInput) return;
+
+    linkPagoField.classList.toggle("is-hidden", !needsPaymentLink);
+    linkPagoField.setAttribute("aria-hidden", String(!needsPaymentLink));
+    linkPagoInput.required = needsPaymentLink;
+
+    if (!needsPaymentLink) {
+      linkPagoInput.value = "";
+      linkPagoInput.classList.remove("is-invalid");
+    }
+  };
+
+  const validate = () => {
+    clearError();
+
+    const turno = document.getElementById("turnoSeleccionado");
+    const rol = document.getElementById("rol");
+    const nombre = document.getElementById("nombreCompleto");
+    const documento = document.getElementById("documento");
+    const profesion = document.getElementById("profesion");
+    const aceptacion = document.getElementById("aceptacion");
+
+    const nombreRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’\-\s]{5,}$/;
+    const documentoRegex = /^[0-9]{6,12}$/;
+    const profesionRegex = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9.,()\-\s]{3,}$/;
+
+    const fieldsToReset = [turno, rol, nombre, documento, profesion, linkPagoInput];
+    fieldsToReset.forEach((field) => field?.classList.remove("is-invalid"));
+
+    if (!hasValue(turno?.value)) {
+      turno?.classList.add("is-invalid");
+      return "Debes seleccionar fecha y turno desde el calendario antes de enviar la inscripción.";
+    }
+
+    if (!hasValue(rol?.value)) {
+      rol?.classList.add("is-invalid");
+      return "Selecciona tu rol (Profesional o Estudiante).";
+    }
+
+    if (!hasValue(nombre?.value) || !nombreRegex.test(nombre.value.trim())) {
+      nombre?.classList.add("is-invalid");
+      return "Ingresa tu nombre y apellidos completos (mínimo 5 caracteres, solo letras y espacios).";
+    }
+
+    if (!hasValue(documento?.value) || !documentoRegex.test(documento.value.trim())) {
+      documento?.classList.add("is-invalid");
+      return "El documento debe contener entre 6 y 12 dígitos numéricos (sin puntos ni guiones).";
+    }
+
+    if (!hasValue(profesion?.value) || !profesionRegex.test(profesion.value.trim())) {
+      profesion?.classList.add("is-invalid");
+      return "Indica tu profesión o ejercicio actual con al menos 3 caracteres válidos.";
+    }
+
+    if (!hasValue(certificado?.value)) {
+      certificado?.classList.add("is-invalid");
+      return "Indica si deseas solicitar certificado de asistencia.";
+    }
+
+    if (certificado?.value === "si") {
+      const urlValue = (linkPagoInput?.value || "").trim();
+      const isValidUrl = /^https?:\/\/.+\..+/.test(urlValue);
+
+      if (!isValidUrl) {
+        linkPagoInput?.classList.add("is-invalid");
+        return "Si solicitas certificado, debes ingresar un link de pago válido que inicie con http:// o https://.";
+      }
+    }
+
+    if (!comprobanteInput?.files || comprobanteInput.files.length === 0) {
+      return "Adjunta el comprobante de pago (PDF o imagen) para completar la inscripción.";
+    }
+
+    if (!signatureState.hasSignature) {
+      return "La firma digital es obligatoria. Firma en el área de canvas antes de enviar.";
+    }
+
+    if (!aceptacion?.checked) {
+      return "Debes aceptar el compromiso y la responsabilidad de asistencia para continuar.";
+    }
+
+    return "";
+  };
+
+  certificado?.addEventListener("change", () => {
+    toggleLinkPago();
+    certificado.classList.remove("is-invalid");
+  });
+
+  comprobanteInput?.addEventListener("change", () => {
+    if (!comprobanteEstado) return;
+
+    if (comprobanteInput.files && comprobanteInput.files.length > 0) {
+      comprobanteEstado.textContent = `Archivo seleccionado: ${comprobanteInput.files[0].name} (simulado)`;
+    } else {
+      comprobanteEstado.textContent = "Aún no seleccionaste archivo.";
+    }
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    clearSuccess();
+
+    const message = validate();
+    if (message) {
+      showError(message);
+      return;
+    }
+
+    clearError();
+    showSuccess(
+      "Gracias por seleccionar esta experiencia en comunidad. Nos pedimos compromiso y responsabilidad a la hora de asistir. Cualquier inquietud, estaré a disposición.<br><strong>María Luz Genovese</strong> | Psicóloga Social | WhatsApp: (+54) 9 115593 6719"
+    );
+    form.reset();
+    toggleLinkPago();
+    clearSignature();
+    if (comprobanteEstado) comprobanteEstado.textContent = "Aún no seleccionaste archivo.";
+  });
+
+  toggleLinkPago();
+}
+
+const signatureState = {
+  isDrawing: false,
+  hasSignature: false,
+  lastX: 0,
+  lastY: 0
+};
+
+let signatureCanvas;
+let signatureCtx;
+
+function getPoint(event) {
+  const rect = signatureCanvas.getBoundingClientRect();
+  if (event.touches && event.touches[0]) {
+    return {
+      x: event.touches[0].clientX - rect.left,
+      y: event.touches[0].clientY - rect.top
+    };
+  }
+
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
+}
+
+function beginSignature(event) {
+  if (!signatureCanvas || !signatureCtx) return;
+  signatureState.isDrawing = true;
+  signatureState.hasSignature = true;
+
+  const point = getPoint(event);
+  signatureState.lastX = point.x;
+  signatureState.lastY = point.y;
+}
+
+function drawSignature(event) {
+  if (!signatureState.isDrawing || !signatureCtx) return;
+  event.preventDefault();
+
+  const point = getPoint(event);
+
+  signatureCtx.beginPath();
+  signatureCtx.moveTo(signatureState.lastX, signatureState.lastY);
+  signatureCtx.lineTo(point.x, point.y);
+  signatureCtx.stroke();
+
+  signatureState.lastX = point.x;
+  signatureState.lastY = point.y;
+}
+
+function stopSignature() {
+  signatureState.isDrawing = false;
+}
+
+function clearSignature() {
+  if (!signatureCanvas || !signatureCtx) return;
+
+  signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+  signatureCtx.fillStyle = "#f8fbff";
+  signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+  signatureState.hasSignature = false;
+}
+
+function setupSignatureCanvas() {
+  signatureCanvas = document.getElementById("firmaCanvas");
+  if (!signatureCanvas) return;
+
+  signatureCtx = signatureCanvas.getContext("2d");
+  signatureCtx.lineWidth = 2;
+  signatureCtx.lineJoin = "round";
+  signatureCtx.lineCap = "round";
+  signatureCtx.strokeStyle = "#0a4a7a";
+
+  clearSignature();
+
+  signatureCanvas.addEventListener("mousedown", beginSignature);
+  signatureCanvas.addEventListener("mousemove", drawSignature);
+  signatureCanvas.addEventListener("mouseup", stopSignature);
+  signatureCanvas.addEventListener("mouseleave", stopSignature);
+
+  signatureCanvas.addEventListener("touchstart", beginSignature, { passive: false });
+  signatureCanvas.addEventListener("touchmove", drawSignature, { passive: false });
+  signatureCanvas.addEventListener("touchend", stopSignature);
+
+  document.getElementById("limpiarFirma")?.addEventListener("click", clearSignature);
+}
+
 renderCalendar();
 selectDate("2026-05-09");
+setupSignatureCanvas();
+setupFormValidation();
