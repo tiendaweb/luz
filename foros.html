@@ -102,25 +102,84 @@
           <form id="inscripcion-form" class="grid grid--2-cols" novalidate>
             <label class="field">
               <span class="field__label">Fecha y turno seleccionado</span>
-              <input id="turnoSeleccionado" class="input" type="text" placeholder="Ej: 9 de mayo · Profesionales Colombia" readonly />
+              <input id="turnoSeleccionado" name="turno" class="input" type="text" placeholder="Ej: 9 de mayo · Profesionales Colombia" readonly required />
             </label>
+
             <label class="field">
               <span class="field__label">Rol</span>
-              <select class="select">
-                <option>Profesional</option>
-                <option>Estudiante</option>
+              <select id="rol" name="rol" class="select" required>
+                <option value="">Selecciona una opción</option>
+                <option value="Profesional">Profesional</option>
+                <option value="Estudiante">Estudiante</option>
               </select>
             </label>
+
             <label class="field">
+              <span class="field__label">Nombre y apellidos completo</span>
+              <input id="nombreCompleto" name="nombreCompleto" class="input" type="text" placeholder="Ej: Ana María Pérez Gómez" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Número de documento (DNI/Cédula)</span>
+              <input id="documento" name="documento" class="input" type="text" inputmode="numeric" placeholder="Ej: 32123456" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">Profesión o ejercicio actual</span>
+              <input id="profesion" name="profesion" class="input" type="text" placeholder="Ej: Psicóloga Clínica" required />
+            </label>
+
+            <label class="field">
+              <span class="field__label">¿Solicita certificado de asistencia?</span>
+              <select id="certificado" name="certificado" class="select" required>
+                <option value="">Selecciona una opción</option>
+                <option value="si">Sí</option>
+                <option value="no">No</option>
+              </select>
               <span class="field__label">Nombre completo</span>
               <input id="nombreCompleto" class="input" type="text" placeholder="Tu nombre y apellidos" required />
             </label>
+
+            <label id="linkPagoField" class="field is-hidden" aria-hidden="true">
+              <span class="field__label">Link de pago</span>
+              <input id="linkPago" name="linkPago" class="input" type="url" placeholder="https://..." />
+              <p class="field__hint">Este campo se habilita solo si solicitas certificado.</p>
+            </label>
+
             <label class="field">
               <span class="field__label">Documento</span>
               <input id="documento" class="input" type="text" placeholder="DNI / Cédula" required />
             </label>
-            <div>
-              <button class="btn btn--cta" type="submit">Enviar inscripción (simulado)</button>
+
+            <div class="field field--full">
+              <span class="field__label">Firma digital (canvas)</span>
+              <canvas
+                id="firmaCanvas"
+                class="signature-canvas"
+                width="640"
+                height="220"
+                role="img"
+                aria-label="Área para firmar de manera digital"
+              ></canvas>
+              <div class="signature-actions">
+                <button id="limpiarFirma" class="btn btn--secondary" type="button">Limpiar/Reintentar firma</button>
+              </div>
+              <p class="field__hint">Dibuja tu firma con mouse o dedo para validar tu aceptación.</p>
+            </div>
+
+            <label class="field field--full checkbox-field">
+              <span>
+                <input id="aceptacion" name="aceptacion" type="checkbox" required />
+                Declaro que los datos son correctos y acepto asistir con compromiso y responsabilidad.
+              </span>
+            </label>
+
+            <div class="field--full stack">
+              <div id="formFeedback" class="alert alert--error is-hidden" role="alert" aria-live="assertive"></div>
+              <div id="formSuccess" class="alert alert--success is-hidden" role="status" aria-live="polite"></div>
+              <div>
+                <button class="btn btn--cta" type="submit">Enviar inscripción (simulado)</button>
+              </div>
             </div>
           <div id="inscripcion-feedback" class="alert alert--info u-hidden" role="status" aria-live="polite"></div>
           </form>
