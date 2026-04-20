@@ -99,7 +99,7 @@
           <h2 id="inscripcion-title" class="card__title">Formulario de inscripción (simulado)</h2>
           <p class="card__meta">Bloque de inscripción para todos los eventos. No guarda datos.</p>
 
-          <form id="inscripcionForm" class="grid grid--2-cols" novalidate>
+          <form id="inscripcion-form" class="grid grid--2-cols" novalidate>
             <label class="field">
               <span class="field__label">Fecha y turno seleccionado</span>
               <input id="turnoSeleccionado" name="turno" class="input" type="text" placeholder="Ej: 9 de mayo · Profesionales Colombia" readonly required />
@@ -136,6 +136,8 @@
                 <option value="si">Sí</option>
                 <option value="no">No</option>
               </select>
+              <span class="field__label">Nombre completo</span>
+              <input id="nombreCompleto" class="input" type="text" placeholder="Tu nombre y apellidos" required />
             </label>
 
             <label id="linkPagoField" class="field is-hidden" aria-hidden="true">
@@ -145,9 +147,8 @@
             </label>
 
             <label class="field">
-              <span class="field__label">Adjuntar comprobante de pago</span>
-              <input id="comprobante" name="comprobante" class="input" type="file" accept=".pdf,.jpg,.jpeg,.png" required />
-              <p id="comprobanteEstado" class="field__hint">Aún no seleccionaste archivo.</p>
+              <span class="field__label">Documento</span>
+              <input id="documento" class="input" type="text" placeholder="DNI / Cédula" required />
             </label>
 
             <div class="field field--full">
@@ -180,6 +181,7 @@
                 <button class="btn btn--cta" type="submit">Enviar inscripción (simulado)</button>
               </div>
             </div>
+          <div id="inscripcion-feedback" class="alert alert--info u-hidden" role="status" aria-live="polite"></div>
           </form>
         </section>
       </div>
