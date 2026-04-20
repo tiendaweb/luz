@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Foro LATAM 2026 PSME | Inicio</title>
+    <meta
+      name="description"
+      content="Conoce a María Luz Genovese, Psicóloga Social y coordinadora del Foro LATAM 2026 PSME. Descubre formación, experiencia, especialidades y agenda de foros."
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -14,30 +18,88 @@
           <ul class="nav-list">
             <li><a class="nav-link is-active" href="index.html" aria-current="page">Inicio</a></li>
             <li><a class="nav-link" href="foros.html">Foros</a></li>
+            <li><a class="nav-link" href="contacto.html">Contacto</a></li>
           </ul>
         </nav>
       </div>
     </header>
 
-    <main>
-      <section class="hero">
+    <main id="contenido-principal">
+      <section class="hero" aria-labelledby="hero-title">
         <div class="container hero__content">
           <p class="eyebrow">Comunidad profesional y estudiantil en salud mental</p>
-          <h1>Conecta, aprende y transforma tu práctica en el Foro LATAM 2026 PSME.</h1>
+          <h1 id="hero-title">Conecta, aprende y transforma tu práctica en el Foro LATAM 2026 PSME.</h1>
           <p class="u-text-muted">
             Un espacio virtual guiado por María Luz Genovese para integrar teoría,
             experiencias y herramientas aplicables en psicología social y bienestar emocional.
           </p>
-          <div class="hero__actions">
-            <a class="btn btn--cta" href="foros.html">Inscribirse al Foro</a>
-            <a class="btn btn--secondary" href="#audiencia">Ver si este foro es para mí</a>
+          <div class="hero__actions" aria-label="Acciones principales">
+            <a class="btn btn--cta" href="foros.html">Inscribirme al Foro</a>
+            <a class="btn btn--secondary" href="foros.html">Ver Foros</a>
+            <a class="btn btn--secondary" href="contacto.html">Ir a Contacto</a>
           </div>
         </div>
       </section>
 
-      <section id="audiencia" class="section">
+      <section class="section" aria-labelledby="sobre-maria-luz">
         <div class="container stack">
-          <h2 class="section__title">¿A quién está dirigido?</h2>
+          <h2 id="sobre-maria-luz" class="section__title">Sobre María Luz Genovese</h2>
+
+          <article class="profile-card">
+            <figure class="profile-card__media">
+              <img
+                src="assets/maria-luz-genovese.svg"
+                alt="Retrato ilustrado de María Luz Genovese"
+                width="360"
+                height="360"
+                loading="lazy"
+              />
+            </figure>
+
+            <div class="profile-card__content stack">
+              <section aria-labelledby="bio-profesional">
+                <h3 id="bio-profesional" class="card__title">Bio profesional</h3>
+                <p class="u-m-0 u-text-muted">
+                  Soy María Luz Genovese, Psicóloga Social, y acompaño procesos individuales y grupales
+                  para fortalecer la salud mental y emocional desde una mirada humana, práctica y situada.
+                  Mi propuesta integra escucha activa, trabajo en comunidad y herramientas concretas para el día a día.
+                </p>
+              </section>
+
+              <section aria-labelledby="formacion-academica">
+                <h3 id="formacion-academica" class="card__title">Formación</h3>
+                <ul class="list u-text-muted">
+                  <li>Psicología Social con foco en dinámicas grupales y vínculos comunitarios.</li>
+                  <li>Actualización continua en bienestar emocional, comunicación y abordajes psicosociales.</li>
+                  <li>Participación en espacios regionales de intercambio académico y profesional.</li>
+                </ul>
+              </section>
+
+              <section aria-labelledby="experiencia-profesional">
+                <h3 id="experiencia-profesional" class="card__title">Experiencia</h3>
+                <p class="u-m-0 u-text-muted">
+                  Coordino foros virtuales para profesionales y estudiantes de toda LATAM, facilitando
+                  conversaciones aplicadas a casos reales y contextos actuales. También acompaño procesos
+                  de orientación psicosocial, con énfasis en prevención, vínculo y construcción de redes de apoyo.
+                </p>
+              </section>
+
+              <section aria-labelledby="especialidades-enfoque">
+                <h3 id="especialidades-enfoque" class="card__title">Especialidades y enfoque</h3>
+                <ul class="list u-text-muted">
+                  <li>Salud mental y emocional en contextos educativos y comunitarios.</li>
+                  <li>Relaciones interpersonales, comunicación y manejo de conflictos.</li>
+                  <li>Intervención psicosocial desde un enfoque cercano, profesional y basado en evidencia práctica.</li>
+                </ul>
+              </section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="audiencia" class="section section--muted" aria-labelledby="audiencia-title">
+        <div class="container stack">
+          <h2 id="audiencia-title" class="section__title">¿A quién está dirigido?</h2>
           <div class="grid grid--3-cols">
             <article class="card">
               <h3 class="card__title">Profesionales</h3>
@@ -55,9 +117,9 @@
         </div>
       </section>
 
-      <section class="section section--muted">
+      <section class="section" aria-labelledby="beneficios-title">
         <div class="container stack">
-          <h2 class="section__title">Beneficios y modalidad virtual</h2>
+          <h2 id="beneficios-title" class="section__title">Beneficios y modalidad virtual</h2>
           <div class="grid grid--2-cols">
             <article class="card">
               <h3 class="card__title">Lo que te llevas</h3>
@@ -75,50 +137,11 @@
                 acompañamiento previo para resolver dudas de ingreso.
               </p>
               <p class="u-mb-4 u-text-muted">Participa desde cualquier país con horarios segmentados por zona.</p>
-              <a class="btn btn--cta" href="foros.html">Ver agenda e inscripción</a>
+              <div class="hero__actions">
+                <a class="btn btn--cta" href="foros.html">Ver agenda e inscripción</a>
+                <a class="btn btn--secondary" href="contacto.html">Resolver dudas</a>
+              </div>
             </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container stack">
-          <h2 class="section__title">Próximas sesiones destacadas</h2>
-          <div class="grid grid--3-cols">
-            <article class="card">
-              <p class="card__meta">Sábado 9 de mayo de 2026</p>
-              <h3 class="card__title">Inicio ciclo Profesionales</h3>
-              <p class="u-m-0 u-text-muted">Apertura regional con foco en salud mental y comunicación interdisciplinaria.</p>
-            </article>
-            <article class="card">
-              <p class="card__meta">Lunes 18 de mayo de 2026</p>
-              <h3 class="card__title">Sesión clave de mitad de programa</h3>
-              <p class="u-m-0 u-text-muted">Integración de casos y aprendizajes aplicables al trabajo cotidiano.</p>
-            </article>
-            <article class="card">
-              <p class="card__meta">Sábado 30 de mayo de 2026</p>
-              <h3 class="card__title">Cierre y próximos pasos</h3>
-              <p class="u-m-0 u-text-muted">Síntesis final, red de contactos y continuidad de la comunidad.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section section--muted">
-        <div class="container stack">
-          <h2 class="section__title">Highlights de participantes</h2>
-          <div class="grid grid--2-cols">
-            <article class="card testimonial">
-              <p class="quote">“Me ayudó a transformar la forma en que abordo entrevistas clínicas y dinámicas grupales.”</p>
-              <p class="card__meta">— Testimonio simulado · Psicóloga, Colombia</p>
-            </article>
-            <article class="card testimonial">
-              <p class="quote">“Encontré una red regional con herramientas prácticas que aplico cada semana.”</p>
-              <p class="card__meta">— Testimonio simulado · Estudiante avanzada, México</p>
-            </article>
-          </div>
-          <div>
-            <a class="btn btn--cta" href="foros.html">Inscribirse al Foro</a>
           </div>
         </div>
       </section>
@@ -127,7 +150,10 @@
     <footer class="site-footer">
       <div class="container footer-wrap">
         <p class="u-m-0">© 2026 Foro LATAM PSME · María Luz Genovese</p>
-        <a href="foros.html">Ir a inscripción</a>
+        <div class="hero__actions">
+          <a href="foros.html">Foros</a>
+          <a href="contacto.html">Contacto</a>
+        </div>
       </div>
     </footer>
   </body>

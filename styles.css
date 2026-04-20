@@ -327,8 +327,41 @@ a:hover {
   display: none !important;
 }
 
+
+
+.profile-card {
+  display: grid;
+  gap: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+.profile-card__media {
+  margin: 0;
+}
+
+.profile-card__media img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.profile-card__content .card__title {
+  margin-bottom: var(--space-3);
+}
+
 /* Mobile-first responsive behavior */
 @media (min-width: 48rem) {
+  .profile-card {
+    grid-template-columns: minmax(14rem, 20rem) minmax(0, 1fr);
+    align-items: start;
+  }
+
   .grid--2-cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
