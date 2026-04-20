@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foro LATAM 2026 PSME | Acceso</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">Foro LATAM 2026 PSME</a>
+        <nav aria-label="Principal">
+          <ul class="nav-list">
+            <li><a class="nav-link" href="index.html">Inicio</a></li>
+            <li><a class="nav-link" href="foros.html">Foros</a></li>
+            <li><a class="nav-link is-active" href="login.html" aria-current="page">Acceso</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container dashboard-shell">
+        <section class="card login-card">
+          <p class="eyebrow">Ingreso de prueba</p>
+          <h1 class="section__title">Selecciona tu rol o usa credenciales dummy</h1>
+          <p class="u-m-0 u-text-muted">
+            Esta pantalla simula autenticación para validar la navegación entre dashboards.
+          </p>
+
+          <form id="login-form" class="stack u-mt-4" novalidate>
+            <div class="field">
+              <label class="field__label" for="email">Email</label>
+              <input class="input" id="email" name="email" type="email" placeholder="admin@psme.test" />
+              <p class="field__hint">Credenciales dummy sugeridas: admin@psme.test / asociado@psme.test / usuario@psme.test</p>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="password">Contraseña</label>
+              <input class="input" id="password" name="password" type="password" placeholder="123456" />
+              <p class="field__hint">Contraseña dummy común: <span class="u-fw-600">123456</span></p>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="role">Rol simulado</label>
+              <select class="select" id="role" name="role" required>
+                <option value="">Seleccionar rol</option>
+                <option value="admin">Admin</option>
+                <option value="asociado">Asociado</option>
+                <option value="usuario">Usuario</option>
+              </select>
+            </div>
+
+            <div id="login-feedback" class="alert alert--warning u-hidden" role="status" aria-live="polite"></div>
+
+            <button class="btn btn--cta" type="submit">Ingresar al dashboard</button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      (() => {
+        const form = document.getElementById('login-form');
+        const roleField = document.getElementById('role');
+        const emailField = document.getElementById('email');
+        const feedback = document.getElementById('login-feedback');
+
+        const routesByRole = {
+          admin: 'dashboard-admin.html',
+          asociado: 'dashboard-admin.html?modo=asociado#panel-asociados',
+          usuario: 'dashboard-usuario.html'
+        };
+
+        const roleByEmail = {
+          'admin@psme.test': 'admin',
+          'asociado@psme.test': 'asociado',
+          'usuario@psme.test': 'usuario'
+        };
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+
+          const email = emailField.value.trim().toLowerCase();
+          const selectedRole = roleField.value || roleByEmail[email] || '';
+
+          if (!selectedRole || !routesByRole[selectedRole]) {
+            feedback.textContent = 'Selecciona un rol válido o utiliza un email dummy conocido para continuar.';
+            feedback.classList.remove('u-hidden');
+            return;
+          }
+
+          feedback.classList.add('u-hidden');
+          window.location.href = routesByRole[selectedRole];
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -487,6 +487,40 @@ a:hover {
   border-top: 1px solid var(--color-border);
 }
 
+/* Dashboard & login views */
+.dashboard-shell {
+  max-width: 40rem;
+}
+
+.login-card {
+  background: var(--color-surface);
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.dashboard-module,
+.dashboard-submodule {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+}
+
+@media (min-width: 48rem) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .dashboard-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-grid--compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 .table-block__title {
   margin: 0 0 var(--space-3);
   font-size: var(--font-size-lg);
