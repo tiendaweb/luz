@@ -642,3 +642,24 @@ a:hover {
     justify-content: flex-end;
   }
 }
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.map-embed {
+  width: 100%;
+  min-height: 18rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  background: var(--color-surface-muted);
+}
+
+.map-embed iframe {
+  width: 100%;
+  min-height: 18rem;
+  border: 0;
+}
