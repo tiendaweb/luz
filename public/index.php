@@ -12,6 +12,10 @@ $routes = [
     'api/auth/me' => __DIR__ . '/api/auth/me.php',
     'api/registrations/create' => __DIR__ . '/api/registrations/create.php',
     'api/dashboard/summary' => __DIR__ . '/api/dashboard/summary.php',
+    'api/referrals/offer' => __DIR__ . '/api/referrals/offer.php',
+    'api/associate/offer' => __DIR__ . '/api/associate/offer.php',
+    'api/admin/registrations' => __DIR__ . '/api/admin/registrations.php',
+    'api/admin/associates' => __DIR__ . '/api/admin/associates.php',
 ];
 
 $routeKey = null;

@@ -396,15 +396,41 @@ declare(strict_types=1);
                                     </div>
                                 </div>
                             </div>
-                            <div class="admin-only hidden bg-emerald-50 border border-emerald-100 p-6 rounded-3xl">
+                            <div class="admin-only hidden bg-emerald-50 border border-emerald-100 p-6 rounded-3xl space-y-6">
                                 <p class="text-xs font-bold uppercase text-emerald-600 mb-2">Módulo exclusivo Admin</p>
                                 <h5 class="text-xl font-extrabold text-emerald-900 mb-2">Validación masiva de pagos</h5>
                                 <p class="text-emerald-800">Accede al consolidado de transferencias y libera cupos de forma centralizada para todos los grupos del ciclo.</p>
+                                <div class="bg-white rounded-2xl border border-emerald-100 p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h6 class="font-bold text-slate-800">Inscripciones (CRUD)</h6>
+                                        <button type="button" id="refreshAdminRegistrations" class="text-xs font-bold text-emerald-700">Actualizar</button>
+                                    </div>
+                                    <div id="adminRegistrationsList" class="space-y-3 text-sm text-slate-700"></div>
+                                </div>
+                                <div class="bg-white rounded-2xl border border-emerald-100 p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h6 class="font-bold text-slate-800">Asociados y oferta activa</h6>
+                                        <button type="button" id="refreshAdminAssociates" class="text-xs font-bold text-emerald-700">Actualizar</button>
+                                    </div>
+                                    <div id="adminAssociatesList" class="space-y-2 text-sm text-slate-700"></div>
+                                </div>
                             </div>
-                            <div class="associate-only hidden bg-violet-50 border border-violet-100 p-6 rounded-3xl">
+                            <div class="associate-only hidden bg-violet-50 border border-violet-100 p-6 rounded-3xl space-y-4">
                                 <p class="text-xs font-bold uppercase text-violet-600 mb-2">Módulo exclusivo Asociado</p>
                                 <h5 class="text-xl font-extrabold text-violet-900 mb-2">Panel de referidos</h5>
                                 <p class="text-violet-800">Comparte tu link, revisa conversiones y gestiona miembros activos de tu grupo derivado.</p>
+                                <form id="associateOfferForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white rounded-2xl p-4 border border-violet-200">
+                                    <input name="referralCode" placeholder="Código referido (ASOCIADO2026)" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                    <input name="currencyCode" placeholder="Moneda (USD, ARS)" maxlength="3" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                    <input name="priceAmount" type="number" min="0.01" step="0.01" placeholder="Precio" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                    <input name="paymentMethod" placeholder="Método de cobro" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                    <input name="paymentLink" type="url" placeholder="https://link-de-cobro..." class="rounded-xl border border-slate-200 px-3 py-2 md:col-span-2" required>
+                                    <div class="md:col-span-2 flex items-center gap-3">
+                                        <button type="submit" class="bg-violet-600 text-white px-4 py-2 rounded-xl font-bold text-sm">Guardar configuración</button>
+                                        <span id="associateOfferStatus" class="text-xs font-bold text-violet-700"></span>
+                                    </div>
+                                    <p class="md:col-span-2 text-xs text-slate-500">Link de referido: <span id="associateReferralPreview" class="font-bold text-violet-700"></span></p>
+                                </form>
                             </div>
                             <div class="user-only hidden bg-sky-50 border border-sky-100 p-6 rounded-3xl">
                                 <p class="text-xs font-bold uppercase text-sky-600 mb-2">Módulo exclusivo Inscripto</p>

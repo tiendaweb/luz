@@ -12,6 +12,8 @@
             </div>
             <form id="registerForm" class="p-8 space-y-6">
                 <div id="registerFormAlert" class="hidden rounded-2xl px-4 py-3 text-sm font-bold"></div>
+                <div id="referralOfferNotice" class="hidden rounded-2xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm text-violet-900"></div>
+                <input type="hidden" id="referralCodeInput" name="referralCode" value="">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="col-span-1 md:col-span-2">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Foro Elegido *</label>
@@ -44,8 +46,8 @@
                         </div>
                     </div>
                     <div id="certFields" class="col-span-1 md:col-span-2 hidden bg-teal-50 p-6 rounded-3xl border border-teal-100 space-y-4">
-                        <p class="text-sm text-teal-800 font-bold"><i class="fa-solid fa-link mr-2"></i> Realiza el abono de inscripción al Foro aquí:</p>
-                        <a href="#" class="inline-block bg-teal-600 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-teal-700 transition-all">Ir a la pasarela de Pago</a>
+                        <p id="paymentInstructions" class="text-sm text-teal-800 font-bold"><i class="fa-solid fa-link mr-2"></i> Realiza el abono de inscripción al Foro aquí:</p>
+                        <a id="paymentGatewayLink" href="#" target="_blank" rel="noopener noreferrer" class="inline-block bg-teal-600 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-teal-700 transition-all">Ir a la pasarela de Pago</a>
                         <div>
                             <label class="block text-xs font-bold text-teal-700 mb-2 uppercase tracking-widest">Adjuntar Comprobante (Ref: DNI)</label>
                             <input id="paymentProof" name="paymentProof" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white file:text-teal-700 hover:file:bg-teal-100">
@@ -68,4 +70,3 @@
             </form>
         </div>
     </div>
-

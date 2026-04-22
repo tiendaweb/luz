@@ -40,4 +40,52 @@ $stmt->execute([
     gmdate('c'),
 ]);
 
-api_json(['ok' => true, 'id' => (int)$pdo->lastInsertId()]);
+$registrationId = (int)$pdo->lastInsertId();
+$referrerUserId = null;
+$offer = null;
+
+if (is_string($payload['referralCode'] ?? null) && $payload['referralCode'] !== '') {
+    $offerStmt = $pdo->prepare(
+        'SELECT user_id, referral_code, payment_method, payment_link, price_amount, currency_code
+         FROM associate_offers
+         WHERE referral_code = :code
+         LIMIT 1'
+    );
+    $offerStmt->execute(['code' => $payload['referralCode']]);
+    $offer = $offerStmt->fetch();
+    if (is_array($offer)) {
+        $referrerUserId = (int)$offer['user_id'];
+    }
+}
+
+$metaStmt = $pdo->prepare(
+    'INSERT INTO registration_meta (
+      registration_id, referral_code, referrer_user_id, payment_method, payment_link, price_amount, currency_code
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)'
+);
+$metaStmt->execute([
+    $registrationId,
+    $payload['referralCode'],
+    $referrerUserId,
+    is_array($offer) ? (string)$offer['payment_method'] : null,
+    is_array($offer) ? (string)$offer['payment_link'] : null,
+    is_array($offer) ? (float)$offer['price_amount'] : null,
+    is_array($offer) ? (string)$offer['currency_code'] : null,
+]);
+
+$adminStateStmt = $pdo->prepare(
+    'INSERT OR IGNORE INTO registration_admin_state (registration_id, status, note, updated_at) VALUES (?, ?, ?, ?)'
+);
+$adminStateStmt->execute([$registrationId, 'pending', null, gmdate('c')]);
+
+api_json([
+    'ok' => true,
+    'id' => $registrationId,
+    'appliedOffer' => is_array($offer) ? [
+        'referralCode' => (string)$offer['referral_code'],
+        'paymentMethod' => (string)$offer['payment_method'],
+        'paymentLink' => (string)$offer['payment_link'],
+        'priceAmount' => (float)$offer['price_amount'],
+        'currencyCode' => (string)$offer['currency_code'],
+    ] : null,
+]);

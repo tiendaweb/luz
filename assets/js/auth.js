@@ -73,6 +73,7 @@
       window.showView("dashboard");
     }
 
+    window.dispatchEvent(new CustomEvent("app:role-changed", { detail: { role } }));
     return role;
   }
 
