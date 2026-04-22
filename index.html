@@ -18,6 +18,7 @@
         [data-active-role="admin"] .admin-only { display: block !important; }
         [data-active-role="associate"] .associate-only { display: block !important; }
         [data-active-role="user"] .user-only { display: block !important; }
+        [data-active-role="guest"] .guest-only { display: block !important; }
         .view-section { display: none; }
         .view-section.active { display: block; }
     </style>
@@ -76,6 +77,7 @@
                 <a onclick="showView('about'); toggleMobileMenu()">La Directora</a>
                 <a onclick="showView('blog'); toggleMobileMenu()">Blog</a>
                 <hr>
+                <button onclick="showView('dashboard'); toggleMobileMenu()" class="mobile-user-access-btn hidden bg-slate-900 text-white py-4 rounded-2xl flex items-center justify-center gap-2"><i class="fa-solid fa-circle-user"></i> Mi Área</button>
                 <button onclick="openModal('registerModal')" class="bg-teal-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2"><i class="fa-solid fa-ticket"></i> Inscribirse a los Foros</button>
             </div>
         </div>
@@ -437,16 +439,38 @@
                                 <h4 class="text-3xl font-extrabold text-slate-800">Pendiente</h4>
                             </div>
                         </div>
-                        <div class="mt-12">
-                            <h4 class="text-xl font-bold mb-6">Actividad y Anuncios del Foro</h4>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm"><i class="fa-solid fa-check"></i></div>
-                                        <div><p class="font-bold">Enlace de Zoom - Sesión 1</p><p class="text-xs text-slate-500">Estará disponible 24hs antes del evento.</p></div>
+                        <div class="mt-12 space-y-6">
+                            <div>
+                                <h4 class="text-xl font-bold mb-6">Actividad y Anuncios del Foro</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-teal-600 shadow-sm"><i class="fa-solid fa-check"></i></div>
+                                            <div><p class="font-bold">Enlace de Zoom - Sesión 1</p><p class="text-xs text-slate-500">Estará disponible 24hs antes del evento.</p></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-slate-400">Automático</span>
                                     </div>
-                                    <span class="text-xs font-bold text-slate-400">Automático</span>
                                 </div>
+                            </div>
+                            <div class="admin-only hidden bg-emerald-50 border border-emerald-100 p-6 rounded-3xl">
+                                <p class="text-xs font-bold uppercase text-emerald-600 mb-2">Módulo exclusivo Admin</p>
+                                <h5 class="text-xl font-extrabold text-emerald-900 mb-2">Validación masiva de pagos</h5>
+                                <p class="text-emerald-800">Accede al consolidado de transferencias y libera cupos de forma centralizada para todos los grupos del ciclo.</p>
+                            </div>
+                            <div class="associate-only hidden bg-violet-50 border border-violet-100 p-6 rounded-3xl">
+                                <p class="text-xs font-bold uppercase text-violet-600 mb-2">Módulo exclusivo Asociado</p>
+                                <h5 class="text-xl font-extrabold text-violet-900 mb-2">Panel de referidos</h5>
+                                <p class="text-violet-800">Comparte tu link, revisa conversiones y gestiona miembros activos de tu grupo derivado.</p>
+                            </div>
+                            <div class="user-only hidden bg-sky-50 border border-sky-100 p-6 rounded-3xl">
+                                <p class="text-xs font-bold uppercase text-sky-600 mb-2">Módulo exclusivo Inscripto</p>
+                                <h5 class="text-xl font-extrabold text-sky-900 mb-2">Materiales y certificados</h5>
+                                <p class="text-sky-800">Descarga bibliografía recomendada, enlaces de reunión y constancias habilitadas para tu cohorte.</p>
+                            </div>
+                            <div class="guest-only hidden bg-amber-50 border border-amber-100 p-6 rounded-3xl">
+                                <p class="text-xs font-bold uppercase text-amber-600 mb-2">Acceso restringido</p>
+                                <h5 class="text-xl font-extrabold text-amber-900 mb-2">Inicia sesión para desbloquear módulos</h5>
+                                <p class="text-amber-800">Como invitado sólo puedes navegar la portada y agenda. Regístrate para activar tu panel personal.</p>
                             </div>
                         </div>
                     </div>
