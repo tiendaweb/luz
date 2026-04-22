@@ -90,6 +90,19 @@ CREATE TABLE IF NOT EXISTS registration_admin_state (
   FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS registration_status_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  registration_id INTEGER NOT NULL,
+  from_status TEXT,
+  to_status TEXT NOT NULL,
+  note TEXT,
+  reviewed_by_user_id INTEGER,
+  reviewed_by_role TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE,
+  FOREIGN KEY (reviewed_by_user_id) REFERENCES users(id)
+);
+
 CREATE TABLE IF NOT EXISTS referrals (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   referrer_user_id INTEGER NOT NULL,

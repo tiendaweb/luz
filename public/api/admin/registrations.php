@@ -33,6 +33,7 @@ if ($method === 'GET') {
          LEFT JOIN users ON users.id = registration_meta.referrer_user_id
          ORDER BY registrations.id DESC'
     )->fetchAll();
+    $rows = api_attach_registration_history($pdo, $rows);
 
     api_json(['ok' => true, 'items' => $rows]);
 }
@@ -56,7 +57,9 @@ if ($method === 'PATCH') {
     ]);
 
     if (!($result['ok'] ?? false)) {
-        api_json(['ok' => false, 'error' => (string)($result['error'] ?? 'No se pudo actualizar estado.')], 403);
+        $error = (string)($result['error'] ?? 'No se pudo actualizar estado.');
+        $statusCode = str_contains($error, 'No autorizado') || str_contains($error, 'Rol no autorizado') ? 403 : 422;
+        api_json(['ok' => false, 'error' => $error], $statusCode);
     }
 
     api_json(['ok' => true]);
