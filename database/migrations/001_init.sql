@@ -23,7 +23,13 @@ CREATE TABLE IF NOT EXISTS forums (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   code TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
-  starts_at TEXT,
+  description TEXT NOT NULL,
+  platform_type TEXT NOT NULL,
+  platform_url TEXT,
+  timezone TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'published',
+  speaker_json TEXT,
+  starts_at TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -116,9 +122,31 @@ INSERT OR IGNORE INTO roles (slug, name) VALUES
   ('associate', 'Asociado'),
   ('admin', 'Administrador');
 
-INSERT OR IGNORE INTO forums (code, title, starts_at) VALUES
-  ('morning', 'Foro de la mañana', NULL),
-  ('afternoon', 'Foro de la tarde', NULL);
+INSERT OR IGNORE INTO forums (
+  code, title, description, platform_type, platform_url, timezone, status, speaker_json, starts_at
+) VALUES
+  (
+    'morning',
+    'Foro de la mañana',
+    'Encuentro orientado a profesionales con enfoque en análisis clínico y discusión grupal.',
+    'zoom',
+    'https://zoom.us/j/psme-manana',
+    'America/Argentina/Buenos_Aires',
+    'published',
+    '[{"name":"Maria Luz Genovese","role":"Directora"}]',
+    '2026-05-09T13:00:00Z'
+  ),
+  (
+    'afternoon',
+    'Foro de la tarde',
+    'Espacio para estudiantes y profesionales en formación con metodología participativa.',
+    'google_meet',
+    'https://meet.google.com/psme-tarde',
+    'America/Bogota',
+    'published',
+    '[{"name":"Maria Luz Genovese","role":"Directora"}]',
+    '2026-05-09T22:00:00Z'
+  );
 
 INSERT OR IGNORE INTO associate_offers (user_id, referral_code, payment_method, payment_link, price_amount, currency_code)
 SELECT users.id, 'ASOCIADO2026', 'Transferencia bancaria', 'https://pagos.psme.local/asociado2026', 35.00, 'USD'
