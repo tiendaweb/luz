@@ -197,6 +197,46 @@
     `).join("");
   }
 
+
+  function renderAssociateRegistrations(items) {
+    const target = document.getElementById("associateRegistrationsList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">Sin registros referidos para este filtro.</p>';
+      return;
+    }
+
+    target.innerHTML = items.map((item) => `
+      <article class="rounded-xl border border-violet-100 bg-white p-3">
+        <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="font-bold text-slate-800">#${item.id} · ${item.full_name}</p>
+            <p class="text-xs text-slate-500">${item.document_id} · ${item.forum_slot}</p>
+            <p class="text-xs text-slate-500">Estado actual: <span class="font-bold text-slate-700">${item.status}</span> · Ref: ${item.referral_code || "—"}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button data-action="associate-approve" data-id="${item.id}" class="rounded-lg bg-emerald-600 px-2 py-1 text-xs font-bold text-white">Aprobar</button>
+            <button data-action="associate-reject" data-id="${item.id}" class="rounded-lg bg-rose-600 px-2 py-1 text-xs font-bold text-white">Rechazar</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  async function loadAssociateRegistrations() {
+    if (document.body.getAttribute("data-active-role") !== "associate") return;
+    const filter = document.getElementById("associateRegistrationsFilter");
+    const status = filter ? String(filter.value || "all") : "all";
+    const query = status === "all" ? "" : `?status=${encodeURIComponent(status)}`;
+
+    try {
+      const result = await window.appApiFetch(`/api/associate/registrations.php${query}`);
+      renderAssociateRegistrations(result.items || []);
+    } catch (_error) {
+      renderAssociateRegistrations([]);
+    }
+  }
+
   function renderAdminAssociates(items) {
     const target = document.getElementById("adminAssociatesList");
     if (!target) return;
@@ -225,6 +265,35 @@
     } catch (_error) {
       // noop
     }
+  }
+
+  function setupAssociateRegistrationActions() {
+    const list = document.getElementById("associateRegistrationsList");
+    const refresh = document.getElementById("refreshAssociateRegistrations");
+    const filter = document.getElementById("associateRegistrationsFilter");
+
+    refresh?.addEventListener("click", () => loadAssociateRegistrations());
+    filter?.addEventListener("change", () => loadAssociateRegistrations());
+
+    list?.addEventListener("click", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      const isApprove = target.dataset.action === "associate-approve";
+      const isReject = target.dataset.action === "associate-reject";
+      if (!isApprove && !isReject) return;
+
+      const registrationId = Number(target.dataset.id || 0);
+      if (!registrationId) return;
+
+      const nextStatus = isApprove ? "approved" : "rejected";
+      await window.appApiFetch("/api/associate/registrations.php", {
+        method: "PATCH",
+        body: JSON.stringify({ registrationId, status: nextStatus })
+      });
+      loadAssociateRegistrations();
+      loadAdminData();
+    });
   }
 
   function setupAdminActions() {
@@ -364,16 +433,19 @@
   window.addEventListener("DOMContentLoaded", async () => {
     setupRegistrationForm();
     setupAssociateOfferForm();
+    setupAssociateRegistrationActions();
     setupAdminActions();
     window.toggleCertFields(false);
     await loadOfferFromReferralCode();
     await loadAssociateOffer();
+    await loadAssociateRegistrations();
     await window.refreshDashboardSummary();
     await loadAdminData();
   });
 
   window.addEventListener("app:role-changed", async () => {
     await loadAssociateOffer();
+    await loadAssociateRegistrations();
     await loadAdminData();
   });
 })();

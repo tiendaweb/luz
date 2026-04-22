@@ -429,6 +429,21 @@ declare(strict_types=1);
                                 <p class="text-xs font-bold uppercase text-violet-600 mb-2">Módulo exclusivo Asociado</p>
                                 <h5 class="text-xl font-extrabold text-violet-900 mb-2">Panel de referidos</h5>
                                 <p class="text-violet-800">Comparte tu link, revisa conversiones y gestiona miembros activos de tu grupo derivado.</p>
+                                <div class="bg-white rounded-2xl border border-violet-200 p-4 space-y-3">
+                                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                                        <h6 class="font-bold text-slate-800">Gestión de inscripciones referidas</h6>
+                                        <div class="flex items-center gap-2">
+                                            <select id="associateRegistrationsFilter" class="rounded-lg border border-slate-300 px-2 py-1 text-xs">
+                                                <option value="all">Todos</option>
+                                                <option value="pending">Pendiente</option>
+                                                <option value="approved">Aprobada</option>
+                                                <option value="rejected">Rechazada</option>
+                                            </select>
+                                            <button type="button" id="refreshAssociateRegistrations" class="text-xs font-bold text-violet-700">Actualizar</button>
+                                        </div>
+                                    </div>
+                                    <div id="associateRegistrationsList" class="space-y-2 text-sm text-slate-700"></div>
+                                </div>
                                 <form id="associateOfferForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white rounded-2xl p-4 border border-violet-200">
                                     <input name="referralCode" placeholder="Código referido (ASOCIADO2026)" class="rounded-xl border border-slate-200 px-3 py-2" required>
                                     <input name="currencyCode" placeholder="Moneda (USD, ARS)" maxlength="3" class="rounded-xl border border-slate-200 px-3 py-2" required>

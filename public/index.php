@@ -17,6 +17,7 @@ $routes = [
     'api/forums/detail' => __DIR__ . '/api/forums/detail.php',
     'api/referrals/offer' => __DIR__ . '/api/referrals/offer.php',
     'api/associate/offer' => __DIR__ . '/api/associate/offer.php',
+    'api/associate/registrations' => __DIR__ . '/api/associate/registrations.php',
     'api/admin/registrations' => __DIR__ . '/api/admin/registrations.php',
     'api/admin/associates' => __DIR__ . '/api/admin/associates.php',
 ];

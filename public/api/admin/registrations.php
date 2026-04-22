@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../_bootstrap.php';
+require_once __DIR__ . '/../_registration_state.php';
 
 $user = api_current_user();
 if (!is_array($user) || ($user['role'] ?? '') !== 'admin') {
@@ -18,6 +19,8 @@ if ($method === 'GET') {
                 registrations.needs_cert, registrations.created_at,
                 COALESCE(registration_admin_state.status, "pending") AS status,
                 registration_admin_state.note,
+                registration_admin_state.updated_by_user_id,
+                registration_admin_state.updated_by_role,
                 registration_meta.referral_code,
                 registration_meta.payment_method,
                 registration_meta.payment_link,
@@ -47,20 +50,14 @@ if ($method === 'PATCH') {
         api_json(['ok' => false, 'error' => 'Estado inválido.'], 422);
     }
 
-    $stmt = $pdo->prepare(
-        'INSERT INTO registration_admin_state (registration_id, status, note, updated_at)
-         VALUES (:registration_id, :status, :note, :updated_at)
-         ON CONFLICT(registration_id) DO UPDATE SET
-          status = excluded.status,
-          note = excluded.note,
-          updated_at = excluded.updated_at'
-    );
-    $stmt->execute([
-        'registration_id' => $registrationId,
-        'status' => $status,
-        'note' => $note === '' ? null : $note,
-        'updated_at' => gmdate('c'),
+    $result = api_set_registration_status($pdo, $registrationId, $status, $note, [
+        'role' => 'admin',
+        'id' => (int)($user['id'] ?? 0),
     ]);
+
+    if (!($result['ok'] ?? false)) {
+        api_json(['ok' => false, 'error' => (string)($result['error'] ?? 'No se pudo actualizar estado.')], 403);
+    }
 
     api_json(['ok' => true]);
 }
