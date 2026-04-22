@@ -241,7 +241,26 @@ declare(strict_types=1);
             </div>
         </section>
 
-        <!-- ABOUT VIEW (Luz Genovese as Director) -->
+
+
+        <!-- FORUM DETAIL VIEW -->
+        <section id="view-forum-detail" class="view-section py-24 animate-fadeIn">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div id="forumDetailAlert" class="hidden mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800"></div>
+                <div id="forumDetailContainer" class="space-y-8">
+                    <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-xl">
+                        <p class="text-sm text-slate-500">Selecciona un foro desde la agenda para ver el detalle.</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <button type="button" onclick="showView('forums')" class="rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-bold text-slate-700 hover:border-teal-500 hover:text-teal-700 transition-all">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Volver a agenda
+                    </button>
+                </div>
+            </div>
+        </section>
+
+                <!-- ABOUT VIEW (Luz Genovese as Director) -->
         <section id="view-about" class="view-section py-24 animate-fadeIn">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row gap-20">

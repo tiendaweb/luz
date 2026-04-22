@@ -1,5 +1,5 @@
 (() => {
-  const validViews = new Set(["home", "forums", "about", "blog", "dashboard"]);
+  const validViews = new Set(["home", "forums", "forum-detail", "about", "blog", "dashboard"]);
 
   const normalizeView = (viewId) => (validViews.has(viewId) ? viewId : "home");
 
@@ -16,8 +16,9 @@
     const rawHash = window.location.hash.replace("#", "");
     const [rawView, query = ""] = rawHash.split("?");
     const view = rawView.startsWith("view-") ? rawView.replace("view-", "") : "home";
-    const role = normalizeRole(new URLSearchParams(query).get("role") || "guest");
-    return { view: normalizeView(view), role };
+    const params = new URLSearchParams(query);
+    const role = normalizeRole(params.get("role") || "guest");
+    return { view: normalizeView(view), role, params };
   }
 
   function updateHash(viewId) {
