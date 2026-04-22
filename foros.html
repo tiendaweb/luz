@@ -1,202 +1,36 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foro LATAM 2026 PSME | Foros</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
-    <header class="site-header">
-      <div class="container nav-wrap">
-        <a class="brand" href="index.html">Foro LATAM 2026 PSME</a>
-        <nav aria-label="Principal">
-          <ul class="nav-list">
-            <li><a class="nav-link" href="index.html">Inicio</a></li>
-            <li><a class="nav-link is-active" href="foros.html" aria-current="page">Foros</a></li>
-            <li><a class="nav-link" href="login.html">Acceso</a></li>
-            <li><a class="nav-link" href="contacto.html">Contacto</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    <main id="contenido-principal" class="section">
-      <div class="container stack">
-        <h1 class="section__title">Agenda e inscripción</h1>
-        <p class="u-m-0 u-text-muted">Selecciona tu segmento y completa tu inscripción para reservar cupo.</p>
-
-        <section class="card stack" aria-labelledby="foro-descripcion-title">
-          <h2 id="foro-descripcion-title" class="card__title">Descripción del foro</h2>
-          <p class="u-m-0 u-text-muted">
-            El Foro LATAM 2026 PSME es un espacio virtual de encuentro sobre psicología, salud mental y dimensión psicosocial.
-            Integra experiencias, teoría aplicada y reflexión profesional para fortalecer la práctica en comunidad.
-          </p>
-          <h3 class="u-m-0">Objetivos del foro</h3>
-          <ul class="list u-m-0">
-            <li>Compartir conocimiento y experiencias entre participantes de distintos países.</li>
-            <li>Discutir temas relevantes de bienestar emocional y relaciones interpersonales.</li>
-            <li>Aprender en red con acompañamiento y enfoque práctico.</li>
-            <li>Conectar con una comunidad profesional y estudiantil en toda LATAM.</li>
-          </ul>
-        </section>
-
-        <section class="stack" aria-labelledby="horarios-title">
-          <h2 id="horarios-title" class="section__title">Horarios de mayo 2026</h2>
-
-          <article class="table-block">
-            <h3 class="table-block__title">Profesionales</h3>
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr><th>Zona</th><th>Fechas</th><th>Horario AR</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Colombia</td><td>Sábados 9, 16, 23, 30</td><td>10:00–11:00</td></tr>
-                  <tr><td>Ecuador/Bolivia</td><td>Lunes 4, 11, 18, 25</td><td>21:00–22:00</td></tr>
-                  <tr><td>México</td><td>Sábados 9, 16, 23, 30</td><td>19:00–20:00</td></tr>
-                  <tr><td>Ecuador</td><td>Martes 5, 12, 19, 26</td><td>20:00–21:00</td></tr>
-                  <tr><td>Guatemala</td><td>Miércoles 6, 13, 20, 27</td><td>20:00–21:00</td></tr>
-                  <tr><td>Perú</td><td>Miércoles 6, 13, 20, 27</td><td>21:00–22:00</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-
-          <article class="table-block">
-            <h3 class="table-block__title">Estudiantes</h3>
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr><th>Zona</th><th>Fechas</th><th>Horario AR</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Colombia</td><td>Sábados 9, 16, 23, 30</td><td>11:00–12:00</td></tr>
-                  <tr><td>México</td><td>Sábados 9, 16, 23, 30</td><td>11:00–12:00</td></tr>
-                  <tr><td>Guatemala</td><td>Miércoles 6, 13, 20, 27</td><td>11:00–12:00</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-
-        <section class="card stack" aria-labelledby="selector-title">
-          <h2 id="selector-title" class="card__title">Calendario y selector visual (mayo 2026)</h2>
-          <p class="u-m-0 u-text-muted">
-            Selecciona una fecha para ver turnos disponibles. Estado de cupos simulado: disponible, últimos cupos o agotado.
-          </p>
-
-          <div class="calendar" id="calendar" aria-label="Calendario de mayo 2026"></div>
-
-          <div class="event-panel stack">
-            <h3 class="u-m-0">Turnos del día seleccionado</h3>
-            <p id="selected-date" class="u-m-0 u-text-muted">Selecciona una fecha en el calendario.</p>
-            <div id="events-list" class="events-list" aria-live="polite"></div>
-          </div>
-        </section>
-
-        <section id="formulario-inscripcion" class="card stack" aria-labelledby="inscripcion-title">
-          <h2 id="inscripcion-title" class="card__title">Formulario de inscripción (simulado)</h2>
-          <p class="card__meta">Bloque de inscripción para todos los eventos. No guarda datos.</p>
-
-          <form id="inscripcion-form" class="grid grid--2-cols" novalidate>
-            <label class="field">
-              <span class="field__label">Fecha y turno seleccionado</span>
-              <input id="turnoSeleccionado" name="turno" class="input" type="text" placeholder="Ej: 9 de mayo · Profesionales Colombia" readonly required />
-            </label>
-
-            <label class="field">
-              <span class="field__label">Rol</span>
-              <select id="rol" name="rol" class="select" required>
-                <option value="">Selecciona una opción</option>
-                <option value="Profesional">Profesional</option>
-                <option value="Estudiante">Estudiante</option>
-              </select>
-            </label>
-
-            <label class="field">
-              <span class="field__label">Nombre y apellidos completo</span>
-              <input id="nombreCompleto" name="nombreCompleto" class="input" type="text" placeholder="Ej: Ana María Pérez Gómez" required />
-            </label>
-
-            <label class="field">
-              <span class="field__label">Número de documento (DNI/Cédula)</span>
-              <input id="documento" name="documento" class="input" type="text" inputmode="numeric" placeholder="Ej: 32123456" required />
-            </label>
-
-            <label class="field">
-              <span class="field__label">Profesión o ejercicio actual</span>
-              <input id="profesion" name="profesion" class="input" type="text" placeholder="Ej: Psicóloga Clínica" required />
-            </label>
-
-            <label class="field">
-              <span class="field__label">¿Solicita certificado de asistencia?</span>
-              <select id="certificado" name="certificado" class="select" required>
-                <option value="">Selecciona una opción</option>
-                <option value="si">Sí</option>
-                <option value="no">No</option>
-              </select>
-              <span class="field__label">Nombre completo para certificado</span>
-              <input id="nombreCertificado" name="nombreCertificado" class="input" type="text" placeholder="Tu nombre y apellidos" required />
-            </label>
-
-            <label id="linkPagoField" class="field is-hidden" aria-hidden="true">
-              <span class="field__label">Link de pago</span>
-              <input id="linkPago" name="linkPago" class="input" type="url" placeholder="https://..." />
-              <p class="field__hint">Este campo se habilita solo si solicitas certificado.</p>
-            </label>
-
-            <label class="field">
-              <span class="field__label">Documento para certificado</span>
-              <input id="documentoCertificado" name="documentoCertificado" class="input" type="text" placeholder="DNI / Cédula" required />
-            </label>
-
-            <div class="field field--full">
-              <span class="field__label">Firma digital (canvas)</span>
-              <canvas
-                id="firmaCanvas"
-                class="signature-canvas"
-                width="640"
-                height="220"
-                role="img"
-                aria-label="Área para firmar de manera digital"
-              ></canvas>
-              <div class="signature-actions">
-                <button id="limpiarFirma" class="btn btn--secondary" type="button">Limpiar/Reintentar firma</button>
-              </div>
-              <p class="field__hint">Dibuja tu firma con mouse o dedo para validar tu aceptación.</p>
-            </div>
-
-            <label class="field field--full checkbox-field" for="aceptacion">
-              <span class="field__label">
-                <input id="aceptacion" name="aceptacion" type="checkbox" required />
-                Declaro que los datos son correctos y acepto asistir con compromiso y responsabilidad.
-              </span>
-            </label>
-
-            <div class="field--full stack">
-              <div id="formFeedback" class="alert alert--error is-hidden" role="alert" aria-live="assertive"></div>
-              <div id="formSuccess" class="alert alert--success is-hidden" role="status" aria-live="polite"></div>
-              <div>
-                <button class="btn btn--cta" type="submit">Enviar inscripción (simulado)</button>
-              </div>
-            </div>
-          <div id="inscripcion-feedback" class="alert alert--info u-hidden" role="status" aria-live="polite"></div>
-          </form>
-        </section>
-      </div>
-    </main>
-
-    <script src="script.js"></script>
-    <footer class="site-footer">
-      <div class="container footer-wrap">
-        <p class="u-m-0">© 2026 Foro LATAM PSME · María Luz Genovese</p>
-        <div class="hero__actions">
-          <a href="index.html">Inicio</a>
-          <a href="contacto.html">Contacto</a>
-        </div>
-      </div>
-    </footer>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redireccionando…</title>
+  <script>
+    const map = {
+      'foros.html': 'forums',
+      'contacto.html': 'about',
+      'login.html': 'dashboard',
+      'dashboard-admin.html': 'dashboard',
+      'dashboard-asociado.html': 'dashboard',
+      'dashboard-usuario.html': 'dashboard'
+    };
+    const file = location.pathname.split('/').pop();
+    const target = map[file] || 'home';
+    location.replace('index.html#view-' + target);
+  </script>
+</head>
+<body style="font-family: system-ui, sans-serif; padding: 2rem;">
+  <p>Redireccionando a la vista interna… <a id="fallback-link" href="index.html">Continuar</a></p>
+  <script>
+    const file = location.pathname.split('/').pop();
+    const target = ({
+      'foros.html': 'forums',
+      'contacto.html': 'about',
+      'login.html': 'dashboard',
+      'dashboard-admin.html': 'dashboard',
+      'dashboard-asociado.html': 'dashboard',
+      'dashboard-usuario.html': 'dashboard'
+    }[file]) || 'home';
+    document.getElementById('fallback-link').href = 'index.html#view-' + target;
+  </script>
+</body>
 </html>
