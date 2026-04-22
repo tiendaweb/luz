@@ -58,10 +58,40 @@ function api_require_db(): PDO
     static $migrated = false;
 
     if (!$migrated) {
-        $migrationSql = file_get_contents(__DIR__ . '/../../database/migrations/001_init.sql');
-        if ($migrationSql !== false) {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS schema_migrations (filename TEXT PRIMARY KEY, executed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)');
+
+        $migrationFiles = glob(__DIR__ . '/../../database/migrations/*.sql') ?: [];
+        sort($migrationFiles, SORT_NATURAL);
+
+        $checkStmt = $pdo->prepare('SELECT 1 FROM schema_migrations WHERE filename = :filename LIMIT 1');
+        $insertStmt = $pdo->prepare('INSERT INTO schema_migrations (filename) VALUES (:filename)');
+
+        foreach ($migrationFiles as $file) {
+            $filename = basename($file);
+            $checkStmt->execute(['filename' => $filename]);
+            $alreadyExecuted = $checkStmt->fetchColumn() !== false;
+            if ($alreadyExecuted) {
+                continue;
+            }
+
+            if ($filename === '002_forum_detail.sql') {
+                $forumColumns = $pdo->query('PRAGMA table_info(forums)')->fetchAll(PDO::FETCH_ASSOC);
+                $forumColumnNames = array_map(static fn(array $column): string => (string)$column['name'], $forumColumns);
+                if (in_array('objective', $forumColumnNames, true)) {
+                    $insertStmt->execute(['filename' => $filename]);
+                    continue;
+                }
+            }
+
+            $migrationSql = file_get_contents($file);
+            if ($migrationSql === false) {
+                throw new RuntimeException(sprintf('No se pudo leer la migración: %s', $filename));
+            }
+
             $pdo->exec($migrationSql);
+            $insertStmt->execute(['filename' => $filename]);
         }
+
         $migrated = true;
     }
 

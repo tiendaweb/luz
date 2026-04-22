@@ -82,6 +82,57 @@ Lista foros publicados con paginación básica.
 }
 ```
 
+
+## GET `/api/forums/detail.php?id=...`
+
+Devuelve el detalle completo de un foro publicado por `id`.
+
+### Query params
+
+- `id` (requerido, entero positivo).
+
+### Respuesta 200
+
+```json
+{
+  "ok": true,
+  "forum": {
+    "id": 1,
+    "code": "morning",
+    "title": "Foro de la mañana",
+    "description": "...",
+    "platformType": "zoom",
+    "platformUrl": "https://zoom.us/j/psme-manana",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "status": "published",
+    "speakerJson": [
+      { "name": "Maria Luz Genovese", "role": "Directora" }
+    ],
+    "startsAt": "2026-05-09T13:00:00Z",
+    "objective": "...",
+    "topics": ["..."],
+    "guests": [
+      {
+        "name": "Maria Luz Genovese",
+        "role": "Directora y moderadora",
+        "bio": "..."
+      }
+    ],
+    "modality": "Virtual en vivo por Zoom",
+    "requirements": "...",
+    "seatsTotal": 80,
+    "seatsAvailable": 26,
+    "ctaLabel": "Reservar cupo mañana",
+    "ctaUrl": "/#view-forums"
+  }
+}
+```
+
+### Errores específicos
+
+- `400` si falta `id` o no es válido.
+- `404` si no existe el foro publicado para ese `id`.
+
 ## Errores
 
 - Método HTTP no soportado: `405`.
