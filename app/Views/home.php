@@ -461,6 +461,16 @@ declare(strict_types=1);
                                 <p class="text-xs font-bold uppercase text-sky-600 mb-2">Módulo exclusivo Inscripto</p>
                                 <h5 class="text-xl font-extrabold text-sky-900 mb-2">Materiales y certificados</h5>
                                 <p class="text-sky-800">Descarga bibliografía recomendada, enlaces de reunión y constancias habilitadas para tu cohorte.</p>
+                                <div id="userEbooksAlert" class="hidden mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-semibold text-amber-800"></div>
+                                <div class="mt-5 rounded-2xl border border-sky-200 bg-white p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h6 class="font-bold text-slate-800">Ebooks habilitados</h6>
+                                        <button type="button" id="refreshUserEbooks" class="text-xs font-bold text-sky-700">Actualizar</button>
+                                    </div>
+                                    <div id="userEbooksList" class="space-y-3 text-sm text-slate-700">
+                                        <p class="text-xs text-slate-500">Inicia sesión como inscripto para consultar tu acceso.</p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="guest-only hidden bg-amber-50 border border-amber-100 p-6 rounded-3xl">
                                 <p class="text-xs font-bold uppercase text-amber-600 mb-2">Acceso restringido</p>
