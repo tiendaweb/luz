@@ -83,6 +83,15 @@ function api_require_db(): PDO
                 }
             }
 
+            if ($filename === '003_registration_state_audit.sql') {
+                $stateColumns = $pdo->query('PRAGMA table_info(registration_admin_state)')->fetchAll(PDO::FETCH_ASSOC);
+                $stateColumnNames = array_map(static fn(array $column): string => (string)$column['name'], $stateColumns);
+                if (in_array('updated_by_user_id', $stateColumnNames, true) && in_array('updated_by_role', $stateColumnNames, true)) {
+                    $insertStmt->execute(['filename' => $filename]);
+                    continue;
+                }
+            }
+
             $migrationSql = file_get_contents($file);
             if ($migrationSql === false) {
                 throw new RuntimeException(sprintf('No se pudo leer la migración: %s', $filename));

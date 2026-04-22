@@ -83,8 +83,11 @@ CREATE TABLE IF NOT EXISTS registration_admin_state (
   registration_id INTEGER NOT NULL UNIQUE,
   status TEXT NOT NULL DEFAULT 'pending',
   note TEXT,
+  updated_by_user_id INTEGER,
+  updated_by_role TEXT,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE
+  FOREIGN KEY (registration_id) REFERENCES registrations(id) ON DELETE CASCADE,
+  FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS referrals (
