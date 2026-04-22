@@ -29,7 +29,27 @@ function api_read_json(): array
 
 function api_current_user(): ?array
 {
-    return $_SESSION['auth_user'] ?? null;
+    if (isset($_SESSION['auth_user']) && is_array($_SESSION['auth_user'])) {
+        return $_SESSION['auth_user'];
+    }
+
+    $userId = $_SESSION['user_id'] ?? null;
+    $role = $_SESSION['role'] ?? null;
+    if (!is_int($userId) || !is_string($role) || $role === '') {
+        return null;
+    }
+
+    return [
+        'id' => $userId,
+        'role' => $role,
+    ];
+}
+
+function api_set_current_user(array $user): void
+{
+    $_SESSION['user_id'] = (int)$user['id'];
+    $_SESSION['role'] = (string)$user['role'];
+    $_SESSION['auth_user'] = $user;
 }
 
 function api_require_db(): PDO
