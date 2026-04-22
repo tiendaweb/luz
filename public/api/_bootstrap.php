@@ -1,0 +1,61 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../../app/Database/connection.php';
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+function api_json(array $payload, int $status = 200): never
+{
+    http_response_code($status);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+function api_read_json(): array
+{
+    $raw = file_get_contents('php://input') ?: '';
+    if ($raw === '') {
+        return [];
+    }
+
+    $data = json_decode($raw, true);
+    return is_array($data) ? $data : [];
+}
+
+function api_current_user(): ?array
+{
+    return $_SESSION['auth_user'] ?? null;
+}
+
+function api_require_db(): PDO
+{
+    $pdo = app_db_connection();
+    static $migrated = false;
+
+    if (!$migrated) {
+        $migrationSql = file_get_contents(__DIR__ . '/../../database/migrations/001_init.sql');
+        if ($migrationSql !== false) {
+            $pdo->exec($migrationSql);
+        }
+        $migrated = true;
+    }
+
+    return $pdo;
+}
+
+function api_audit(?int $userId, string $event): void
+{
+    $pdo = api_require_db();
+    $stmt = $pdo->prepare('INSERT INTO sessions_audit (user_id, event, ip_address, user_agent) VALUES (?, ?, ?, ?)');
+    $stmt->execute([
+        $userId,
+        $event,
+        $_SERVER['REMOTE_ADDR'] ?? null,
+        $_SERVER['HTTP_USER_AGENT'] ?? null,
+    ]);
+}

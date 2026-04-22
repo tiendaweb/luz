@@ -1,67 +1,49 @@
 (() => {
   const validViews = new Set(["home", "forums", "about", "blog", "dashboard"]);
   const validRoles = new Set(["guest", "user", "associate", "admin"]);
-  const DB_STORAGE_KEY = "psme_forum_registers_sqlite_v1";
 
   const normalizeView = (viewId) => (validViews.has(viewId) ? viewId : "home");
   const normalizeRole = (roleName) => (validRoles.has(roleName) ? roleName : "guest");
-  let dbPromise = null;
   let signatureCtx = null;
   let signatureIsDrawing = false;
 
-  function uint8ToBase64(bytes) {
-    let binary = "";
-    bytes.forEach((byte) => {
-      binary += String.fromCharCode(byte);
-    });
-    return window.btoa(binary);
-  }
+  async function apiFetch(url, options = {}) {
+    const normalizedUrl = url.startsWith("/api/") ? url : `/api/${url.replace(/^\/+/, "")}`;
+    const fallbackUrl = normalizedUrl.replace(/^\/api\//, "/public/api/");
 
-  function base64ToUint8(base64) {
-    const binary = window.atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i += 1) {
-      bytes[i] = binary.charCodeAt(i);
+    const requestConfig = {
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options
+    };
+
+    const doRequest = async (requestUrl) => {
+      const response = await fetch(requestUrl, requestConfig);
+      const data = await response.json().catch(() => ({}));
+      return { response, data };
+    };
+
+    let result = await doRequest(normalizedUrl);
+    if (result.response.status === 404 && fallbackUrl !== normalizedUrl) {
+      result = await doRequest(fallbackUrl);
     }
-    return bytes;
+    if (!result.response.ok || result.data.ok === false) {
+      throw new Error(result.data.error || "Error de comunicación con el servidor.");
+    }
+    return result.data;
   }
 
-  async function getDb() {
-    if (dbPromise) return dbPromise;
-    dbPromise = (async () => {
-      if (typeof window.initSqlJs !== "function") {
-        throw new Error("No se pudo cargar SQLite en el navegador.");
-      }
-      const SQL = await window.initSqlJs({
-        locateFile: (file) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/${file}`
-      });
-
-      const serialized = window.localStorage.getItem(DB_STORAGE_KEY);
-      const db = serialized ? new SQL.Database(base64ToUint8(serialized)) : new SQL.Database();
-      db.run(`
-        CREATE TABLE IF NOT EXISTS registrations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          forum_slot TEXT NOT NULL,
-          full_name TEXT NOT NULL,
-          document_id TEXT NOT NULL,
-          needs_cert INTEGER NOT NULL,
-          payment_proof_name TEXT,
-          payment_proof_mime TEXT,
-          payment_proof_size INTEGER,
-          payment_proof_base64 TEXT,
-          acceptance_checked INTEGER NOT NULL,
-          signature_data_url TEXT NOT NULL,
-          created_at TEXT NOT NULL
-        );
-      `);
-      const saveDb = () => {
-        const data = db.export();
-        window.localStorage.setItem(DB_STORAGE_KEY, uint8ToBase64(data));
-      };
-      saveDb();
-      return { db, saveDb };
-    })();
-    return dbPromise;
+  async function refreshDashboardSummary() {
+    try {
+      const { summary } = await apiFetch("/api/dashboard/summary.php");
+      const statNodes = document.querySelectorAll("#view-dashboard .grid > article h4");
+      if (statNodes[0]) statNodes[0].textContent = String(summary.registrations_total ?? 0);
+      if (statNodes[1]) statNodes[1].textContent = String(summary.cert_requests_total ?? 0);
+      if (statNodes[2]) statNodes[2].textContent = String(summary.users_total ?? 0);
+      if (statNodes[3]) statNodes[3].textContent = String(summary.messages_total ?? 0);
+    } catch (_error) {
+      // silencioso: mantenemos datos mock si no hay backend disponible
+    }
   }
 
   function showRegisterFeedback(type, message) {
@@ -198,30 +180,26 @@
           paymentProofSize = proofFile.size;
         }
 
-        const { db, saveDb } = await getDb();
-        db.run(
-          `INSERT INTO registrations (
-            forum_slot, full_name, document_id, needs_cert,
-            payment_proof_name, payment_proof_mime, payment_proof_size, payment_proof_base64,
-            acceptance_checked, signature_data_url, created_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-          [
-            String(formData.get("forumSlot") || ""),
-            String(formData.get("fullName") || ""),
-            String(formData.get("documentId") || ""),
-            needsCert ? 1 : 0,
-            paymentProofName,
-            paymentProofMime,
-            paymentProofSize,
-            paymentProofBase64,
-            1,
-            signatureCanvas.toDataURL("image/png"),
-            new Date().toISOString()
-          ]
-        );
-        saveDb();
+        await apiFetch("/api/registrations/create.php", {
+          method: "POST",
+          body: JSON.stringify({
+            forumSlot: String(formData.get("forumSlot") || ""),
+            fullName: String(formData.get("fullName") || ""),
+            documentId: String(formData.get("documentId") || ""),
+            needsCert,
+            acceptanceChecked: true,
+            signatureDataUrl: signatureCanvas.toDataURL("image/png"),
+            paymentProof: paymentProofBase64 ? {
+              name: paymentProofName,
+              mime: paymentProofMime,
+              size: paymentProofSize,
+              base64: paymentProofBase64
+            } : null
+          })
+        });
         showRegisterFeedback("success", "Inscripción registrada con éxito. Tu cupo quedó guardado correctamente.");
         resetRegisterForm();
+        refreshDashboardSummary();
       } catch (_error) {
         showRegisterFeedback("error", "No pudimos persistir la inscripción en este momento. Intenta nuevamente.");
       }
@@ -306,8 +284,18 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  window.setRole = (roleName) => {
-    applyRoleUI(roleName, { redirectToDashboard: true });
+  window.setRole = async (roleName) => {
+    const role = normalizeRole(roleName);
+    try {
+      const result = await apiFetch("/api/auth/login.php", {
+        method: "POST",
+        body: JSON.stringify({ role })
+      });
+      applyRoleUI(result.user?.role || role, { redirectToDashboard: true });
+      refreshDashboardSummary();
+    } catch (_error) {
+      applyRoleUI(role, { redirectToDashboard: true });
+    }
   };
 
   window.setDashTab = () => {
@@ -347,8 +335,13 @@
     }
   };
 
-  window.logout = () => {
-    alert("Sesión cerrada (Simulación)");
+  window.logout = async () => {
+    try {
+      await apiFetch("/api/auth/logout.php", { method: "POST", body: JSON.stringify({}) });
+    } catch (_error) {
+      // seguimos con cierre local aun si backend falla
+    }
+    alert("Sesión cerrada");
     applyRoleUI("guest", { redirectToDashboard: false });
     window.showView("home");
   };
@@ -361,14 +354,21 @@
     closeMobileMenu();
   });
 
-  window.addEventListener("DOMContentLoaded", () => {
+  window.addEventListener("DOMContentLoaded", async () => {
     const { view, role } = parseHashState();
     document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
     document.getElementById(`view-${view}`)?.classList.add("active");
     window.setDashTab("overview");
-    applyRoleUI(role, { redirectToDashboard: false });
+    try {
+      const me = await apiFetch("/api/auth/me.php");
+      const sessionRole = me.user?.role || role;
+      applyRoleUI(sessionRole, { redirectToDashboard: false });
+    } catch (_error) {
+      applyRoleUI(role, { redirectToDashboard: false });
+    }
     updateHash(view);
     setupRegistrationForm();
     window.toggleCertFields(false);
+    refreshDashboardSummary();
   });
 })();
