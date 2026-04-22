@@ -1,111 +1,36 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foro LATAM 2026 PSME | Dashboard Admin</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <a class="skip-link" href="#contenido-principal">Saltar al contenido principal</a>
-    <header class="site-header">
-      <div class="container nav-wrap">
-        <a class="brand" href="index.html">Foro LATAM 2026 PSME</a>
-        <nav aria-label="Principal">
-          <ul class="nav-list">
-            <li><a class="nav-link" href="index.html">Inicio</a></li>
-            <li><a class="nav-link" href="foros.html">Foros</a></li>
-            <li><a class="nav-link" href="login.html">Acceso</a></li>
-            <li><a class="nav-link" href="contacto.html">Contacto</a></li>
-            <li><a class="nav-link is-active" href="dashboard-admin.html" aria-current="page">Dashboard Admin</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    <main id="contenido-principal" class="section">
-      <div class="container stack">
-        <section class="card">
-          <p class="eyebrow">Panel de gestión</p>
-          <h1 class="section__title">Dashboard Administrador</h1>
-          <p class="u-m-0 u-text-muted">Módulos visuales para operación, comunicación y seguimiento de la comunidad.</p>
-          <div class="hero__actions u-mt-4">
-            <span class="badge badge--disponible">Usuarios activos: <strong data-widget="usuariosActivos">--</strong></span>
-            <span class="badge badge--ultimos">Foros esta semana: <strong data-widget="forosSemana">--</strong></span>
-            <span class="badge badge--agotado">Tickets pendientes: <strong data-widget="ticketsPendientes">--</strong></span>
-          </div>
-        </section>
-
-        <section class="dashboard-grid" aria-label="Módulos de administración">
-          <article class="card dashboard-module">
-            <h2 class="card__title">Gestión de usuarios</h2>
-            <p class="u-text-muted">Alta/baja, roles, validaciones y estado de actividad de cuentas.</p>
-            <a class="btn btn--secondary" href="#">Ver usuarios</a>
-          </article>
-
-          <article class="card dashboard-module">
-            <h2 class="card__title">Gestión de eventos</h2>
-            <p class="u-text-muted">Calendario, cupos, sesiones en vivo, edición de contenidos y speakers.</p>
-            <a class="btn btn--secondary" href="#">Administrar eventos</a>
-          </article>
-
-          <article class="card dashboard-module">
-            <h2 class="card__title">Turnos y agenda</h2>
-            <p class="u-text-muted">Organización de turnos para entrevistas, soporte y reuniones grupales.</p>
-            <a class="btn btn--secondary" href="#">Gestionar turnos</a>
-          </article>
-
-          <article class="card dashboard-module">
-            <h2 class="card__title">Inscripciones</h2>
-            <p class="u-text-muted">Control de pagos, pendientes, estados de alta y confirmaciones automáticas.</p>
-            <a class="btn btn--secondary" href="#">Ver inscripciones</a>
-          </article>
-
-          <article class="card dashboard-module">
-            <h2 class="card__title">Mensajes y soporte</h2>
-            <p class="u-text-muted">Bandeja de consultas, respuestas rápidas y seguimiento de tickets.</p>
-            <a class="btn btn--secondary" href="#">Abrir mensajería</a>
-          </article>
-
-          <article class="card dashboard-module">
-            <h2 class="card__title">Reportes</h2>
-            <p class="u-text-muted">Métricas de conversión, retención, asistencia y satisfacción por foro.</p>
-            <a class="btn btn--secondary" href="#">Ver reportes</a>
-          </article>
-        </section>
-
-        <section id="panel-asociados" class="card">
-          <h2 class="card__title">Estado Asociado (preparado)</h2>
-          <p class="u-text-muted">
-            Este panel queda listo para operar como modo dentro del admin y también para migrar a vista separada.
-          </p>
-          <div class="dashboard-grid dashboard-grid--compact">
-            <article class="card dashboard-submodule">
-              <h3 class="card__title">Link referido</h3>
-              <p class="u-text-muted">https://forolatampsme.com/ref/ASOCIADO-2026</p>
-            </article>
-            <article class="card dashboard-submodule">
-              <h3 class="card__title">Panel de referidos</h3>
-              <p class="u-text-muted">Visualización de leads, estado de inscripción y origen de tráfico.</p>
-            </article>
-            <article class="card dashboard-submodule">
-              <h3 class="card__title">Pagos y comisiones</h3>
-              <p class="u-text-muted">Comisiones pendientes, cobradas y próximas liquidaciones.</p>
-            </article>
-          </div>
-          <a class="btn btn--cta u-mt-4" href="dashboard-asociado.html">Abrir vista separada de Asociado</a>
-        </section>
-      </div>
-    </main>
-    <footer class="site-footer">
-      <div class="container footer-wrap">
-        <p class="u-m-0">© 2026 Foro LATAM PSME · María Luz Genovese</p>
-        <div class="hero__actions">
-          <a href="index.html">Inicio</a>
-          <a href="foros.html">Foros</a>
-        </div>
-      </div>
-    </footer>
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redireccionando…</title>
+  <script>
+    const map = {
+      'foros.html': 'forums',
+      'contacto.html': 'about',
+      'login.html': 'dashboard',
+      'dashboard-admin.html': 'dashboard',
+      'dashboard-asociado.html': 'dashboard',
+      'dashboard-usuario.html': 'dashboard'
+    };
+    const file = location.pathname.split('/').pop();
+    const target = map[file] || 'home';
+    location.replace('index.html#view-' + target);
+  </script>
+</head>
+<body style="font-family: system-ui, sans-serif; padding: 2rem;">
+  <p>Redireccionando a la vista interna… <a id="fallback-link" href="index.html">Continuar</a></p>
+  <script>
+    const file = location.pathname.split('/').pop();
+    const target = ({
+      'foros.html': 'forums',
+      'contacto.html': 'about',
+      'login.html': 'dashboard',
+      'dashboard-admin.html': 'dashboard',
+      'dashboard-asociado.html': 'dashboard',
+      'dashboard-usuario.html': 'dashboard'
+    }[file]) || 'home';
+    document.getElementById('fallback-link').href = 'index.html#view-' + target;
+  </script>
+</body>
 </html>
