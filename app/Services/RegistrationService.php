@@ -16,6 +16,7 @@ final class RegistrationService
         $needsCert = !empty($input['needsCert']);
         $acceptanceChecked = !empty($input['acceptanceChecked']);
         $signatureDataUrl = trim((string)($input['signatureDataUrl'] ?? ''));
+        $referralCode = strtoupper(trim((string)($input['referralCode'] ?? '')));
 
         if ($forumSlot === '' || mb_strlen($forumSlot) < 10 || mb_strlen($forumSlot) > 180) {
             throw new InvalidArgumentException('Foro elegido inválido.');
@@ -40,6 +41,9 @@ final class RegistrationService
         }
         if (strlen($signatureDataUrl) < 300) {
             throw new InvalidArgumentException('La firma digital parece incompleta.');
+        }
+        if ($referralCode !== '' && !preg_match('/^[A-Z0-9\-_]{4,32}$/', $referralCode)) {
+            throw new InvalidArgumentException('Código de referido inválido.');
         }
 
         $paymentProof = is_array($input['paymentProof'] ?? null) ? $input['paymentProof'] : null;
@@ -71,6 +75,7 @@ final class RegistrationService
             'needsCert' => $needsCert,
             'acceptanceChecked' => true,
             'signatureDataUrl' => $signatureDataUrl,
+            'referralCode' => $referralCode === '' ? null : $referralCode,
             'paymentProofName' => $proofName,
             'paymentProofMime' => $proofMime,
             'paymentProofSize' => is_numeric($proofSize) ? (int)$proofSize : null,

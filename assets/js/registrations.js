@@ -1,6 +1,7 @@
 (() => {
   let signatureCtx = null;
   let signatureIsDrawing = false;
+  let activeReferralOffer = null;
 
   function showRegisterFeedback(type, message) {
     const box = document.getElementById("registerFormAlert");
@@ -48,6 +49,48 @@
     return true;
   }
 
+  function applyReferralOfferUI(offer) {
+    const notice = document.getElementById("referralOfferNotice");
+    const input = document.getElementById("referralCodeInput");
+    const paymentInstructions = document.getElementById("paymentInstructions");
+    const paymentLink = document.getElementById("paymentGatewayLink");
+
+    activeReferralOffer = offer;
+    if (input) input.value = offer?.referralCode || "";
+
+    if (!notice || !paymentInstructions || !paymentLink) return;
+
+    if (!offer) {
+      notice.classList.add("hidden");
+      paymentInstructions.innerHTML = '<i class="fa-solid fa-link mr-2"></i> Realiza el abono de inscripción al Foro aquí:';
+      paymentLink.href = "#";
+      paymentLink.textContent = "Ir a la pasarela de Pago";
+      return;
+    }
+
+    notice.classList.remove("hidden");
+    notice.textContent = `Inscripción con referido de ${offer.associateName}. Precio aplicado: ${offer.priceAmount} ${offer.currencyCode}. Método: ${offer.paymentMethod}.`;
+    paymentInstructions.innerHTML = `<i class="fa-solid fa-link mr-2"></i> Pago con referido (${offer.referralCode}): ${offer.paymentMethod}.`;
+    paymentLink.href = offer.paymentLink;
+    paymentLink.textContent = `Pagar ${offer.priceAmount} ${offer.currencyCode}`;
+  }
+
+  async function loadOfferFromReferralCode() {
+    const params = new URLSearchParams(window.location.search);
+    const code = (params.get("ref") || "").trim();
+    if (!code) {
+      applyReferralOfferUI(null);
+      return;
+    }
+
+    try {
+      const result = await window.appApiFetch(`/api/referrals/offer.php?code=${encodeURIComponent(code)}`);
+      applyReferralOfferUI(result.offer || null);
+    } catch (_error) {
+      applyReferralOfferUI(null);
+    }
+  }
+
   function resetRegisterForm() {
     const form = document.getElementById("registerForm");
     const canvas = document.getElementById("signatureCanvas");
@@ -70,15 +113,146 @@
   window.refreshDashboardSummary = async () => {
     try {
       const { summary } = await window.appApiFetch("/api/dashboard/summary.php");
-      const statNodes = document.querySelectorAll("#view-dashboard .grid > article h4");
+      const statNodes = document.querySelectorAll("#view-dashboard .grid > div h4");
       if (statNodes[0]) statNodes[0].textContent = String(summary.registrations_total ?? 0);
       if (statNodes[1]) statNodes[1].textContent = String(summary.cert_requests_total ?? 0);
       if (statNodes[2]) statNodes[2].textContent = String(summary.users_total ?? 0);
-      if (statNodes[3]) statNodes[3].textContent = String(summary.messages_total ?? 0);
     } catch (_error) {
       // silencioso: mantenemos datos mock si no hay backend disponible
     }
   };
+
+  async function loadAssociateOffer() {
+    const form = document.getElementById("associateOfferForm");
+    if (!form || document.body.getAttribute("data-active-role") !== "associate") return;
+
+    try {
+      const result = await window.appApiFetch("/api/associate/offer.php");
+      const offer = result.offer;
+      if (!offer) return;
+      form.referralCode.value = offer.referralCode;
+      form.currencyCode.value = offer.currencyCode;
+      form.priceAmount.value = offer.priceAmount;
+      form.paymentMethod.value = offer.paymentMethod;
+      form.paymentLink.value = offer.paymentLink;
+      const preview = document.getElementById("associateReferralPreview");
+      if (preview) preview.textContent = `${window.location.origin}/index.php?ref=${offer.referralCode}`;
+    } catch (_error) {
+      // noop
+    }
+  }
+
+  function setupAssociateOfferForm() {
+    const form = document.getElementById("associateOfferForm");
+    const status = document.getElementById("associateOfferStatus");
+    const preview = document.getElementById("associateReferralPreview");
+    if (!form || !status || !preview) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {
+        referralCode: String(form.referralCode.value || "").trim().toUpperCase(),
+        currencyCode: String(form.currencyCode.value || "").trim().toUpperCase(),
+        priceAmount: Number(form.priceAmount.value || 0),
+        paymentMethod: String(form.paymentMethod.value || "").trim(),
+        paymentLink: String(form.paymentLink.value || "").trim()
+      };
+
+      try {
+        await window.appApiFetch("/api/associate/offer.php", { method: "POST", body: JSON.stringify(payload) });
+        status.textContent = "Configuración guardada.";
+        preview.textContent = `${window.location.origin}/index.php?ref=${payload.referralCode}`;
+      } catch (error) {
+        status.textContent = error instanceof Error ? error.message : "No se pudo guardar.";
+      }
+    });
+  }
+
+  function renderAdminRegistrations(items) {
+    const target = document.getElementById("adminRegistrationsList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">Sin inscripciones cargadas.</p>';
+      return;
+    }
+
+    target.innerHTML = items.slice(0, 12).map((item) => `
+      <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div class="flex items-center justify-between gap-3">
+          <div>
+            <p class="font-bold">#${item.id} · ${item.full_name}</p>
+            <p class="text-xs text-slate-500">${item.document_id} · ${item.forum_slot}</p>
+            <p class="text-xs text-slate-500">Ref: ${item.referral_code || '—'} · ${item.price_amount || '—'} ${item.currency_code || ''}</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select data-action="status" data-id="${item.id}" class="rounded-lg border border-slate-300 px-2 py-1 text-xs">
+              <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+              <option value="approved" ${item.status === 'approved' ? 'selected' : ''}>Aprobada</option>
+              <option value="rejected" ${item.status === 'rejected' ? 'selected' : ''}>Rechazada</option>
+            </select>
+            <button data-action="delete" data-id="${item.id}" class="rounded-lg bg-rose-600 px-2 py-1 text-xs font-bold text-white">Eliminar</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+  }
+
+  function renderAdminAssociates(items) {
+    const target = document.getElementById("adminAssociatesList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">Sin asociados.</p>';
+      return;
+    }
+
+    target.innerHTML = items.map((item) => `
+      <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <p class="font-bold">${item.full_name} <span class="text-xs text-slate-500">(${item.email || 'sin email'})</span></p>
+        <p class="text-xs text-slate-600">Código: ${item.referral_code || 'sin configurar'} · ${item.price_amount || '-'} ${item.currency_code || ''}</p>
+      </article>
+    `).join("");
+  }
+
+  async function loadAdminData() {
+    if (document.body.getAttribute("data-active-role") !== "admin") return;
+    try {
+      const [registrations, associates] = await Promise.all([
+        window.appApiFetch("/api/admin/registrations.php"),
+        window.appApiFetch("/api/admin/associates.php")
+      ]);
+      renderAdminRegistrations(registrations.items || []);
+      renderAdminAssociates(associates.items || []);
+    } catch (_error) {
+      // noop
+    }
+  }
+
+  function setupAdminActions() {
+    const regList = document.getElementById("adminRegistrationsList");
+    const refreshRegs = document.getElementById("refreshAdminRegistrations");
+    const refreshAssoc = document.getElementById("refreshAdminAssociates");
+
+    refreshRegs?.addEventListener("click", () => loadAdminData());
+    refreshAssoc?.addEventListener("click", () => loadAdminData());
+
+    regList?.addEventListener("change", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLSelectElement) || target.dataset.action !== "status") return;
+      await window.appApiFetch("/api/admin/registrations.php", {
+        method: "PATCH",
+        body: JSON.stringify({ registrationId: Number(target.dataset.id || 0), status: target.value })
+      });
+      loadAdminData();
+    });
+
+    regList?.addEventListener("click", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || target.dataset.action !== "delete") return;
+      await window.appApiFetch(`/api/admin/registrations.php?id=${encodeURIComponent(target.dataset.id || '')}`, { method: "DELETE" });
+      loadAdminData();
+      window.refreshDashboardSummary();
+    });
+  }
 
   function setupRegistrationForm() {
     const form = document.getElementById("registerForm");
@@ -109,11 +283,9 @@
     signatureCanvas.addEventListener("mousedown", startSignature);
     signatureCanvas.addEventListener("mousemove", drawSignature);
     window.addEventListener("mouseup", stopSignature);
-
     signatureCanvas.addEventListener("touchstart", startSignature, { passive: true });
     signatureCanvas.addEventListener("touchmove", drawSignature, { passive: false });
     window.addEventListener("touchend", stopSignature);
-
     clearBtn.addEventListener("click", () => setSignatureCanvasSize(signatureCanvas));
 
     form.addEventListener("submit", async (event) => {
@@ -166,6 +338,7 @@
             forumSlot: String(formData.get("forumSlot") || ""),
             fullName: String(formData.get("fullName") || ""),
             documentId: String(formData.get("documentId") || ""),
+            referralCode: String(formData.get("referralCode") || ""),
             needsCert,
             acceptanceChecked: true,
             signatureDataUrl: signatureCanvas.toDataURL("image/png"),
@@ -179,16 +352,28 @@
         });
         showRegisterFeedback("success", "Inscripción registrada con éxito. Tu cupo quedó guardado correctamente.");
         resetRegisterForm();
+        applyReferralOfferUI(activeReferralOffer);
         window.refreshDashboardSummary();
+        loadAdminData();
       } catch (_error) {
         showRegisterFeedback("error", "No pudimos persistir la inscripción en este momento. Intenta nuevamente.");
       }
     });
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
+  window.addEventListener("DOMContentLoaded", async () => {
     setupRegistrationForm();
+    setupAssociateOfferForm();
+    setupAdminActions();
     window.toggleCertFields(false);
-    window.refreshDashboardSummary();
+    await loadOfferFromReferralCode();
+    await loadAssociateOffer();
+    await window.refreshDashboardSummary();
+    await loadAdminData();
+  });
+
+  window.addEventListener("app:role-changed", async () => {
+    await loadAssociateOffer();
+    await loadAdminData();
   });
 })();
