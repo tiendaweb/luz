@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../_bootstrap.php';
+require_once __DIR__ . '/../../../app/Services/AuthService.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     api_json(['ok' => false, 'error' => 'Método no permitido'], 405);

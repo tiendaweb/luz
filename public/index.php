@@ -31,7 +31,12 @@ if ($routeKey !== null) {
     exit;
 }
 
-$publicAsset = $path === '' ? 'index.html' : $path;
+if ($path === '' || $path === 'index.php') {
+    require $projectRoot . '/app/Views/home.php';
+    exit;
+}
+
+$publicAsset = $path;
 $candidate = realpath($projectRoot . '/' . $publicAsset);
 $rootRealpath = realpath($projectRoot);
 $isInsideProject = $candidate !== false && $rootRealpath !== false && str_starts_with($candidate, $rootRealpath . DIRECTORY_SEPARATOR);
