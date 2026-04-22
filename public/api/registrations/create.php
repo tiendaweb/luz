@@ -78,6 +78,13 @@ $adminStateStmt = $pdo->prepare(
 );
 $adminStateStmt->execute([$registrationId, 'pending', null, gmdate('c')]);
 
+$historyStmt = $pdo->prepare(
+    'INSERT INTO registration_status_history (
+      registration_id, from_status, to_status, note, reviewed_by_user_id, reviewed_by_role, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)'
+);
+$historyStmt->execute([$registrationId, null, 'pending', 'Estado inicial al registrar inscripción.', null, 'system', gmdate('c')]);
+
 api_json([
     'ok' => true,
     'id' => $registrationId,

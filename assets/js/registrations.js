@@ -183,6 +183,7 @@
             <p class="font-bold">#${item.id} · ${item.full_name}</p>
             <p class="text-xs text-slate-500">${item.document_id} · ${item.forum_slot}</p>
             <p class="text-xs text-slate-500">Ref: ${item.referral_code || '—'} · ${item.price_amount || '—'} ${item.currency_code || ''}</p>
+            ${renderStatusTimeline(item.status_history)}
           </div>
           <div class="flex items-center gap-2">
             <select data-action="status" data-id="${item.id}" class="rounded-lg border border-slate-300 px-2 py-1 text-xs">
@@ -195,6 +196,23 @@
         </div>
       </article>
     `).join("");
+  }
+
+  function renderStatusTimeline(history) {
+    if (!Array.isArray(history) || history.length === 0) {
+      return '<p class="mt-1 text-xs text-slate-400">Sin historial de cambios.</p>';
+    }
+
+    const lines = history.slice(0, 4).map((entry) => {
+      const from = entry.from_status || "inicio";
+      const to = entry.to_status || "—";
+      const role = entry.reviewed_by_role || "sistema";
+      const note = entry.note ? ` · Nota: ${entry.note}` : "";
+      const date = entry.created_at ? new Date(entry.created_at).toLocaleString() : "sin fecha";
+      return `<li class="text-[11px] text-slate-600">${from} → ${to} · ${role} · ${date}${note}</li>`;
+    });
+
+    return `<ul class="mt-1 space-y-1 rounded-lg bg-white/70 p-2">${lines.join("")}</ul>`;
   }
 
 
@@ -213,6 +231,7 @@
             <p class="font-bold text-slate-800">#${item.id} · ${item.full_name}</p>
             <p class="text-xs text-slate-500">${item.document_id} · ${item.forum_slot}</p>
             <p class="text-xs text-slate-500">Estado actual: <span class="font-bold text-slate-700">${item.status}</span> · Ref: ${item.referral_code || "—"}</p>
+            ${renderStatusTimeline(item.status_history)}
           </div>
           <div class="flex items-center gap-2">
             <button data-action="associate-approve" data-id="${item.id}" class="rounded-lg bg-emerald-600 px-2 py-1 text-xs font-bold text-white">Aprobar</button>
@@ -287,9 +306,18 @@
       if (!registrationId) return;
 
       const nextStatus = isApprove ? "approved" : "rejected";
+      const note = window.prompt(
+        isReject
+          ? "Ingresa una nota obligatoria para rechazar la inscripción:"
+          : "Ingresa una nota opcional para aprobar la inscripción:"
+      ) || "";
+      if (isReject && !note.trim()) {
+        window.alert("La nota es obligatoria para rechazar.");
+        return;
+      }
       await window.appApiFetch("/api/associate/registrations.php", {
         method: "PATCH",
-        body: JSON.stringify({ registrationId, status: nextStatus })
+        body: JSON.stringify({ registrationId, status: nextStatus, note })
       });
       loadAssociateRegistrations();
       loadAdminData();
@@ -307,9 +335,20 @@
     regList?.addEventListener("change", async (event) => {
       const target = event.target;
       if (!(target instanceof HTMLSelectElement) || target.dataset.action !== "status") return;
+      const nextStatus = String(target.value || "");
+      const note = window.prompt(
+        nextStatus === "rejected"
+          ? "Ingresa una nota obligatoria para rechazar:"
+          : "Ingresa una nota opcional para este cambio:"
+      ) || "";
+      if (nextStatus === "rejected" && !note.trim()) {
+        window.alert("La nota es obligatoria para rechazar.");
+        loadAdminData();
+        return;
+      }
       await window.appApiFetch("/api/admin/registrations.php", {
         method: "PATCH",
-        body: JSON.stringify({ registrationId: Number(target.dataset.id || 0), status: target.value })
+        body: JSON.stringify({ registrationId: Number(target.dataset.id || 0), status: nextStatus, note })
       });
       loadAdminData();
     });
