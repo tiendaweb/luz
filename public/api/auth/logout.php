@@ -12,6 +12,7 @@ $currentUser = api_current_user();
 api_audit($currentUser['id'] ?? null, 'logout');
 
 $_SESSION = [];
+unset($_SESSION['user_id'], $_SESSION['role'], $_SESSION['auth_user']);
 if (ini_get('session.use_cookies')) {
     $params = session_get_cookie_params();
     setcookie(session_name(), '', time() - 3600, $params['path'], $params['domain'], (bool)$params['secure'], (bool)$params['httponly']);

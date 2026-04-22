@@ -1,8 +1,8 @@
 (() => {
   const DEMO_CREDENTIALS = {
-    admin: { username: 'admin@forospsme.com', password: 'Admin123*' },
-    associate: { username: 'asociado@forospsme.com', password: 'Asociado123*' },
-    user: { username: 'usuario@forospsme.com', password: 'Usuario123*' }
+    admin: { username: 'admin@psme.local', password: 'Admin123*' },
+    associate: { username: 'asociado@psme.local', password: 'Asociado123*' },
+    user: { username: 'usuario@psme.local', password: 'Usuario123*' }
   };
 
   function showLoginFeedback(type, message) {
