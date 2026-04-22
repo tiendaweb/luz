@@ -1,57 +1,63 @@
 (() => {
   const validViews = new Set(["home", "forums", "about", "blog", "dashboard"]);
+  const validRoles = new Set(["guest", "user", "associate", "admin"]);
 
-  function normalizeView(viewId) {
-    return validViews.has(viewId) ? viewId : "home";
-  }
+  const normalizeView = (viewId) => (validViews.has(viewId) ? viewId : "home");
+  const normalizeRole = (roleName) => (validRoles.has(roleName) ? roleName : "guest");
 
   function closeMobileMenu() {
-    const mobileMenu = document.getElementById("mobileMenu");
-    if (mobileMenu) {
-      mobileMenu.classList.add("hidden");
+    document.getElementById("mobileMenu")?.classList.add("hidden");
+  }
+
+  function parseHashState() {
+    const rawHash = window.location.hash.replace("#", "");
+    const [rawView, query = ""] = rawHash.split("?");
+    const view = rawView.startsWith("view-") ? rawView.replace("view-", "") : "home";
+    const role = normalizeRole(new URLSearchParams(query).get("role") || "guest");
+    return { view: normalizeView(view), role };
+  }
+
+  function updateHash(viewId) {
+    const role = normalizeRole(document.body.getAttribute("data-active-role") || "guest");
+    const query = role === "guest" ? "" : `?role=${role}`;
+    const nextHash = `#view-${normalizeView(viewId)}${query}`;
+    if (window.location.hash !== nextHash) {
+      window.location.hash = nextHash;
     }
   }
 
-  window.showView = (viewId) => {
-    const normalizedView = normalizeView(viewId);
+  function applyRoleUI(roleName, options = {}) {
+    const role = normalizeRole(roleName);
+    const { redirectToDashboard = false } = options;
 
-    document.querySelectorAll(".view-section").forEach((section) => {
-      section.classList.remove("active");
-    });
+    document.body.setAttribute("data-active-role", role);
 
-    const target = document.getElementById(`view-${normalizedView}`);
-    if (target) {
-      target.classList.add("active");
-      window.location.hash = `view-${normalizedView}`;
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  window.setRole = (roleName) => {
-    document.body.setAttribute("data-active-role", roleName);
     const userBtn = document.querySelector(".user-access-btn");
+    const mobileUserBtn = document.querySelector(".mobile-user-access-btn");
     const badge = document.getElementById("userRoleBadge");
     const initial = document.getElementById("userInitial");
     const nameDisp = document.getElementById("userName");
 
-    if (roleName === "guest") {
+    if (role === "guest") {
       userBtn?.classList.add("hidden");
-      window.showView("home");
-      return;
+      mobileUserBtn?.classList.add("hidden");
+
+      if (window.location.hash.includes("view-dashboard")) {
+        window.showView("home");
+      }
+      return role;
     }
 
     userBtn?.classList.remove("hidden");
-
-    if (badge) {
-      badge.innerText = roleName.toUpperCase();
-    }
+    mobileUserBtn?.classList.remove("hidden");
+    if (badge) badge.innerText = role.toUpperCase();
 
     if (initial && nameDisp && initial.parentElement) {
-      if (roleName === "admin") {
+      if (role === "admin") {
         initial.innerText = "ML";
         nameDisp.innerText = "Luz Genovese";
         initial.parentElement.className = "w-12 h-12 bg-teal-600 text-white rounded-2xl flex items-center justify-center font-bold text-xl";
-      } else if (roleName === "associate") {
+      } else if (role === "associate") {
         initial.innerText = "A";
         nameDisp.innerText = "Coordinador Red";
         initial.parentElement.className = "w-12 h-12 bg-purple-600 text-white rounded-2xl flex items-center justify-center font-bold text-xl";
@@ -62,14 +68,31 @@
       }
     }
 
-    window.showView("dashboard");
+    if (redirectToDashboard) {
+      window.showView("dashboard");
+    }
+
+    return role;
+  }
+
+  window.showView = (viewId) => {
+    const view = normalizeView(viewId);
+    document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
+    document.getElementById(`view-${view}`)?.classList.add("active");
+    updateHash(view);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  window.toggleMobileMenu = () => {
-    const mobileMenu = document.getElementById("mobileMenu");
-    if (!mobileMenu) return;
-    mobileMenu.classList.toggle("hidden");
+  window.setRole = (roleName) => {
+    applyRoleUI(roleName, { redirectToDashboard: true });
   };
+
+  window.setDashTab = () => {
+    const firstBtn = document.querySelector("#view-dashboard nav button");
+    firstBtn?.classList.add("bg-teal-50", "text-teal-700");
+  };
+
+  window.toggleMobileMenu = () => document.getElementById("mobileMenu")?.classList.toggle("hidden");
 
   window.openModal = (id) => {
     const modal = document.getElementById(id);
@@ -86,40 +109,32 @@
   };
 
   window.toggleFaq = (buttonElement) => {
-    const content = buttonElement?.nextElementSibling;
-    const icon = buttonElement?.querySelector("i");
-
-    if (content) {
-      content.classList.toggle("hidden");
-    }
-
-    if (icon) {
-      icon.classList.toggle("rotate-180");
-    }
+    buttonElement?.nextElementSibling?.classList.toggle("hidden");
+    buttonElement?.querySelector("i")?.classList.toggle("rotate-180");
   };
 
-  window.toggleCertFields = (show) => {
-    const certFields = document.getElementById("certFields");
-    certFields?.classList.toggle("hidden", !show);
-  };
+  window.toggleCertFields = (show) => document.getElementById("certFields")?.classList.toggle("hidden", !show);
 
   window.logout = () => {
     alert("Sesión cerrada (Simulación)");
-    window.setRole("guest");
+    applyRoleUI("guest", { redirectToDashboard: false });
+    window.showView("home");
   };
 
   window.addEventListener("hashchange", () => {
-    const hash = window.location.hash.replace("#", "");
-    const view = hash.startsWith("view-") ? hash.replace("view-", "") : "home";
-    window.showView(view);
+    const { view, role } = parseHashState();
+    document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
+    document.getElementById(`view-${view}`)?.classList.add("active");
+    applyRoleUI(role, { redirectToDashboard: false });
     closeMobileMenu();
   });
 
   window.addEventListener("DOMContentLoaded", () => {
-    const initialHash = window.location.hash.replace("#", "");
-    const initialView = initialHash.startsWith("view-")
-      ? initialHash.replace("view-", "")
-      : "home";
-    window.showView(initialView);
+    const { view, role } = parseHashState();
+    document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
+    document.getElementById(`view-${view}`)?.classList.add("active");
+    window.setDashTab("overview");
+    applyRoleUI(role, { redirectToDashboard: false });
+    updateHash(view);
   });
 })();

@@ -5,32 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redireccionando…</title>
   <script>
-    const map = {
-      'foros.html': 'forums',
-      'contacto.html': 'about',
-      'login.html': 'dashboard',
-      'dashboard-admin.html': 'dashboard',
-      'dashboard-asociado.html': 'dashboard',
-      'dashboard-usuario.html': 'dashboard'
-    };
-    const file = location.pathname.split('/').pop();
-    const target = map[file] || 'home';
-    location.replace('index.html#view-' + target);
+    location.replace('index.html#view-dashboard?role=user');
   </script>
 </head>
 <body style="font-family: system-ui, sans-serif; padding: 2rem;">
-  <p>Redireccionando a la vista interna… <a id="fallback-link" href="index.html">Continuar</a></p>
-  <script>
-    const file = location.pathname.split('/').pop();
-    const target = ({
-      'foros.html': 'forums',
-      'contacto.html': 'about',
-      'login.html': 'dashboard',
-      'dashboard-admin.html': 'dashboard',
-      'dashboard-asociado.html': 'dashboard',
-      'dashboard-usuario.html': 'dashboard'
-    }[file]) || 'home';
-    document.getElementById('fallback-link').href = 'index.html#view-' + target;
-  </script>
+  <p>Redireccionando a tu panel… <a href="index.html#view-dashboard?role=user">Continuar</a></p>
 </body>
 </html>
