@@ -176,51 +176,42 @@ declare(strict_types=1);
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Foro LATAM 2026</h2>
-                    <p class="text-xl text-slate-600 max-w-2xl mx-auto">Selecciona el espacio adecuado a tu perfil y reserva tu cupo en los próximos encuentros.</p>
+                    <p class="text-xl text-slate-600 max-w-2xl mx-auto">Agenda viva desde API: próximos encuentros, plataforma y horarios por zona.</p>
                 </div>
+
+                <div id="forumsApiAlert" class="hidden mb-8 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-800"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-24">
                     <div class="lg:col-span-2 space-y-8">
                         <div class="bg-white rounded-3xl p-10 shadow-xl border border-slate-100">
-                            <h3 class="text-2xl font-bold mb-6 border-b pb-4">Ejes Temáticos de este Ciclo</h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                <div class="flex gap-4 items-start">
-                                    <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center text-teal-600 shrink-0"><i class="fa-solid fa-users"></i></div>
-                                    <div><h4 class="font-bold">Relaciones y Vínculos</h4><p class="text-sm text-slate-500">Patrones de comunicación actual.</p></div>
+                            <h3 class="text-2xl font-bold mb-2">Próximo foro publicado</h3>
+                            <p class="text-sm text-slate-500 mb-6">Referencia temporal del servidor en UTC. La zona del foro se informa en cada registro.</p>
+                            <div id="nextForumCard" class="rounded-2xl border border-slate-200 bg-slate-50 p-6">
+                                <p class="text-sm text-slate-500">Cargando próximo foro...</p>
+                            </div>
+
+                            <div class="mt-6 rounded-2xl bg-slate-900 text-white p-6 border border-slate-800">
+                                <p class="text-xs uppercase tracking-widest text-teal-300 font-bold mb-4">Cuenta regresiva</p>
+                                <div id="forumCountdown" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div class="rounded-xl bg-slate-800 p-4 text-center"><p class="text-3xl font-extrabold" data-unit="days">00</p><p class="text-xs text-slate-400">Días</p></div>
+                                    <div class="rounded-xl bg-slate-800 p-4 text-center"><p class="text-3xl font-extrabold" data-unit="hours">00</p><p class="text-xs text-slate-400">Horas</p></div>
+                                    <div class="rounded-xl bg-slate-800 p-4 text-center"><p class="text-3xl font-extrabold" data-unit="minutes">00</p><p class="text-xs text-slate-400">Min</p></div>
+                                    <div class="rounded-xl bg-slate-800 p-4 text-center"><p class="text-3xl font-extrabold" data-unit="seconds">00</p><p class="text-xs text-slate-400">Seg</p></div>
                                 </div>
-                                <div class="flex gap-4 items-start">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 shrink-0"><i class="fa-solid fa-book"></i></div>
-                                    <div><h4 class="font-bold">Marco Teórico</h4><p class="text-sm text-slate-500">Enfoques Psicosociales en SmE.</p></div>
-                                </div>
-                                <div class="flex gap-4 items-start">
-                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600 shrink-0"><i class="fa-solid fa-earth-americas"></i></div>
-                                    <div><h4 class="font-bold">Impacto Sociocultural</h4><p class="text-sm text-slate-500">Cultura y bienestar subjetivo.</p></div>
-                                </div>
-                                <div class="flex gap-4 items-start">
-                                    <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center text-rose-600 shrink-0"><i class="fa-solid fa-brain"></i></div>
-                                    <div><h4 class="font-bold">Casuística</h4><p class="text-sm text-slate-500">Relatos en primera persona y análisis.</p></div>
-                                </div>
+                                <p id="forumCountdownStatus" class="mt-4 text-sm text-slate-300">Esperando fecha...</p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="bg-white rounded-3xl p-8 shadow-lg border-t-8 border-teal-600">
-                                <h4 class="text-xl font-bold mb-6">Grupo PROFESIONALES</h4>
-                                <ul class="space-y-4 text-sm text-slate-600">
-                                    <li><i class="fa-solid fa-calendar text-teal-500 mr-2"></i> <strong>Sábados (09, 16, 23, 30):</strong> 10:00 AR/COL</li>
-                                    <li><i class="fa-solid fa-calendar text-teal-500 mr-2"></i> <strong>Lunes (04, 11, 18, 25):</strong> 21:00 ECU/BOL</li>
-                                    <li><i class="fa-solid fa-calendar text-teal-500 mr-2"></i> <strong>Sábados (09, 16, 23, 30):</strong> 19:00 MÉXICO</li>
-                                    <li><i class="fa-solid fa-calendar text-teal-500 mr-2"></i> <strong>Miércoles (06, 13, 20, 27):</strong> 21:00 PERÚ</li>
-                                </ul>
+                        <div class="bg-white rounded-3xl p-10 shadow-xl border border-slate-100">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                                <h3 class="text-2xl font-bold">Agenda publicada</h3>
+                                <div class="flex gap-2">
+                                    <button id="forumsPrevPage" type="button" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 disabled:opacity-40">Anterior</button>
+                                    <button id="forumsNextPage" type="button" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 disabled:opacity-40">Siguiente</button>
+                                </div>
                             </div>
-                            <div class="bg-white rounded-3xl p-8 shadow-lg border-t-8 border-blue-600">
-                                <h4 class="text-xl font-bold mb-6">Grupo ESTUDIANTES</h4>
-                                <ul class="space-y-4 text-sm text-slate-600">
-                                    <li><i class="fa-solid fa-calendar text-blue-500 mr-2"></i> <strong>Sábados (09, 16, 23, 30):</strong> 11:00 AR/COL</li>
-                                    <li><i class="fa-solid fa-calendar text-blue-500 mr-2"></i> <strong>Sábados (09, 16, 23, 30):</strong> 11:00 MÉXICO</li>
-                                    <li><i class="fa-solid fa-calendar text-blue-500 mr-2"></i> <strong>Miércoles (06, 13, 20, 27):</strong> 11:00 GUATEMALA</li>
-                                </ul>
-                            </div>
+                            <div id="forumsList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+                            <p id="forumsPaginationMeta" class="mt-5 text-sm text-slate-500"></p>
                         </div>
                     </div>
 
@@ -467,6 +458,7 @@ declare(strict_types=1);
     <script type="module" src="/assets/js/navigation.js"></script>
     <script type="module" src="/assets/js/auth.js"></script>
     <script type="module" src="/assets/js/registrations.js"></script>
+    <script type="module" src="/assets/js/forums.js"></script>
 
 </body>
 </html>
