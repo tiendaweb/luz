@@ -286,6 +286,66 @@
     }
   }
 
+  function renderUserEbooks(items) {
+    const target = document.getElementById("userEbooksList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">No hay ebooks publicados actualmente.</p>';
+      return;
+    }
+
+    target.innerHTML = items.map((item) => {
+      const canDownload = Boolean(item.has_access && item.download_url);
+      const badge = canDownload
+        ? '<span class="rounded-full bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-700">Acceso habilitado</span>'
+        : '<span class="rounded-full bg-rose-100 px-2 py-1 text-[11px] font-bold text-rose-700">Sin acceso</span>';
+      const action = canDownload
+        ? `<a href="${item.download_url}" class="rounded-lg bg-sky-600 px-3 py-2 text-xs font-bold text-white hover:bg-sky-700">Descargar</a>`
+        : '<span class="text-[11px] font-semibold text-slate-500">Cumple aprobación o asistencia mínima para habilitar.</span>';
+
+      return `
+      <article class="rounded-xl border border-sky-100 bg-sky-50/40 p-3">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p class="font-bold text-slate-800">${item.title}</p>
+            <p class="text-xs text-slate-600">${item.description || "Sin descripción."}</p>
+            <p class="text-[11px] text-slate-500 mt-1">${item.access_reason || ""}</p>
+          </div>
+          <div class="flex flex-col items-start gap-2 md:items-end">
+            ${badge}
+            ${action}
+          </div>
+        </div>
+      </article>`;
+    }).join("");
+  }
+
+  function showUserEbooksAlert(message) {
+    const alert = document.getElementById("userEbooksAlert");
+    if (!alert) return;
+    if (!message) {
+      alert.classList.add("hidden");
+      alert.textContent = "";
+      return;
+    }
+    alert.classList.remove("hidden");
+    alert.textContent = message;
+  }
+
+  async function loadUserEbooks() {
+    const role = document.body.getAttribute("data-active-role");
+    if (role !== "user" && role !== "admin" && role !== "associate") return;
+
+    try {
+      showUserEbooksAlert("");
+      const result = await window.appApiFetch("/api/user/ebooks.php");
+      renderUserEbooks(result.items || []);
+    } catch (error) {
+      renderUserEbooks([]);
+      showUserEbooksAlert(error instanceof Error ? error.message : "No se pudo cargar el catálogo de ebooks.");
+    }
+  }
+
   function setupAssociateRegistrationActions() {
     const list = document.getElementById("associateRegistrationsList");
     const refresh = document.getElementById("refreshAssociateRegistrations");
@@ -360,6 +420,11 @@
       loadAdminData();
       window.refreshDashboardSummary();
     });
+  }
+
+  function setupUserEbooksActions() {
+    const refresh = document.getElementById("refreshUserEbooks");
+    refresh?.addEventListener("click", () => loadUserEbooks());
   }
 
   function setupRegistrationForm() {
@@ -474,17 +539,20 @@
     setupAssociateOfferForm();
     setupAssociateRegistrationActions();
     setupAdminActions();
+    setupUserEbooksActions();
     window.toggleCertFields(false);
     await loadOfferFromReferralCode();
     await loadAssociateOffer();
     await loadAssociateRegistrations();
     await window.refreshDashboardSummary();
     await loadAdminData();
+    await loadUserEbooks();
   });
 
   window.addEventListener("app:role-changed", async () => {
     await loadAssociateOffer();
     await loadAssociateRegistrations();
     await loadAdminData();
+    await loadUserEbooks();
   });
 })();
