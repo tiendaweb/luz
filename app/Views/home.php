@@ -460,7 +460,8 @@ declare(strict_types=1);
                             <div class="user-only hidden bg-sky-50 border border-sky-100 p-6 rounded-3xl">
                                 <p class="text-xs font-bold uppercase text-sky-600 mb-2">Módulo exclusivo Inscripto</p>
                                 <h5 class="text-xl font-extrabold text-sky-900 mb-2">Materiales y certificados</h5>
-                                <p class="text-sky-800">Descarga bibliografía recomendada, enlaces de reunión y constancias habilitadas para tu cohorte.</p>
+                                <p id="userBenefitsSummary" class="text-sky-800">Descarga bibliografía recomendada y constancias solo si tu inscripción fue aprobada y cumple asistencia mínima.</p>
+                                <div id="userBenefitsList" class="mt-4 space-y-3"></div>
                             </div>
                             <div class="guest-only hidden bg-amber-50 border border-amber-100 p-6 rounded-3xl">
                                 <p class="text-xs font-bold uppercase text-amber-600 mb-2">Acceso restringido</p>

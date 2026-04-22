@@ -9,8 +9,45 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     api_json(['ok' => false, 'error' => 'Método no permitido'], 405);
 }
 
+/**
+ * @return array{id:int,slot:string}|null
+ */
+function api_resolve_forum(PDO $pdo, ?int $forumId, string $forumSlot): ?array
+{
+    if ($forumId !== null && $forumId > 0) {
+        $stmt = $pdo->prepare('SELECT id, title FROM forums WHERE id = :id LIMIT 1');
+        $stmt->execute(['id' => $forumId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (is_array($row)) {
+            return ['id' => (int)$row['id'], 'slot' => trim((string)$row['title'])];
+        }
+    }
+
+    $slot = trim($forumSlot);
+    if ($slot === '') {
+        return null;
+    }
+
+    $stmt = $pdo->prepare('SELECT id, title, code FROM forums ORDER BY starts_at ASC, id ASC');
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($rows as $row) {
+        $title = mb_strtolower(trim((string)($row['title'] ?? '')));
+        $code = mb_strtolower(trim((string)($row['code'] ?? '')));
+        $candidate = mb_strtolower($slot);
+        if ($candidate === $title || $candidate === $code || str_contains($candidate, $title) || str_contains($candidate, $code)) {
+            return ['id' => (int)$row['id'], 'slot' => trim((string)$row['title'])];
+        }
+    }
+
+    return null;
+}
+
 $pdo = api_require_db();
 $input = api_read_json();
+$currentUser = api_current_user();
+$currentUserId = is_array($currentUser) ? (int)($currentUser['id'] ?? 0) : 0;
 
 try {
     $service = new RegistrationService();
@@ -19,15 +56,49 @@ try {
     api_json(['ok' => false, 'error' => $error->getMessage()], 422);
 }
 
+$resolvedForum = api_resolve_forum($pdo, isset($payload['forumId']) ? (int)$payload['forumId'] : null, (string)$payload['forumSlot']);
+if (!is_array($resolvedForum)) {
+    api_json(['ok' => false, 'error' => 'No se pudo resolver el foro seleccionado.'], 422);
+}
+
+if ($currentUserId > 0) {
+    $duplicateStmt = $pdo->prepare(
+        'SELECT id
+         FROM registrations
+         WHERE user_id = :user_id
+           AND (
+             forum_id = :forum_id
+             OR (
+               forum_id IS NULL
+               AND forum_slot = :forum_slot
+             )
+           )
+         LIMIT 1'
+    );
+    $duplicateStmt->execute([
+        'user_id' => $currentUserId,
+        'forum_id' => (int)$resolvedForum['id'],
+        'forum_slot' => (string)$resolvedForum['slot'],
+    ]);
+    if ($duplicateStmt->fetchColumn() !== false) {
+        api_json([
+            'ok' => false,
+            'error' => 'Ya existe una inscripción para este usuario en el foro seleccionado.',
+        ], 409);
+    }
+}
+
 $stmt = $pdo->prepare(
     'INSERT INTO registrations (
-      forum_slot, full_name, document_id, needs_cert,
+      user_id, forum_id, forum_slot, full_name, document_id, needs_cert,
       payment_proof_name, payment_proof_mime, payment_proof_size, payment_proof_base64,
       acceptance_checked, signature_data_url, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
 );
 $stmt->execute([
-    $payload['forumSlot'],
+    $currentUserId > 0 ? $currentUserId : null,
+    (int)$resolvedForum['id'],
+    (string)$resolvedForum['slot'],
     $payload['fullName'],
     $payload['documentId'],
     $payload['needsCert'] ? 1 : 0,

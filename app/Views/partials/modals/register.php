@@ -17,11 +17,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="col-span-1 md:col-span-2">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Foro Elegido *</label>
-                        <select name="forumSlot" class="w-full bg-slate-100 border-none rounded-xl p-4 font-medium focus:ring-2 focus:ring-teal-500" required>
+                        <select name="forumId" id="forumIdSelect" class="w-full bg-slate-100 border-none rounded-xl p-4 font-medium focus:ring-2 focus:ring-teal-500" required>
                             <option value="">Selecciona tu grupo y horario...</option>
-                            <option value="PROFESIONALES: Sábado 09 Mayo 10:00 AR-COL">PROFESIONALES: Sábado 09 Mayo 10:00 AR-COL</option>
-                            <option value="ESTUDIANTES: Sábado 09 Mayo 11:00 AR-COL">ESTUDIANTES: Sábado 09 Mayo 11:00 AR-COL</option>
-                            <option value="PROFESIONALES: Lunes 04 Mayo 21:00 ECU/BOL">PROFESIONALES: Lunes 04 Mayo 21:00 ECU/BOL</option>
+                            <option value="1">Foro de la mañana</option>
+                            <option value="2">Foro de la tarde</option>
                         </select>
                     </div>
                     <div>

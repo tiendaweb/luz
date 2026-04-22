@@ -362,6 +362,45 @@
     });
   }
 
+
+  function renderUserBenefits(items) {
+    const card = document.getElementById("userBenefitsList");
+    const summary = document.getElementById("userBenefitsSummary");
+    if (!card || !summary) return;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      summary.textContent = "No encontramos inscripciones asociadas a tu usuario.";
+      card.innerHTML = '<p class="text-xs text-slate-500">Cuando tengas una inscripción validada verás beneficios habilitados aquí.</p>';
+      return;
+    }
+
+    summary.textContent = "Beneficios habilitados según estado administrativo aprobado y asistencia registrada por sesión.";
+    card.innerHTML = items.map((item) => {
+      const ebooks = item.benefits?.ebooks_enabled;
+      const cert = item.benefits?.certificate_enabled;
+      return `
+        <article class="rounded-2xl border border-sky-200 bg-white p-4">
+          <p class="font-bold text-slate-800">${item.forum_slot || `Foro #${item.forum_id}`}</p>
+          <p class="text-xs text-slate-500">Estado admin: <span class="font-bold">${item.admin_status}</span> · Asistencia: ${item.attendance_percent}% (${item.sessions_with_attendance}/${item.sessions_total} sesiones)</p>
+          <ul class="mt-2 text-xs space-y-1">
+            <li class="${ebooks ? "text-emerald-700" : "text-slate-500"}">${ebooks ? "✅" : "🔒"} eBooks ${ebooks ? "habilitados" : "bloqueados (requiere aprobación)"}</li>
+            <li class="${cert ? "text-emerald-700" : "text-slate-500"}">${cert ? "✅" : "🔒"} Certificado ${cert ? "habilitado" : "bloqueado (requiere aprobación + 75% asistencia)"}</li>
+          </ul>
+        </article>
+      `;
+    }).join("");
+  }
+
+  async function loadUserBenefits() {
+    if (document.body.getAttribute("data-active-role") !== "user") return;
+    try {
+      const result = await window.appApiFetch("/api/registrations/me.php");
+      renderUserBenefits(result.items || []);
+    } catch (_error) {
+      renderUserBenefits([]);
+    }
+  }
+
   function setupRegistrationForm() {
     const form = document.getElementById("registerForm");
     const signatureCanvas = document.getElementById("signatureCanvas");
@@ -443,7 +482,8 @@
         await window.appApiFetch("/api/registrations/create.php", {
           method: "POST",
           body: JSON.stringify({
-            forumSlot: String(formData.get("forumSlot") || ""),
+            forumId: Number(formData.get("forumId") || 0),
+            forumSlot: String((document.getElementById("forumIdSelect")?.selectedOptions?.[0]?.textContent || "").trim()),
             fullName: String(formData.get("fullName") || ""),
             documentId: String(formData.get("documentId") || ""),
             referralCode: String(formData.get("referralCode") || ""),
@@ -480,11 +520,13 @@
     await loadAssociateRegistrations();
     await window.refreshDashboardSummary();
     await loadAdminData();
+    await loadUserBenefits();
   });
 
   window.addEventListener("app:role-changed", async () => {
     await loadAssociateOffer();
     await loadAssociateRegistrations();
     await loadAdminData();
+    await loadUserBenefits();
   });
 })();
