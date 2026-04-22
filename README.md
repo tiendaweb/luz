@@ -1,4 +1,25 @@
 
+## Demo: migraciones, seeds y credenciales
+
+> ⚠️ **Uso exclusivo en entorno demo/local.**  
+> Las credenciales incluidas aquí son públicas y no deben usarse en producción.
+
+### Ejecutar migraciones + seeds
+
+```bash
+php scripts/seed.php
+```
+
+Este comando crea/actualiza tablas (incluyendo `roles` y `users.role_id`) y carga usuarios demo con contraseñas hasheadas mediante `password_hash()` (Argon2id o bcrypt como fallback).
+
+### Credenciales de prueba
+
+- **Admin**: `admin@psme.local` / `Admin123*`
+- **Asociado**: `asociado@psme.local` / `Asociado123*`
+- **Usuario**: `usuario@psme.local` / `Usuario123*`
+
+---
+
 ### **OBJETIVO PRINCIPAL**
 Crear una **maqueta funcional HTML/CSS/JS** (sin persistencia de datos) para la plataforma web de "Foro LATAM 2026 PSME" — un espacio de encuentro en Salud Mental y Emocional dirigido por María Luz Genovese, Psicóloga Social.
 
