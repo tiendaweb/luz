@@ -6,10 +6,7 @@ require_once __DIR__ . '/_common.php';
 
 admin_pages_require_admin();
 
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-if ($method !== 'PATCH' && $method !== 'PUT') {
-    api_json(['ok' => false, 'error' => 'Método no permitido'], 405);
-}
+api_require_method(['PATCH', 'PUT']);
 
 $input = api_read_json();
 $id = (int)($input['id'] ?? 0);

@@ -5,9 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../_bootstrap.php';
 require_once __DIR__ . '/../../../app/Services/RegistrationService.php';
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-    api_json(['ok' => false, 'error' => 'Método no permitido'], 405);
-}
+api_require_method(['POST']);
 
 /**
  * @return array{id:int,slot:string}|null

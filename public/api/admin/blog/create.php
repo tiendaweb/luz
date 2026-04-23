@@ -4,33 +4,25 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../../_bootstrap.php';
 
-$user = api_current_user();
-if (!is_array($user) || ($user['role'] ?? '') !== 'admin') {
-    api_json(['ok' => false, 'error' => 'Acceso denegado'], 403);
-}
-
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-    api_json(['ok' => false, 'error' => 'Método no permitido'], 405);
-}
+$user = api_require_role('admin');
+api_require_method(['POST']);
 
 $input = api_read_json();
-$slug = trim((string)($input['slug'] ?? ''));
-$title = trim((string)($input['title'] ?? ''));
-$excerpt = trim((string)($input['excerpt'] ?? ''));
-$contentHtml = trim((string)($input['content_html'] ?? ''));
-$status = trim((string)($input['status'] ?? 'draft'));
-$publishedAt = trim((string)($input['published_at'] ?? ''));
+api_require_fields($input, ['slug', 'title', 'excerpt', 'content_html']);
 
-if ($slug === '' || $title === '' || $excerpt === '' || $contentHtml === '') {
-    api_json(['ok' => false, 'error' => 'slug, title, excerpt y content_html son obligatorios.'], 422);
-}
+$slug = api_input_string($input, 'slug', true);
+$title = api_input_string($input, 'title', true);
+$excerpt = api_input_string($input, 'excerpt', true);
+$contentHtml = api_input_string($input, 'content_html', true);
+$status = api_input_string($input, 'status') ?: 'draft';
+$publishedAt = api_input_string($input, 'published_at');
 
-if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
-    api_json(['ok' => false, 'error' => 'Slug inválido. Usa minúsculas, números y guiones.'], 422);
+if (!api_validate_slug($slug)) {
+    api_error('Slug inválido. Usa minúsculas, números y guiones.', 422, 'validation_error', ['field' => 'slug']);
 }
 
 if (!in_array($status, ['draft', 'published'], true)) {
-    api_json(['ok' => false, 'error' => 'Estado inválido.'], 422);
+    api_error('Estado inválido.', 422, 'validation_error', ['field' => 'status']);
 }
 
 if ($status === 'published' && $publishedAt === '') {
@@ -57,7 +49,7 @@ try {
         'published_at' => $publishedAt,
     ]);
 } catch (Throwable $e) {
-    api_json(['ok' => false, 'error' => 'No se pudo crear el artículo (slug duplicado o datos inválidos).'], 422);
+    api_error('No se pudo crear el artículo (slug duplicado o datos inválidos).', 422, 'blog_create_failed');
 }
 
 api_json(['ok' => true, 'id' => (int)$pdo->lastInsertId()], 201);
