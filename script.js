@@ -227,6 +227,199 @@
     }
   }
 
+  function formatBlogDate(dateValue) {
+    if (!dateValue) return "Sin fecha";
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return "Sin fecha";
+    return date.toLocaleDateString("es-AR", { year: "numeric", month: "long", day: "numeric" });
+  }
+
+  function renderPublicBlogPosts(items) {
+    const target = document.getElementById("blogPublicList");
+    if (!target) return;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = `
+        <article class="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 card-shadow md:col-span-2 lg:col-span-3">
+          <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-slate-500 mb-4">Blog</span>
+          <h4 class="text-2xl font-bold mb-4">Aún no hay artículos publicados</h4>
+          <p class="text-slate-600">Próximamente publicaremos nuevos materiales sobre la causa PSME.</p>
+        </article>`;
+      return;
+    }
+
+    target.innerHTML = items.map((item) => `
+      <article class="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 card-shadow">
+        <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-teal-600 mb-4">${formatBlogDate(item.published_at)}</span>
+        <h4 class="text-2xl font-bold mb-4">${item.title || "Sin título"}</h4>
+        <p class="text-slate-600">${item.excerpt || ""}</p>
+      </article>`).join("");
+  }
+
+  async function loadPublicBlogPosts() {
+    try {
+      const result = await apiFetch("/api/blog/list.php");
+      renderPublicBlogPosts(result.items || []);
+    } catch (_error) {
+      renderPublicBlogPosts([]);
+    }
+  }
+
+  function showAdminBlogFeedback(type, message) {
+    const box = document.getElementById("adminBlogFeedback");
+    if (!box) return;
+    if (!message) {
+      box.classList.add("hidden");
+      box.textContent = "";
+      return;
+    }
+
+    box.classList.remove("hidden", "bg-emerald-50", "text-emerald-800", "border-emerald-200", "bg-rose-50", "text-rose-700", "border-rose-200", "border");
+    box.classList.add("border");
+    if (type === "success") {
+      box.classList.add("bg-emerald-50", "text-emerald-800", "border-emerald-200");
+    } else {
+      box.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+    }
+    box.textContent = message;
+  }
+
+  function resetAdminBlogForm() {
+    const id = document.getElementById("adminBlogId");
+    const slug = document.getElementById("adminBlogSlug");
+    const title = document.getElementById("adminBlogTitle");
+    const excerpt = document.getElementById("adminBlogExcerpt");
+    const content = document.getElementById("adminBlogContent");
+    const status = document.getElementById("adminBlogStatus");
+    if (id) id.value = "";
+    if (slug) slug.value = "";
+    if (title) title.value = "";
+    if (excerpt) excerpt.value = "";
+    if (content) content.value = "";
+    if (status) status.value = "draft";
+  }
+
+  function fillAdminBlogForm(item) {
+    const id = document.getElementById("adminBlogId");
+    const slug = document.getElementById("adminBlogSlug");
+    const title = document.getElementById("adminBlogTitle");
+    const excerpt = document.getElementById("adminBlogExcerpt");
+    const content = document.getElementById("adminBlogContent");
+    const status = document.getElementById("adminBlogStatus");
+    if (id) id.value = String(item.id || "");
+    if (slug) slug.value = item.slug || "";
+    if (title) title.value = item.title || "";
+    if (excerpt) excerpt.value = item.excerpt || "";
+    if (content) content.value = item.content_html || "";
+    if (status) status.value = item.status || "draft";
+  }
+
+  function renderAdminBlogPosts(items) {
+    const target = document.getElementById("adminBlogList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">No hay artículos cargados.</p>';
+      return;
+    }
+
+    target.innerHTML = items.map((item) => `
+      <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="font-bold text-slate-800">${item.title}</p>
+            <p class="text-xs text-slate-500">/${item.slug} · ${item.status} · ${formatBlogDate(item.published_at)}</p>
+          </div>
+          <div class="flex gap-2">
+            <button data-action="edit-blog" data-id="${item.id}" class="rounded-lg border border-slate-300 px-2 py-1 text-xs font-bold">Editar</button>
+            <button data-action="delete-blog" data-id="${item.id}" class="rounded-lg bg-rose-600 px-2 py-1 text-xs font-bold text-white">Eliminar</button>
+          </div>
+        </div>
+      </article>`).join("");
+  }
+
+  async function loadAdminBlogPosts() {
+    if ((document.body.getAttribute("data-active-role") || "") !== "admin") return;
+    try {
+      const result = await apiFetch("/api/admin/blog/list.php");
+      const items = result.items || [];
+      renderAdminBlogPosts(items);
+      window.__adminBlogItems = items;
+    } catch (_error) {
+      renderAdminBlogPosts([]);
+    }
+  }
+
+  function setupAdminBlogActions() {
+    const form = document.getElementById("adminBlogForm");
+    const refresh = document.getElementById("adminBlogRefreshBtn");
+    const clear = document.getElementById("adminBlogClearBtn");
+    const list = document.getElementById("adminBlogList");
+
+    refresh?.addEventListener("click", async () => {
+      showAdminBlogFeedback("success", "");
+      await loadAdminBlogPosts();
+    });
+
+    clear?.addEventListener("click", () => {
+      showAdminBlogFeedback("success", "");
+      resetAdminBlogForm();
+    });
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const payload = {
+        id: Number(document.getElementById("adminBlogId")?.value || 0),
+        slug: String(document.getElementById("adminBlogSlug")?.value || "").trim(),
+        title: String(document.getElementById("adminBlogTitle")?.value || "").trim(),
+        excerpt: String(document.getElementById("adminBlogExcerpt")?.value || "").trim(),
+        content_html: String(document.getElementById("adminBlogContent")?.value || "").trim(),
+        status: String(document.getElementById("adminBlogStatus")?.value || "draft").trim()
+      };
+
+      try {
+        if (payload.id > 0) {
+          await apiFetch("/api/admin/blog/update.php", { method: "PATCH", body: JSON.stringify(payload) });
+          showAdminBlogFeedback("success", "Artículo actualizado correctamente.");
+        } else {
+          await apiFetch("/api/admin/blog/create.php", { method: "POST", body: JSON.stringify(payload) });
+          showAdminBlogFeedback("success", "Artículo creado correctamente.");
+        }
+        resetAdminBlogForm();
+        await loadAdminBlogPosts();
+        await loadPublicBlogPosts();
+      } catch (error) {
+        showAdminBlogFeedback("error", error instanceof Error ? error.message : "No se pudo guardar el artículo.");
+      }
+    });
+
+    list?.addEventListener("click", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.action || "";
+      const id = Number(target.dataset.id || 0);
+      if (!id) return;
+
+      if (action === "edit-blog") {
+        const items = Array.isArray(window.__adminBlogItems) ? window.__adminBlogItems : [];
+        const item = items.find((entry) => Number(entry.id) === id);
+        if (item) fillAdminBlogForm(item);
+        return;
+      }
+
+      if (action === "delete-blog") {
+        if (!window.confirm("¿Eliminar este artículo?")) return;
+        try {
+          await apiFetch(`/api/admin/blog/delete.php?id=${encodeURIComponent(String(id))}`, { method: "DELETE" });
+          showAdminBlogFeedback("success", "Artículo eliminado.");
+          await loadAdminBlogPosts();
+          await loadPublicBlogPosts();
+        } catch (error) {
+          showAdminBlogFeedback("error", error instanceof Error ? error.message : "No se pudo eliminar.");
+        }
+      }
+    });
+  }
+
   function applyRoleUI(roleName, options = {}) {
     const role = normalizeRole(roleName);
     const { redirectToDashboard = false } = options;
@@ -273,6 +466,7 @@
       window.showView("dashboard");
     }
 
+    window.dispatchEvent(new CustomEvent("app:role-changed", { detail: { role } }));
     return role;
   }
 
@@ -280,6 +474,9 @@
     const view = normalizeView(viewId);
     document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
     document.getElementById(`view-${view}`)?.classList.add("active");
+    if (view === "blog") {
+      loadPublicBlogPosts();
+    }
     updateHash(view);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -354,6 +551,11 @@
     closeMobileMenu();
   });
 
+
+  window.addEventListener("app:role-changed", () => {
+    loadAdminBlogPosts();
+  });
+
   window.addEventListener("DOMContentLoaded", async () => {
     const { view, role } = parseHashState();
     document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
@@ -368,7 +570,10 @@
     }
     updateHash(view);
     setupRegistrationForm();
+    setupAdminBlogActions();
     window.toggleCertFields(false);
     refreshDashboardSummary();
+    loadPublicBlogPosts();
+    loadAdminBlogPosts();
   });
 })();
