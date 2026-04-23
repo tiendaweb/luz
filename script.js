@@ -420,6 +420,214 @@
     });
   }
 
+  function setBriefFeedback(type, message) {
+    const box = document.getElementById("briefFeedback");
+    if (!box) return;
+    if (!message) {
+      box.classList.add("hidden");
+      box.textContent = "";
+      return;
+    }
+
+    box.classList.remove("hidden", "bg-emerald-50", "text-emerald-800", "border-emerald-200", "bg-rose-50", "text-rose-700", "border-rose-200", "border");
+    box.classList.add("border");
+    if (type === "success") {
+      box.classList.add("bg-emerald-50", "text-emerald-800", "border-emerald-200");
+    } else {
+      box.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+    }
+    box.textContent = message;
+  }
+
+  function buildContentBriefPayload() {
+    const form = document.getElementById("contentBriefForm");
+    if (!(form instanceof HTMLFormElement)) return null;
+    const fd = new FormData(form);
+    return {
+      objective: String(fd.get("objective") || "").trim(),
+      audience: String(fd.get("audience") || "").trim(),
+      tone: String(fd.get("tone") || "").trim(),
+      channel: String(fd.get("channel") || "").trim(),
+      length: String(fd.get("length") || "").trim(),
+      cta: String(fd.get("cta") || "").trim(),
+      keywords: String(fd.get("keywords") || "").trim(),
+      legal: String(fd.get("legal") || "").trim()
+    };
+  }
+
+  function buildPromptFromBrief(payload) {
+    return [
+      "Actúa como estratega de contenidos para PSME y redacta una primera versión lista para edición.",
+      `Objetivo: ${payload.objective}`,
+      `Audiencia: ${payload.audience}`,
+      `Tono: ${payload.tone}`,
+      `Canal: ${payload.channel}`,
+      `Longitud objetivo: ${payload.length}`,
+      `Llamado a la acción (CTA): ${payload.cta}`,
+      `Keywords obligatorias: ${payload.keywords}`,
+      `Restricciones legales/éticas: ${payload.legal}`,
+      "Estructura esperada:",
+      "1) Título sugerido.",
+      "2) Bajada o resumen breve.",
+      "3) Desarrollo en secciones con subtítulos.",
+      "4) Cierre con CTA.",
+      "5) Meta descripción SEO (máx. 155 caracteres)."
+    ].join("\n");
+  }
+
+  function buildDraftFromBrief(payload) {
+    return [
+      `<h2>${payload.objective}</h2>`,
+      `<p><strong>Audiencia:</strong> ${payload.audience}</p>`,
+      `<p><strong>Tono sugerido:</strong> ${payload.tone}. <strong>Canal:</strong> ${payload.channel}. <strong>Longitud:</strong> ${payload.length}.</p>`,
+      `<p>En este borrador base se abordarán los temas clave: ${payload.keywords}.</p>`,
+      `<h3>Desarrollo sugerido</h3>`,
+      `<p>Desarrollar aquí los argumentos principales respetando estas restricciones: ${payload.legal}.</p>`,
+      `<p><strong>CTA:</strong> ${payload.cta}</p>`
+    ].join("\n");
+  }
+
+  function fillBriefForm(payload) {
+    const form = document.getElementById("contentBriefForm");
+    if (!(form instanceof HTMLFormElement)) return;
+    form.objective.value = payload.objective || "";
+    form.audience.value = payload.audience || "";
+    form.tone.value = payload.tone || "";
+    form.channel.value = payload.channel || "";
+    form.length.value = payload.length || "";
+    form.cta.value = payload.cta || "";
+    form.keywords.value = payload.keywords || "";
+    form.legal.value = payload.legal || "";
+  }
+
+  function renderBriefPresetOptions(items) {
+    const select = document.getElementById("briefPresetSelect");
+    if (!(select instanceof HTMLSelectElement)) return;
+    const options = ['<option value="">Seleccionar preset…</option>'];
+    (Array.isArray(items) ? items : []).forEach((item) => {
+      options.push(`<option value="${item.id}">${item.name}</option>`);
+    });
+    select.innerHTML = options.join("");
+  }
+
+  async function loadContentPromptTemplates() {
+    if ((document.body.getAttribute("data-active-role") || "") !== "admin") return;
+    try {
+      const result = await apiFetch("/api/admin/content-prompts/list.php");
+      window.__contentPromptTemplates = Array.isArray(result.items) ? result.items : [];
+      renderBriefPresetOptions(window.__contentPromptTemplates);
+    } catch (_error) {
+      window.__contentPromptTemplates = [];
+      renderBriefPresetOptions([]);
+    }
+  }
+
+  async function setupContentBriefActions() {
+    const copyBtn = document.getElementById("briefCopyPromptBtn");
+    const output = document.getElementById("briefPromptOutput");
+    const savePresetBtn = document.getElementById("briefSavePresetBtn");
+    const loadPresetBtn = document.getElementById("briefLoadPresetBtn");
+    const deletePresetBtn = document.getElementById("briefDeletePresetBtn");
+    const generateDraftBtn = document.getElementById("briefGenerateDraftBtn");
+    const presetNameInput = document.getElementById("briefPresetName");
+    const presetSelect = document.getElementById("briefPresetSelect");
+
+    if (!copyBtn || !output) return;
+
+    copyBtn.addEventListener("click", async () => {
+      const payload = buildContentBriefPayload();
+      if (!payload) return;
+      const prompt = buildPromptFromBrief(payload);
+      output.value = prompt;
+      try {
+        await navigator.clipboard.writeText(prompt);
+        setBriefFeedback("success", "Prompt copiado al portapapeles.");
+      } catch (_error) {
+        setBriefFeedback("error", "No se pudo copiar automáticamente. Copia manual desde la caja.");
+      }
+    });
+
+    generateDraftBtn?.addEventListener("click", async () => {
+      const payload = buildContentBriefPayload();
+      if (!payload) return;
+      const draft = buildDraftFromBrief(payload);
+      const prompt = buildPromptFromBrief(payload);
+      output.value = `${prompt}
+
+--- BORRADOR BASE ---
+${draft}`;
+
+      const blogContent = document.getElementById("adminBlogContent");
+      if (blogContent instanceof HTMLTextAreaElement && blogContent.value.trim() === "") {
+        blogContent.value = draft;
+      }
+
+      const pageForm = document.getElementById("adminPageForm");
+      if (pageForm instanceof HTMLFormElement && pageForm.content_html && !String(pageForm.content_html.value || "").trim()) {
+        pageForm.content_html.value = draft;
+      }
+
+      try {
+        await navigator.clipboard.writeText(draft);
+        setBriefFeedback("success", "Borrador base generado. Se copió al portapapeles y se precargó en Blog/Páginas cuando aplica.");
+      } catch (_error) {
+        setBriefFeedback("success", "Borrador base generado. Copia manual desde la caja si lo necesitas.");
+      }
+    });
+
+    savePresetBtn?.addEventListener("click", async () => {
+      const payload = buildContentBriefPayload();
+      const presetName = String((presetNameInput instanceof HTMLInputElement ? presetNameInput.value : "") || "").trim();
+      if (!payload || !presetName) {
+        setBriefFeedback("error", "Debes indicar un nombre para guardar el preset.");
+        return;
+      }
+
+      try {
+        await apiFetch("/api/admin/content-prompts/create.php", {
+          method: "POST",
+          body: JSON.stringify({ name: presetName, ...payload })
+        });
+        if (presetNameInput instanceof HTMLInputElement) presetNameInput.value = "";
+        await loadContentPromptTemplates();
+        setBriefFeedback("success", "Preset guardado correctamente.");
+      } catch (error) {
+        setBriefFeedback("error", error instanceof Error ? error.message : "No se pudo guardar el preset.");
+      }
+    });
+
+    loadPresetBtn?.addEventListener("click", () => {
+      const selectedId = Number((presetSelect instanceof HTMLSelectElement ? presetSelect.value : "") || 0);
+      const items = Array.isArray(window.__contentPromptTemplates) ? window.__contentPromptTemplates : [];
+      const selected = items.find((item) => Number(item.id) === selectedId);
+      if (!selected) {
+        setBriefFeedback("error", "Selecciona un preset para cargar.");
+        return;
+      }
+      fillBriefForm(selected);
+      setBriefFeedback("success", "Preset cargado en el brief.");
+    });
+
+    deletePresetBtn?.addEventListener("click", async () => {
+      const selectedId = Number((presetSelect instanceof HTMLSelectElement ? presetSelect.value : "") || 0);
+      if (!selectedId) {
+        setBriefFeedback("error", "Selecciona un preset para eliminar.");
+        return;
+      }
+      if (!window.confirm("¿Eliminar este preset?")) return;
+
+      try {
+        await apiFetch(`/api/admin/content-prompts/delete.php?id=${encodeURIComponent(String(selectedId))}`, { method: "DELETE" });
+        await loadContentPromptTemplates();
+        setBriefFeedback("success", "Preset eliminado.");
+      } catch (error) {
+        setBriefFeedback("error", error instanceof Error ? error.message : "No se pudo eliminar el preset.");
+      }
+    });
+
+    await loadContentPromptTemplates();
+  }
+
   function applyRoleUI(roleName, options = {}) {
     const role = normalizeRole(roleName);
     const { redirectToDashboard = false } = options;
@@ -554,6 +762,7 @@
 
   window.addEventListener("app:role-changed", () => {
     loadAdminBlogPosts();
+    loadContentPromptTemplates();
   });
 
   window.addEventListener("DOMContentLoaded", async () => {
@@ -571,6 +780,7 @@
     updateHash(view);
     setupRegistrationForm();
     setupAdminBlogActions();
+    await setupContentBriefActions();
     window.toggleCertFields(false);
     refreshDashboardSummary();
     loadPublicBlogPosts();
