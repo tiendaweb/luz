@@ -356,6 +356,7 @@ declare(strict_types=1);
                             <div class="admin-only hidden space-y-2 pt-2 border-t mt-2">
                                 <button class="w-full text-left p-4 rounded-2xl hover:bg-teal-50 hover:text-teal-700 font-bold flex items-center gap-3"><i class="fa-solid fa-users"></i> Gestión Inscripciones</button>
                                 <button class="w-full text-left p-4 rounded-2xl hover:bg-teal-50 hover:text-teal-700 font-bold flex items-center gap-3"><i class="fa-solid fa-file-invoice-dollar"></i> Validar Pagos Foros</button>
+                                <button class="w-full text-left p-4 rounded-2xl hover:bg-teal-50 hover:text-teal-700 font-bold flex items-center gap-3"><i class="fa-solid fa-file-lines"></i> Páginas</button>
                             </div>
 
                             <!-- Associate only -->
@@ -423,6 +424,30 @@ declare(strict_types=1);
                                         <button type="button" id="refreshAdminAssociates" class="text-xs font-bold text-emerald-700">Actualizar</button>
                                     </div>
                                     <div id="adminAssociatesList" class="space-y-2 text-sm text-slate-700"></div>
+                                </div>
+                                <div class="bg-white rounded-2xl border border-emerald-100 p-4 space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <h6 class="font-bold text-slate-800">Páginas (CRUD)</h6>
+                                        <button type="button" id="refreshAdminPages" class="text-xs font-bold text-emerald-700">Actualizar</button>
+                                    </div>
+                                    <form id="adminPageForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <input type="hidden" name="id">
+                                        <input name="slug" placeholder="slug (ej: quienes-somos)" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                        <input name="title" placeholder="Título" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                        <select name="status" class="rounded-xl border border-slate-200 px-3 py-2">
+                                            <option value="draft">Borrador</option>
+                                            <option value="published">Publicada</option>
+                                        </select>
+                                        <input name="seo_title" placeholder="SEO title" class="rounded-xl border border-slate-200 px-3 py-2">
+                                        <textarea name="seo_description" placeholder="SEO description" class="rounded-xl border border-slate-200 px-3 py-2 md:col-span-2" rows="2"></textarea>
+                                        <textarea name="content_html" placeholder="HTML permitido (p, a, ul, h1-h6, img, etc.)" class="rounded-xl border border-slate-200 px-3 py-2 md:col-span-2" rows="6" required></textarea>
+                                        <div class="md:col-span-2 flex items-center gap-3">
+                                            <button type="submit" class="bg-emerald-600 text-white px-4 py-2 rounded-xl font-bold text-sm">Guardar página</button>
+                                            <button type="button" id="adminPageFormReset" class="border border-slate-300 px-4 py-2 rounded-xl font-bold text-sm">Limpiar</button>
+                                            <span id="adminPagesStatus" class="text-xs font-bold text-emerald-700"></span>
+                                        </div>
+                                    </form>
+                                    <div id="adminPagesList" class="space-y-2 text-sm text-slate-700"></div>
                                 </div>
                             </div>
                             <div class="associate-only hidden bg-violet-50 border border-violet-100 p-6 rounded-3xl space-y-4">
@@ -503,6 +528,7 @@ declare(strict_types=1);
     <script type="module" src="/assets/js/auth.js"></script>
     <script type="module" src="/assets/js/registrations.js"></script>
     <script type="module" src="/assets/js/forums.js"></script>
+    <script type="module" src="/assets/js/pages-admin.js"></script>
 
 </body>
 </html>

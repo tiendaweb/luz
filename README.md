@@ -101,6 +101,34 @@ Este comando aplica migraciones y carga datos demo (usuarios, foros y datos rela
 
 ---
 
+
+## Convención de slugs y rutas para páginas personalizadas
+
+### Slug (campo `custom_pages.slug`)
+- Formato obligatorio: `^[a-z0-9]+(?:-[a-z0-9]+)*$`
+- Reglas:
+  - Sólo minúsculas, números y guiones medios (`-`).
+  - No se permiten espacios, tildes ni guiones al inicio/fin.
+  - Debe ser único por página.
+- Ejemplos válidos: `quienes-somos`, `agenda-2026`, `preguntas-frecuentes`.
+
+### Rutas de acceso
+- **API admin CRUD** (requiere sesión `admin`):
+  - `GET /public/api/admin/pages/list.php`
+  - `GET /public/api/admin/pages/show.php?id={id}`
+  - `POST /public/api/admin/pages/create.php`
+  - `PATCH /public/api/admin/pages/update.php`
+  - `DELETE /public/api/admin/pages/delete.php?id={id}`
+- **API pública** (solo publicadas):
+  - `GET /public/api/pages/show.php?slug={slug}`
+- **Render web público** (solo publicadas):
+  - `GET /p/{slug}`
+
+### Seguridad de `content_html`
+- El HTML se sanitiza del lado servidor antes de persistir.
+- Se aplica lista blanca de etiquetas/atributos permitidos.
+- Se eliminan etiquetas y atributos inseguros (`script`, `iframe`, `on*`, `style`, URLs no seguras).
+
 ## Matriz de estado por módulo
 
 | Módulo | Implementado | Parcial | Pendiente | Comentario breve |

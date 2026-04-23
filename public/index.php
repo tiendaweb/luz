@@ -39,6 +39,33 @@ if ($routeKey !== null) {
     exit;
 }
 
+
+if (preg_match('#^p/([a-z0-9]+(?:-[a-z0-9]+)*)$#', $path, $matches) === 1) {
+    require_once $projectRoot . '/app/Database/connection.php';
+    require_once $projectRoot . '/public/api/_bootstrap.php';
+
+    $slug = (string)$matches[1];
+    $pdo = api_require_db();
+    $stmt = $pdo->prepare(
+        'SELECT id, slug, title, content_html, seo_title, seo_description, published_at, created_at, updated_at
+         FROM custom_pages
+         WHERE slug = :slug AND status = "published"
+         LIMIT 1'
+    );
+    $stmt->execute(['slug' => $slug]);
+    $page = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!is_array($page)) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'Página no encontrada';
+        exit;
+    }
+
+    require $projectRoot . '/app/Views/pages/show.php';
+    exit;
+}
+
 if ($path === '' || $path === 'index.php') {
     require $projectRoot . '/app/Views/home.php';
     exit;
