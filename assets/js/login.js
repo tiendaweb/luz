@@ -33,9 +33,8 @@
     return ['admin', 'associate', 'user'].includes(role) ? role : 'user';
   }
 
-  function buildApiCandidates(path) {
-    const normalizedPath = path.startsWith('/api/') ? path : `/api/${path.replace(/^\/+/, '')}`;
-    return [normalizedPath, normalizedPath.replace(/^\/api\//, '/public/api/')];
+  function buildApiPath(path) {
+    return path.startsWith('/api/') ? path : `/api/${path.replace(/^\/+/, '')}`;
   }
 
   window.fillDemoCredentials = (role) => {
@@ -63,7 +62,7 @@
   }
 
   async function loginRequest(payload) {
-    const [primaryUrl, fallbackUrl] = buildApiCandidates('/api/auth/login.php');
+    const loginUrl = buildApiPath('/api/auth/login');
     const requestConfig = {
       method: 'POST',
       credentials: 'same-origin',
@@ -71,26 +70,18 @@
       body: JSON.stringify(payload)
     };
 
-    const send = async (url) => {
-      const response = await fetch(url, requestConfig);
-      const data = await response.json().catch(() => ({}));
-      return { response, data };
-    };
+    const response = await fetch(loginUrl, requestConfig);
+    const data = await response.json().catch(() => ({}));
 
-    let result = await send(primaryUrl);
-    if (result.response.status === 404 && fallbackUrl !== primaryUrl) {
-      result = await send(fallbackUrl);
+    if (!response.ok || data.ok === false) {
+      throw new Error(getErrorMessage(data));
     }
 
-    if (!result.response.ok || result.data.ok === false) {
-      throw new Error(getErrorMessage(result.data));
+    if (data?.csrfToken) {
+      window.__csrfToken = data.csrfToken;
     }
 
-    if (result.data?.csrfToken) {
-      window.__csrfToken = result.data.csrfToken;
-    }
-
-    return result.data;
+    return data;
   }
 
   document.addEventListener('DOMContentLoaded', () => {

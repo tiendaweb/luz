@@ -29,6 +29,9 @@ if (is_string($action) && isset($routes[$action])) {
 } else {
     $normalizedPath = str_starts_with($path, 'public/') ? substr($path, 7) : $path;
     $normalizedPath = trim($normalizedPath, '/');
+    if (str_ends_with($normalizedPath, '.php')) {
+        $normalizedPath = substr($normalizedPath, 0, -4);
+    }
     if (isset($routes[$normalizedPath])) {
         $routeKey = $normalizedPath;
     }

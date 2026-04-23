@@ -8,10 +8,10 @@ require_once __DIR__ . '/../../../app/Services/AuthService.php';
 api_require_method(['POST']);
 
 $input = api_read_json();
-$usernameOrEmail = trim((string)($input['email'] ?? $input['username'] ?? ''));
+$identifier = trim((string)($input['email'] ?? $input['username'] ?? ''));
 $password = (string)($input['password'] ?? '');
 
-if ($usernameOrEmail === '' || $password === '') {
+if ($identifier === '' || $password === '') {
     api_error('Email/usuario y contraseña son obligatorios', 422, 'validation_error');
 }
 
@@ -20,10 +20,11 @@ $stmt = $pdo->prepare(
     'SELECT users.id, users.full_name, users.email, users.password_hash, roles.slug AS role
      FROM users
      INNER JOIN roles ON roles.id = users.role_id
-     WHERE users.email = :email
+     WHERE lower(users.email) = lower(:identifier)
+        OR lower(substr(users.email, 1, instr(users.email, "@") - 1)) = lower(:identifier)
      LIMIT 1'
 );
-$stmt->execute(['email' => $usernameOrEmail]);
+$stmt->execute(['identifier' => $identifier]);
 $row = $stmt->fetch();
 
 if (!is_array($row) || !password_verify($password, (string)$row['password_hash'])) {
