@@ -450,6 +450,62 @@
                             <div class="admin-only hidden bg-white border border-slate-200 p-6 rounded-3xl space-y-4">
                                 <div class="flex items-center justify-between gap-4">
                                     <div>
+                                        <p class="text-xs font-bold uppercase text-slate-500">Prompt Box IA (Admin)</p>
+                                        <h5 class="text-xl font-extrabold text-slate-900">Brief de contenido reutilizable</h5>
+                                    </div>
+                                    <button id="briefCopyPromptBtn" type="button" class="rounded-xl bg-slate-900 px-3 py-2 text-xs font-bold text-white">Copiar prompt</button>
+                                </div>
+                                <form id="contentBriefForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Objetivo
+                                        <input name="objective" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Audiencia
+                                        <input name="audience" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Tono
+                                        <input name="tone" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="Ej: cercano, profesional, esperanzador" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Canal
+                                        <input name="channel" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="Blog, Página estática, Newsletter..." required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Longitud
+                                        <input name="length" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="Ej: 900-1200 palabras" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">CTA
+                                        <input name="cta" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Keywords (separadas por coma)
+                                        <input name="keywords" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="salud mental, prevención, comunidad" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Restricciones legales/éticas
+                                        <textarea name="legal" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" rows="2" placeholder="Evitar diagnósticos, no prometer curas, lenguaje inclusivo..." required></textarea>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Nombre del preset (opcional)
+                                        <div class="mt-1 flex gap-2">
+                                            <input id="briefPresetName" class="w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="Ej: Artículo foro profesionales">
+                                            <button id="briefSavePresetBtn" type="button" class="rounded-xl border border-slate-300 px-4 py-2 text-xs font-bold text-slate-700">Guardar preset</button>
+                                        </div>
+                                    </label>
+                                </form>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider">Presets guardados
+                                        <select id="briefPresetSelect" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm">
+                                            <option value="">Seleccionar preset…</option>
+                                        </select>
+                                    </label>
+                                    <div class="flex items-end gap-2">
+                                        <button id="briefLoadPresetBtn" type="button" class="rounded-xl border border-slate-300 px-4 py-3 text-xs font-bold text-slate-700">Cargar</button>
+                                        <button id="briefDeletePresetBtn" type="button" class="rounded-xl border border-rose-300 px-4 py-3 text-xs font-bold text-rose-700">Eliminar</button>
+                                        <button id="briefGenerateDraftBtn" type="button" class="rounded-xl bg-teal-600 px-4 py-3 text-xs font-bold text-white">Generar borrador base</button>
+                                    </div>
+                                </div>
+                                <textarea id="briefPromptOutput" class="w-full rounded-xl border border-slate-300 p-3 text-sm" rows="8" readonly placeholder="Aquí se mostrará el prompt final y borrador base..."></textarea>
+                                <div id="briefFeedback" class="hidden rounded-xl border px-3 py-2 text-sm"></div>
+                            </div>
+
+                            <div class="admin-only hidden bg-white border border-slate-200 p-6 rounded-3xl space-y-4">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div>
                                         <p class="text-xs font-bold uppercase text-slate-500">Módulo Blog (Admin)</p>
                                         <h5 class="text-xl font-extrabold text-slate-900">ABM de artículos PSME</h5>
                                     </div>

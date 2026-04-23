@@ -129,6 +129,18 @@ Este comando aplica migraciones y carga datos demo (usuarios, foros y datos rela
 - Se aplica lista blanca de etiquetas/atributos permitidos.
 - Se eliminan etiquetas y atributos inseguros (`script`, `iframe`, `on*`, `style`, URLs no seguras).
 
+
+## Cómo usar el Prompt Box para crear artículos y páginas
+
+1. Inicia sesión como **Admin** y entra al dashboard (`#view-dashboard?role=admin`).
+2. En el bloque **Prompt Box IA (Admin)** completa el brief: objetivo, audiencia, tono, canal, longitud, CTA, keywords y restricciones legales/éticas.
+3. Haz clic en **Copiar prompt** para generar el prompt final y enviarlo a la IA de tu preferencia.
+4. Si reutilizarás el esquema, asigna un nombre y usa **Guardar preset**. Luego podrás **Cargar** o **Eliminar** presets desde el selector.
+5. Usa **Generar borrador base** para obtener una versión inicial en HTML:
+   - Se copia al portapapeles.
+   - Se precarga automáticamente en el campo de contenido de Blog y, cuando está disponible, también en el formulario de Páginas.
+6. Ajusta el resultado, valida restricciones legales/éticas y recién entonces publica.
+
 ## Matriz de estado por módulo
 
 | Módulo | Implementado | Parcial | Pendiente | Comentario breve |
