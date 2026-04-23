@@ -34,6 +34,24 @@ Este README describe **el estado real de la base actual** (frontend + backend PH
 
 ---
 
+
+## Criterios: “listo para producción” vs “entorno demo”
+
+### Entorno demo (actual)
+- Credenciales demo y datos de ejemplo cargados por `scripts/seed.php`.
+- SQLite local en `data/app.sqlite` sin alta disponibilidad.
+- Objetivo principal: validación funcional y UX.
+
+### Listo para producción (mínimo exigido)
+- Sesión endurecida:
+  - regeneración de sesión en login,
+  - expiración configurable con `SESSION_TTL_SECONDS`,
+  - protección CSRF en mutaciones (`POST/PUT/PATCH/DELETE`).
+- Operación confiable documentada en `docs/operacion-confiable.md`.
+- Backups y recuperación de DB probados periódicamente.
+- Pruebas de humo API ejecutables (`scripts/smoke-api.sh`, ver `docs/api-smoke-tests.md`).
+- Monitoreo/logs y gestión de secretos fuera de código.
+
 ## Pendiente por construir
 
 - Endurecimiento para producción (secretos, hardening, observabilidad, backups y despliegue).

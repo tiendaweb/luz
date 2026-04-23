@@ -6,9 +6,7 @@ require_once __DIR__ . '/_common.php';
 
 admin_pages_require_admin();
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
-    api_json(['ok' => false, 'error' => 'Método no permitido'], 405);
-}
+api_require_method(['POST']);
 
 $data = admin_pages_normalize_payload(api_read_json());
 

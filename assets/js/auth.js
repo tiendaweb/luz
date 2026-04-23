@@ -1,13 +1,33 @@
 (() => {
   const normalizeRole = (roleName) => window.__navigation?.normalizeRole(roleName) || "guest";
 
+  let csrfToken = null;
+
+  function getErrorMessage(payload) {
+    if (payload && typeof payload.error === "object" && payload.error.message) return payload.error.message;
+    return payload?.error || "Error de comunicación con el servidor.";
+  }
+
+  function updateSecurityState(payload) {
+    if (payload?.csrfToken) {
+      csrfToken = payload.csrfToken;
+      window.__csrfToken = payload.csrfToken;
+    }
+  }
+
   async function apiFetch(url, options = {}) {
     const normalizedUrl = url.startsWith("/api/") ? url : `/api/${url.replace(/^\/+/, "")}`;
     const fallbackUrl = normalizedUrl.replace(/^\/api\//, "/public/api/");
 
+    const method = String(options.method || "GET").toUpperCase();
+    const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method) && csrfToken) {
+      headers["X-CSRF-Token"] = csrfToken;
+    }
+
     const requestConfig = {
       credentials: "same-origin",
-      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      headers,
       ...options
     };
 
@@ -21,8 +41,9 @@
     if (result.response.status === 404 && fallbackUrl !== normalizedUrl) {
       result = await doRequest(fallbackUrl);
     }
+    updateSecurityState(result.data);
     if (!result.response.ok || result.data.ok === false) {
-      throw new Error(result.data.error || "Error de comunicación con el servidor.");
+      throw new Error(getErrorMessage(result.data));
     }
     return result.data;
   }

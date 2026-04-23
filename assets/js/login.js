@@ -57,6 +57,11 @@
     submitBtn.focus();
   };
 
+  function getErrorMessage(payload) {
+    if (payload && typeof payload.error === "object" && payload.error.message) return payload.error.message;
+    return payload?.error || "No se pudo iniciar sesión.";
+  }
+
   async function loginRequest(payload) {
     const [primaryUrl, fallbackUrl] = buildApiCandidates('/api/auth/login.php');
     const requestConfig = {
@@ -78,7 +83,11 @@
     }
 
     if (!result.response.ok || result.data.ok === false) {
-      throw new Error(result.data.error || 'No se pudo iniciar sesión.');
+      throw new Error(getErrorMessage(result.data));
+    }
+
+    if (result.data?.csrfToken) {
+      window.__csrfToken = result.data.csrfToken;
     }
 
     return result.data;
