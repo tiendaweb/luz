@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../app/Database/connection.php';
+require_once __DIR__ . '/../../app/Database/DemoDataInitializer.php';
 
 const API_CSRF_HEADER = 'HTTP_X_CSRF_TOKEN';
 const API_SESSION_TTL_ENV = 'SESSION_TTL_SECONDS';
@@ -285,81 +286,12 @@ function api_require_db(): PDO
             $insertStmt->execute(['filename' => $filename]);
         }
 
-        api_run_initial_seeds($pdo);
+        app_initialize_demo_data($pdo);
 
         $migrated = true;
     }
 
     return $pdo;
-}
-
-function api_run_initial_seeds(PDO $pdo): void
-{
-    $pdo->exec('CREATE TABLE IF NOT EXISTS seed_runs (seed_key TEXT PRIMARY KEY, executed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)');
-
-    $seedKey = 'initial_demo_seed_v1';
-    $seedCheck = $pdo->prepare('SELECT 1 FROM seed_runs WHERE seed_key = :seed_key LIMIT 1');
-    $seedCheck->execute(['seed_key' => $seedKey]);
-    $alreadySeeded = $seedCheck->fetchColumn() !== false;
-
-    if (!$alreadySeeded) {
-        $seedFiles = glob(__DIR__ . '/../../database/seeds/*.php') ?: [];
-        sort($seedFiles, SORT_NATURAL);
-
-        $startedTransaction = false;
-        if (!$pdo->inTransaction()) {
-            $pdo->beginTransaction();
-            $startedTransaction = true;
-        }
-
-        try {
-            foreach ($seedFiles as $file) {
-                $seedRunner = require $file;
-                if (!is_callable($seedRunner)) {
-                    throw new RuntimeException(sprintf('El seed no retorna una función válida: %s', basename($file)));
-                }
-
-                $seedRunner($pdo);
-            }
-
-            $seedInsert = $pdo->prepare('INSERT INTO seed_runs (seed_key) VALUES (:seed_key)');
-            $seedInsert->execute(['seed_key' => $seedKey]);
-
-            if ($startedTransaction && $pdo->inTransaction()) {
-                $pdo->commit();
-            }
-        } catch (Throwable $exception) {
-            if ($startedTransaction && $pdo->inTransaction()) {
-                $pdo->rollBack();
-            }
-
-            throw $exception;
-        }
-    }
-
-    api_assert_demo_users_seeded($pdo);
-}
-
-function api_assert_demo_users_seeded(PDO $pdo): void
-{
-    $requiredEmails = [
-        'admin@psme.local',
-        'asociado@psme.local',
-        'usuario@psme.local',
-    ];
-
-    $placeholders = implode(', ', array_fill(0, count($requiredEmails), '?'));
-    $stmt = $pdo->prepare(sprintf('SELECT email FROM users WHERE email IN (%s)', $placeholders));
-    $stmt->execute($requiredEmails);
-    $presentEmails = array_map(static fn($email): string => (string)$email, $stmt->fetchAll(PDO::FETCH_COLUMN));
-
-    foreach ($requiredEmails as $email) {
-        if (in_array($email, $presentEmails, true)) {
-            continue;
-        }
-
-        throw new RuntimeException(sprintf('Inicialización incompleta: falta el usuario demo "%s".', strstr($email, '@', true) ?: $email));
-    }
 }
 
 function api_audit(?int $userId, string $event): void

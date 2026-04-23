@@ -87,6 +87,17 @@ php scripts/seed.php
 
 Este comando aplica migraciones y carga datos demo (usuarios, foros y datos relacionados).
 
+
+### Auto-init en primer arranque web
+
+- En el **primer request a la API/web**, el bootstrap ejecuta una inicialización idempotente si detecta base vacía.
+- La rutina valida datos críticos de demo y repara faltantes sin borrar registros válidos existentes.
+- Validaciones mínimas garantizadas:
+  - al menos **1 admin**, **1 asociado** y **1 usuario**,
+  - al menos **1 foro publicado**,
+  - datos mínimos para dashboard (**registros** y **mensajes**).
+- Si faltan datos críticos (por ejemplo, se borró un usuario demo o quedó el dashboard sin datos), se regeneran automáticamente usando los seeds idempotentes.
+
 ### 2) Credenciales demo vigentes
 
 > Uso exclusivo en entorno local/demo.

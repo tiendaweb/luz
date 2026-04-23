@@ -17,8 +17,15 @@ return static function (PDO $pdo): void {
     );
 
     $forumGuestStmt = $pdo->prepare(
-        'INSERT OR IGNORE INTO forum_guests (forum_id, full_name, role, bio, sort_order)
-         VALUES (:forum_id, :full_name, :role, :bio, :sort_order)'
+        'INSERT INTO forum_guests (forum_id, full_name, role, bio, sort_order)
+         SELECT :forum_id, :full_name, :role, :bio, :sort_order
+         WHERE NOT EXISTS (
+            SELECT 1
+            FROM forum_guests
+            WHERE forum_id = :forum_id
+              AND full_name = :full_name
+              AND role = :role
+         )'
     );
 
     $forums = [
