@@ -10,6 +10,7 @@ final class RegistrationService
      */
     public function validateAndNormalize(array $input): array
     {
+        $forumId = (int)($input['forumId'] ?? 0);
         $forumSlot = trim((string)($input['forumSlot'] ?? ''));
         $fullName = trim((string)($input['fullName'] ?? ''));
         $documentId = trim((string)($input['documentId'] ?? ''));
@@ -18,7 +19,7 @@ final class RegistrationService
         $signatureDataUrl = trim((string)($input['signatureDataUrl'] ?? ''));
         $referralCode = strtoupper(trim((string)($input['referralCode'] ?? '')));
 
-        if ($forumSlot === '' || mb_strlen($forumSlot) < 10 || mb_strlen($forumSlot) > 180) {
+        if ($forumId < 1 && ($forumSlot === '' || mb_strlen($forumSlot) < 5 || mb_strlen($forumSlot) > 180)) {
             throw new InvalidArgumentException('Foro elegido inválido.');
         }
         if ($fullName === '' || mb_strlen($fullName) < 5 || mb_strlen($fullName) > 120) {
@@ -69,6 +70,7 @@ final class RegistrationService
         }
 
         return [
+            'forumId' => $forumId > 0 ? $forumId : null,
             'forumSlot' => $forumSlot,
             'fullName' => $fullName,
             'documentId' => $documentId,
