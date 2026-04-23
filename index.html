@@ -360,21 +360,11 @@
                     <h3 class="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">Reflexiones y Materiales</h3>
                     <p class="text-xl text-slate-600 max-w-3xl mx-auto">Lecturas breves para profundizar los ejes trabajados en los foros de salud mental y emocional.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div id="blogPublicList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <article class="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 card-shadow">
-                        <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-teal-600 mb-4">Artículo</span>
-                        <h4 class="text-2xl font-bold mb-4">Intervención grupal en crisis</h4>
-                        <p class="text-slate-600">Claves para sostener dispositivos comunitarios en contextos de alta demanda emocional.</p>
-                    </article>
-                    <article class="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 card-shadow">
-                        <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-teal-600 mb-4">Análisis</span>
-                        <h4 class="text-2xl font-bold mb-4">Salud mental y territorio</h4>
-                        <p class="text-slate-600">Prácticas situadas para profesionales que trabajan con realidades locales diversas.</p>
-                    </article>
-                    <article class="bg-white rounded-3xl border border-slate-100 shadow-lg p-8 card-shadow">
-                        <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-teal-600 mb-4">Guía</span>
-                        <h4 class="text-2xl font-bold mb-4">Estrategias de autocuidado</h4>
-                        <p class="text-slate-600">Recomendaciones para prevenir el desgaste en equipos de asistencia psicosocial.</p>
+                        <span class="inline-block text-xs font-extrabold uppercase tracking-widest text-teal-600 mb-4">Cargando</span>
+                        <h4 class="text-2xl font-bold mb-4">Estamos cargando los artículos del blog</h4>
+                        <p class="text-slate-600">En unos segundos verás aquí las publicaciones más recientes.</p>
                     </article>
                 </div>
             </div>
@@ -456,6 +446,42 @@
                                 <p class="text-xs font-bold uppercase text-emerald-600 mb-2">Módulo exclusivo Admin</p>
                                 <h5 class="text-xl font-extrabold text-emerald-900 mb-2">Validación masiva de pagos</h5>
                                 <p class="text-emerald-800">Accede al consolidado de transferencias y libera cupos de forma centralizada para todos los grupos del ciclo.</p>
+                            </div>
+                            <div class="admin-only hidden bg-white border border-slate-200 p-6 rounded-3xl space-y-4">
+                                <div class="flex items-center justify-between gap-4">
+                                    <div>
+                                        <p class="text-xs font-bold uppercase text-slate-500">Módulo Blog (Admin)</p>
+                                        <h5 class="text-xl font-extrabold text-slate-900">ABM de artículos PSME</h5>
+                                    </div>
+                                    <button id="adminBlogRefreshBtn" class="rounded-xl bg-slate-900 px-3 py-2 text-xs font-bold text-white">Actualizar</button>
+                                </div>
+                                <form id="adminBlogForm" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <input type="hidden" id="adminBlogId">
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-1">Slug
+                                        <input id="adminBlogSlug" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" placeholder="ej: salud-mental-comunitaria" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-1">Estado
+                                        <select id="adminBlogStatus" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm">
+                                            <option value="draft">Borrador</option>
+                                            <option value="published">Publicado</option>
+                                        </select>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Título
+                                        <input id="adminBlogTitle" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" required>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Extracto
+                                        <textarea id="adminBlogExcerpt" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" rows="2" required></textarea>
+                                    </label>
+                                    <label class="text-xs font-bold text-slate-600 uppercase tracking-wider md:col-span-2">Contenido HTML
+                                        <textarea id="adminBlogContent" class="mt-1 w-full rounded-xl border border-slate-300 p-3 text-sm" rows="5" required></textarea>
+                                    </label>
+                                    <div class="md:col-span-2 flex gap-2">
+                                        <button type="submit" class="rounded-xl bg-teal-600 px-4 py-2 text-sm font-bold text-white">Guardar artículo</button>
+                                        <button type="button" id="adminBlogClearBtn" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">Limpiar</button>
+                                    </div>
+                                </form>
+                                <div id="adminBlogFeedback" class="hidden rounded-xl border px-3 py-2 text-sm"></div>
+                                <div id="adminBlogList" class="space-y-2"></div>
                             </div>
                             <div class="associate-only hidden bg-violet-50 border border-violet-100 p-6 rounded-3xl">
                                 <p class="text-xs font-bold uppercase text-violet-600 mb-2">Módulo exclusivo Asociado</p>
