@@ -1,3 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+$headerMode = $headerMode ?? 'spa';
+$isStaticHeader = $headerMode === 'static';
+$forumsHref = $isStaticHeader ? '/index.php#view-forums' : 'javascript:void(0)';
+$blogHref = $isStaticHeader ? '/index.php#view-blog' : 'javascript:void(0)';
+$aboutHref = $isStaticHeader ? '/index.php#view-about' : 'javascript:void(0)';
+$forumsAction = $isStaticHeader ? '' : 'onclick="showView(\'forums\')"';
+$blogAction = $isStaticHeader ? '' : 'onclick="showView(\'blog\')"';
+$aboutAction = $isStaticHeader ? '' : 'onclick="showView(\'about\')"';
+?>
     <!-- FOOTER -->
     <footer class="bg-slate-950 text-white py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -19,16 +32,16 @@
             <div>
                 <h4 class="font-bold mb-6 uppercase tracking-widest text-sm text-teal-500">Foros</h4>
                 <ul class="space-y-4 text-slate-400">
-                    <li><a href="javascript:void(0)" onclick="showView('forums')" class="hover:text-white transition-colors">Ver Cronogramas</a></li>
-                    <li><a href="javascript:void(0)" onclick="openModal('registerModal')" class="hover:text-white transition-colors">Inscripciones</a></li>
-                    <li><a href="javascript:void(0)" onclick="showView('blog')" class="hover:text-white transition-colors">Materiales Blog</a></li>
+                    <li><a href="<?= $forumsHref ?>" <?= $forumsAction ?> class="hover:text-white transition-colors">Ver Cronogramas</a></li>
+                    <li><a href="/index.php" class="hover:text-white transition-colors">Inscripciones</a></li>
+                    <li><a href="<?= $blogHref ?>" <?= $blogAction ?> class="hover:text-white transition-colors">Materiales Blog</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-6 uppercase tracking-widest text-sm text-teal-500">Luz Genovese</h4>
                 <ul class="space-y-4 text-slate-400">
-                    <li><a href="javascript:void(0)" onclick="showView('about')" class="hover:text-white transition-colors">Perfil Profesional</a></li>
-                    <li><a href="javascript:void(0)" onclick="showView('about')" class="hover:text-white transition-colors">Contacto Particular</a></li>
+                    <li><a href="<?= $aboutHref ?>" <?= $aboutAction ?> class="hover:text-white transition-colors">Perfil Profesional</a></li>
+                    <li><a href="<?= $aboutHref ?>" <?= $aboutAction ?> class="hover:text-white transition-colors">Contacto Particular</a></li>
                     <li><a href="#" class="hover:text-white transition-colors">Políticas y Términos</a></li>
                 </ul>
             </div>
@@ -37,4 +50,3 @@
             © 2026 Foros PSME (Salud Mental y Emocional) - Dir. Maria Luz Genovese. Todos los derechos reservados.
         </div>
     </footer>
-
