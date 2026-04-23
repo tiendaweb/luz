@@ -69,8 +69,24 @@ if (preg_match('#^p/([a-z0-9]+(?:-[a-z0-9]+)*)$#', $path, $matches) === 1) {
     exit;
 }
 
-if ($path === '' || $path === 'index.php') {
-    require $projectRoot . '/app/Views/home.php';
+
+$pageRoutes = [
+    'index' => $projectRoot . '/index.php',
+    'login' => $projectRoot . '/login.php',
+    'foros' => $projectRoot . '/foros.php',
+    'contacto' => $projectRoot . '/contacto.php',
+    'dashboard-admin' => $projectRoot . '/dashboard-admin.php',
+    'dashboard-asociado' => $projectRoot . '/dashboard-asociado.php',
+    'dashboard-usuario' => $projectRoot . '/dashboard-usuario.php',
+];
+
+$pageKey = $path === '' ? 'index' : trim($path, '/');
+if (str_ends_with($pageKey, '.php')) {
+    $pageKey = substr($pageKey, 0, -4);
+}
+
+if (isset($pageRoutes[$pageKey])) {
+    require $pageRoutes[$pageKey];
     exit;
 }
 
@@ -80,6 +96,16 @@ $rootRealpath = realpath($projectRoot);
 $isInsideProject = $candidate !== false && $rootRealpath !== false && str_starts_with($candidate, $rootRealpath . DIRECTORY_SEPARATOR);
 
 if ($isInsideProject && is_file($candidate)) {
+    if (pathinfo($candidate, PATHINFO_EXTENSION) === 'php') {
+        http_response_code(404);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'ok' => false,
+            'error' => 'Ruta PHP no encontrada',
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
     $mimeType = mime_content_type($candidate) ?: 'application/octet-stream';
     header('Content-Type: ' . $mimeType);
     readfile($candidate);

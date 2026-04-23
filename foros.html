@@ -15,11 +15,11 @@
     };
     const file = location.pathname.split('/').pop();
     const target = map[file] || 'home';
-    location.replace('index.html#view-' + target);
+    location.replace('index.php#view-' + target);
   </script>
 </head>
 <body style="font-family: system-ui, sans-serif; padding: 2rem;">
-  <p>Redireccionando a la vista interna… <a id="fallback-link" href="index.html">Continuar</a></p>
+  <p>Redireccionando a la vista interna… <a id="fallback-link" href="index.php">Continuar</a></p>
   <script>
     const file = location.pathname.split('/').pop();
     const target = ({
@@ -30,7 +30,7 @@
       'dashboard-asociado.html': 'dashboard',
       'dashboard-usuario.html': 'dashboard'
     }[file]) || 'home';
-    document.getElementById('fallback-link').href = 'index.html#view-' + target;
+    document.getElementById('fallback-link').href = 'index.php#view-' + target;
   </script>
 </body>
 </html>

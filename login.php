@@ -2,4 +2,4 @@
 
 declare(strict_types=1);
 
-readfile(__DIR__ . '/login.html');
+require __DIR__ . '/app/Views/login.php';
