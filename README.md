@@ -1,273 +1,121 @@
+# Foro LATAM 2026 PSME — Estado actual del proyecto
 
-## Demo: migraciones, seeds y credenciales
+Este README describe **el estado real de la base actual** (frontend + backend PHP + SQLite + APIs) y separa qué está implementado, qué está parcial/simulado y qué falta construir.
 
-> ⚠️ **Uso exclusivo en entorno demo/local.**  
-> Las credenciales incluidas aquí son públicas y no deben usarse en producción.
+---
 
-### Ejecutar migraciones + seeds
+## Estado actual (implementado hoy)
+
+### Frontend
+- Vistas y páginas HTML existentes para flujo público y paneles (`index.html`, `foros.html`, `contacto.html`, `login.html`, dashboards).
+- JS por dominio para autenticación, foros e inscripciones (`assets/js/auth.js`, `assets/js/forums.js`, `assets/js/registrations.js`).
+- Estilos globales en `styles.css`.
+
+### Backend PHP + SQLite
+- Router principal en `public/index.php`.
+- Conexión SQLite vía PDO en `app/Database/connection.php`.
+- Migraciones SQL y seeds PHP para crear/llenar datos demo.
+- Servicios backend para autenticación e inscripciones en `app/Services/*`.
+
+### APIs disponibles (núcleo)
+- Auth: login/logout/me.
+- Foros: listado, próximo foro, detalle.
+- Inscripciones: creación y consulta.
+- Dashboard/resúmenes y endpoints por rol (admin/asociado/usuario).
+
+---
+
+## Demo / simulado (actualmente)
+
+- El proyecto corre con **datos demo** y credenciales de prueba.
+- El contenido funcional depende de seeds locales (no hay entorno productivo configurado aquí).
+- No hay integración de pagos reales ni pasarela transaccional end-to-end.
+- No hay canal de emails/notificaciones productivas documentado en esta base.
+
+---
+
+## Pendiente por construir
+
+- Endurecimiento para producción (secretos, hardening, observabilidad, backups y despliegue).
+- Integraciones externas reales (pagos, mensajería transaccional, etc.).
+- Blog funcional completo (no hay módulo de blog operativo en esta base actual).
+- Evolución de páginas personalizadas con editor/gestión dinámica (si se requiere CMS).
+
+---
+
+## Arquitectura actual
+
+Rutas/áreas clave del código:
+
+- **Router HTTP principal:** `public/index.php`
+- **Endpoints API:** `public/api/*`
+- **Migraciones SQL:** `database/migrations/*`
+- **Seeds de datos demo:** `database/seeds/*`
+- **Conexión DB (DSN SQLite):** `app/Database/connection.php`
+
+Notas:
+- El DSN está configurado a un archivo SQLite local (`data/app.sqlite`).
+- El router permite resolver rutas `api/*` y servir vistas/activos.
+
+---
+
+## Flujo mínimo de arranque local
+
+### 1) Ejecutar migraciones + seeds
 
 ```bash
 php scripts/seed.php
 ```
 
-Este comando crea/actualiza tablas (incluyendo `roles` y `users.role_id`) y carga usuarios demo con contraseñas hasheadas mediante `password_hash()` (Argon2id o bcrypt como fallback).
+Este comando aplica migraciones y carga datos demo (usuarios, foros y datos relacionados).
 
-### Credenciales de prueba
+### 2) Credenciales demo vigentes
+
+> Uso exclusivo en entorno local/demo.
 
 - **Admin**: `admin@psme.local` / `Admin123*`
 - **Asociado**: `asociado@psme.local` / `Asociado123*`
 - **Usuario**: `usuario@psme.local` / `Usuario123*`
 
----
+### 3) Rutas principales de UI/API
 
-### **OBJETIVO PRINCIPAL**
-Crear una **maqueta funcional HTML/CSS/JS** (sin persistencia de datos) para la plataforma web de "Foro LATAM 2026 PSME" — un espacio de encuentro en Salud Mental y Emocional dirigido por María Luz Genovese, Psicóloga Social.
+#### UI
+- `/` (home)
+- `/foros.html`
+- `/login.html`
+- `/dashboard-admin.html`
+- `/dashboard-asociado.html`
+- `/dashboard-usuario.html`
 
----
-
-### **INFORMACIÓN DEL PROYECTO**
-
-**Responsable:**
-- **Nombre:** María Luz Genovese
-- **Profesión:** Psicóloga Social
-- **Contacto WhatsApp:** (+54) 9 115593 6719
-
-**Propuesta:**
-El sitio debe posicionar enfocarse en los foros y espacio, ademas, el expertise de María Luz como profesional mientras facilita la inscripción a sus foros internacionales. Incluir CTA claros para reserva de turnos y consultas.
-Los foros son reuniones online via zoom, meet, se accede mediante un link
-
----
-
-### **AUDIENCIA OBJETIVO**
-
-- Psicólogos y profesionales de salud mental/emocional
-- Estudiantes de psicología y disciplinas afines
-- Personas interesadas en bienestar emocional y psicología social
+#### API
+- `/api/auth/login`
+- `/api/auth/logout`
+- `/api/auth/me`
+- `/api/forums/list`
+- `/api/forums/next`
+- `/api/forums/detail`
+- `/api/registrations/create`
+- `/api/registrations/me`
+- `/api/admin/registrations`
+- `/api/associate/registrations`
 
 ---
 
-### **CONTENIDO PRINCIPAL: FORO LATAM 2026 PSME**
+## Matriz de estado por módulo
 
-**¿Qué es el foro?**
-Espacio de encuentro donde se abordan temas de Psicología, Psicosocial y Salud Mental/Emocional a través de:
-- Experiencias personales
-- Teoría y enfoque psicológico
-- Salud mental y bienestar emocional
-- Relaciones interpersonales y comunicación
-- Cultura y sociedad en relación con la psicología
-
-**Objetivos:**
-- Compartir conocimiento y experiencias
-- Discutir y reflexionar sobre temas relevantes
-- Aprender de otros y recibir apoyo
-- Conectar con personas con intereses comunes
+| Módulo | Implementado | Parcial | Pendiente | Comentario breve |
+|---|---:|---:|---:|---|
+| Auth | ✅ |  |  | Login/logout/me con persistencia SQLite y sesión. |
+| Foros | ✅ |  |  | Listado, próximo y detalle vía API + UI de foros. |
+| Inscripciones | ✅ |  |  | Alta de inscripción y estados base con datos persistidos. |
+| Admin |  | ✅ |  | Gestión principal disponible; faltan capacidades avanzadas productivas. |
+| Blog |  |  | ✅ | No existe módulo blog funcional en esta base actual. |
+| Páginas personalizadas |  | ✅ |  | Hay páginas estáticas; falta capa dinámica tipo CMS/editor. |
 
 ---
 
-### **CALENDARIOS Y HORARIOS POR ZONA (MAYO 2026)**
+## Contexto del proyecto (histórico)
 
-#### **PROFESIONALES:**
-| Zona | Fechas | Horario AR |
-|------|--------|-----------|
-| Colombia | Sábados 9, 16, 23, 30 | 10:00–11:00 |
-| Ecuador/Bolivia | Lunes 4, 11, 18, 25 | 21:00–22:00 |
-| México | Sábados 9, 16, 23, 30 | 19:00–20:00 |
-| Ecuador | Martes 5, 12, 19, 26 | 20:00–21:00 |
-| Guatemala | Miércoles 6, 13, 20, 27 | 20:00–21:00 |
-| Perú | Miércoles 6, 13, 20, 27 | 21:00–22:00 |
+El objetivo inicial del proyecto fue una maqueta funcional para presentar la propuesta del **Foro LATAM 2026 PSME** (con foco en experiencia de navegación, propuesta de valor, calendario y conversión de inscripciones).
 
-#### **ESTUDIANTES:**
-| Zona | Fechas | Horario AR |
-|------|--------|-----------|
-| Colombia | Sábados 9, 16, 23, 30 | 11:00–12:00 |
-| México | Sábados 9, 16, 23, 30 | 11:00–12:00 |
-| Guatemala | Miércoles 6, 13, 20, 27 | 11:00–12:00 |
-
-**Modalidad:** Virtual
-
----
-
-### **TARIFAS**
-
-| Cantidad | Precio unitario | Descuento |
-|----------|-----------------|-----------|
-| 1–3 personas | $35.000 ARS | — |
-| 4+ personas | $28.000 ARS | 20% |
-
-**Opcionales:**
-- Certificado de asistencia: Sí/No
-- Comprobante de pago: Archivo adjunto (requerido con N° DNI)
-
----
-
-### **ESTRUCTURA DE LA PLATAFORMA**
-
-#### **PÁGINAS PÚBLICAS**
-
-1. **Home / Landing Page**
-   - Presentación clara de la propuesta y valor
-   - Audiencia objetivo y beneficios
-   - CTA principal: "Inscribirse al Foro"
-   - Preview de próximas sesiones
-   - Testimonios o highlights (opcional)
-
-2. **Sobre María Luz** (Página de profesional)
-   - Foto y biografía
-   - Formación académica y experiencia
-   - Especialidades y enfoques
-   - Credibilidad y confianza
-
-3. **Foros / Eventos**
-   - Listado de foros disponibles
-   - Descripción de cada uno (temática, objetivos)
-   - Calendario interactivo con fechas/horarios por zona
-   - Cupos disponibles (visual)
-   - Botón individual: "Inscribirse a este foro"
-
-4. **Blog** (Opcional)
-   - Artículos sobre salud mental, psicología social
-   - Reflexiones y actualizaciones
-
-5. **Contacto**
-   - Formulario de contacto (simulado, sin guardar)
-   - Enlaces directos: WhatsApp, Email, Redes sociales
-   - Mapa integrado (si aplica ubicación física)
-
-6. **Zona de Usuarios** (Después de inscribirse)
-   - **Login/Register** (simulado)
-
----
-
-#### **ZONA DE USUARIOS: 3 Roles**
-
-##### **ADMIN (María Luz)**
-- Dashboard principal
-- **Gestión de Usuarios:** Ver, editar, eliminar registros
-- **Gestión de Eventos:** Crear, editar, listar foros
-- **Gestión de Turnos/Citas:** Reservas y confirmaciones
-- **Inscripciones:** Estado, certificados solicitados
-- **Mensajes:** Contactos y mensajes internos
-- Reportes básicos (inscritos, ingresos, etc.)
-
-##### **ASOCIADO** (Con link de referido personalizado)
-- **Link de referido único:** Cada vez que se comparte, contiene parámetro de afiliado
-- **Panel de referidos:** Ver usuarios inscritos a través del link
-- **Estado de pagos:** Verificar estado de pago de referidos
-- **Comisiones/Ganancias:** Dashboard simple (opcional)
-
-##### **USUARIO** (Profesional, Estudiante, Interesado)
-- **Mi Perfil:** Datos personales, rol, estado
-- **Mis Inscripciones:** Eventos a los que se ha registrado
-- **Mis Descargas:** eBooks/recursos entregados en foros asistidos
-- **Historial:** Foros completados con certificados descargables
-
----
-
-### **FORMULARIO DE INSCRIPCIÓN**
-
-**Campos requeridos:**
-1. Seleccionar fecha y hora disponible
-2. Rol: Profesional / Estudiante
-3. Nombre y apellidos completo (para certificado)
-4. Número de documento (DNI/Cédula)
-5. Profesión o ejercicio actual
-6. ¿Solicita certificado de asistencia? (Sí/No)
-7. Link de pago (si certificado = Sí)
-8. Adjuntar comprobante de pago (archivo)
-9. **Firma digital / Aceptación** (checkbox + campo de firma)
-
-**Mensaje final:**
-> "Gracias por seleccionar esta experiencia en comunidad. Nos pedimos compromiso y responsabilidad a la hora de asistir. Cualquier inquietud, estaré a disposición.  
-> **María Luz Genovese** | Psicóloga Social | WhatsApp: (+54) 9 115593 6719"
-
----
-
-### **ESPECIFICACIONES TÉCNICAS**
-
-**Stack:**
-- HTML5 (semántico)
-- CSS3 (responsive, mobile-first)
-- JavaScript vanilla (sin frameworks ni persistencia)
-- Formularios simulados (validación local, sin base de datos)
-
-**Funcionalidad:**
-- ✅ Navegación fluida entre páginas
-- ✅ Calendario interactivo para seleccionar turnos
-- ✅ Formulario de inscripción funcional (sin guardar)
-- ✅ Simulación de login/zona usuarios (sin autenticación real)
-- ✅ Responsive design (móvil, tablet, desktop)
-- ✅ Firma digital/canvas (visual)
-
-**Funcionalidad NO incluida:**
-- ❌ Base de datos
-- ❌ Envío de emails
-- ❌ Pagos reales
-- ❌ Autenticación segura
-
----
-
-### **ESTILO Y TONALIDAD**
-
-- **Paleta:** Colores cálidos, profesionales y accesibles (psicología ≠ frío)
-- **Tipografía:** Moderna, legible, con buena jerarquía
-- **Imagery:** Fotos de profesionales, espacios colaborativos, o abstracciones en salud mental
-- **Tono:** Empático, confiable, profesional pero cercano
-- **Accesibilidad:** WCAG 2.1 AA (contraste, navegación)
-
----
-
-### **ENTREGABLES**
-
-1. **Index.html** (landing + home)
-2. **about.html** (sobre María Luz)
-3. **foros.html** (listado y detalles)
-4. **contact.html** (contacto)
-5. **login.html** (simulado)
-6. **dashboard-admin.html** (simulado)
-7. **dashboard-usuario.html** (simulado)
-8. **styles.css** (global + componentes)
-9. **script.js** (navegación, formularios, interactividad)
-10. **assets/** (imágenes, iconos)
-
----
-
-### **PRIORIDADES**
-
-**MVP (Mínimo Viable):**
-1. Landing page clara y atractiva
-2. Página sobre María Luz (credibilidad)
-3. Listado de foros con calendarios
-4. Formulario de inscripción funcional
-5. Zona de usuario básica (login simulado)
-
-**Nice to have:**
-- Blog
-- Testimonios
-- Dashboard admin/asociado completo
-- Animaciones sutiles
-
----
-
-## ✅ MEJORAS APLICADAS
-
-| Aspecto | Original | Mejorado |
-|---------|----------|----------|
-| **Estructura** | Dispersa, sin orden lógico | Secciones claras por tipo (público, usuarios, specs) |
-| **Horarios** | Texto corrido, confuso | Tabla con zonas, fechas y horarios |
-| **Roles** | Descritos brevemente | Desglose detallado de funcionalidades por rol |
-| **Formulario** | Puntos sueltos | Flujo completo con contexto |
-| **Especificaciones** | Vago ("en .html") | Stack, funcionalidad y limitaciones explícitas |
-| **Prioridades** | No hay | MVP + Nice to have definidos |
-| **Entregables** | No mencionados | Lista de archivos esperados |
-
----
-
-### **SISTEMA DE ESTILOS BASE (IMPLEMENTADO)**
-
-Se incorporó una base reusable para acelerar la maqueta:
-
-- `styles.css` con variables globales de color, tipografía, spacing, radios y sombras.
-- Componentes mínimos: botones CTA, cards, tablas, badges de cupos, inputs y alerts.
-- Enfoque de contraste/legibilidad orientado a WCAG 2.1 AA.
-- Breakpoints mobile-first para móvil/tablet/desktop.
-- Guía de clases utilitarias en `docs/guia-componentes.md` para evitar CSS duplicado.
+Ese objetivo de maqueta fue el punto de partida histórico. El estado actual ya incorpora backend PHP, SQLite, migraciones/seeds y endpoints API en funcionamiento para entorno local/demo.
