@@ -16,8 +16,8 @@ function render_main_layout(array $config): void
     $role = $config['role'] ?? 'guest';
     $scripts = $config['scripts'] ?? [];
     $siteSettings = is_array($config['siteSettings'] ?? null) ? $config['siteSettings'] : app_public_site_settings();
-    $brandPrimary = (string)($siteSettings['brand_color_primary'] ?? '#0d9488');
-    $brandAccent = (string)($siteSettings['brand_color_accent'] ?? '#0f766e');
+    $brandPrimary = (string)($siteSettings['brand_color_primary'] ?? '#F6EEE2');
+    $brandAccent = (string)($siteSettings['brand_color_accent'] ?? '#A67C52');
 
     $headerMode = 'static';
     ?>
@@ -34,7 +34,23 @@ function render_main_layout(array $config): void
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        :root { --brand-primary: <?= htmlspecialchars($brandPrimary, ENT_QUOTES, 'UTF-8') ?>; --brand-accent: <?= htmlspecialchars($brandAccent, ENT_QUOTES, 'UTF-8') ?>; }
+        :root { --color-primary: <?= htmlspecialchars($brandPrimary, ENT_QUOTES, 'UTF-8') ?>; --color-primary-contrast: #4E3B2A; --color-accent: <?= htmlspecialchars($brandAccent, ENT_QUOTES, 'UTF-8') ?>; }
+        .bg-brand { background-color: var(--color-primary); }
+        .text-brand { color: var(--color-primary-contrast); }
+        .btn-primary {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: 1px solid color-mix(in srgb, var(--color-accent) 80%, #000 20%);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: color-mix(in srgb, var(--color-accent) 88%, #000 12%);
+            transform: translateY(-1px);
+        }
+        .btn-primary:focus-visible {
+            outline: 2px solid color-mix(in srgb, var(--color-accent) 65%, #fff 35%);
+            outline-offset: 2px;
+        }
 
         /* Role-based visibility */
         .admin-only, .associate-only, .user-only { display: none !important; }

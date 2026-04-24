@@ -56,6 +56,18 @@ Esta matriz valida la paridad visual entre:
 - [ ] Menú móvil no interfiere en `md+`.
 - [ ] Interacciones: verificar hover, focus-visible (si aplica), estados active de vista.
 
+## Registro de ejecución por lotes (tema crema)
+
+### Lote 1 — Dashboard + CTAs principales (2026-04-24)
+- Alcance validado: `dashboard`, CTA primarios de header, foros e inscripción.
+- Resultado: checklist ejecutado en los tres viewports sin desvíos críticos observados en jerarquía visual.
+- Observación: se conserva semántica de estados operativos (success/warn/error) sin cambios cromáticos.
+
+### Lote 2 — Landing + Blog + Contacto/Directora (2026-04-24)
+- Alcance validado: home/landing, blog, bloque de contacto y formulario de consulta en `directora`.
+- Resultado: checklist ejecutado en mobile/tablet/desktop con paridad visual general respecto a estructura objetivo.
+- Observación: se unificó la identidad de marca a clases semánticas (`btn-primary`, `text-brand`, `bg-brand`) y variables `:root`.
+
 ## Política de PR (visual)
 
 ### Regla obligatoria
