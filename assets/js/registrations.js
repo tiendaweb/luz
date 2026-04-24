@@ -593,6 +593,68 @@
     }
   }
 
+  function getAdminSettingsElements() {
+    return {
+      form: document.getElementById("adminSettingsForm"),
+      status: document.getElementById("adminSettingsStatus")
+    };
+  }
+
+  function setAdminSettingsStatus(message, isError = false) {
+    const { status } = getAdminSettingsElements();
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("text-rose-700", isError);
+    status.classList.toggle("text-emerald-700", !isError);
+  }
+
+  async function loadAdminSettings() {
+    const role = document.body.getAttribute("data-active-role");
+    const { form, status } = getAdminSettingsElements();
+    if (!form || !status || role !== "admin") return;
+
+    try {
+      const result = await window.appApiFetch("/api/admin/settings");
+      const settings = result.settings || {};
+      Array.from(form.elements).forEach((element) => {
+        if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) return;
+        if (!element.name) return;
+        if (Object.prototype.hasOwnProperty.call(settings, element.name)) {
+          element.value = String(settings[element.name] || "");
+        }
+      });
+      setAdminSettingsStatus("Valores cargados correctamente.");
+    } catch (error) {
+      setAdminSettingsStatus(error instanceof Error ? error.message : "No se pudieron cargar ajustes.", true);
+    }
+  }
+
+  function setupAdminSettingsForm() {
+    const { form } = getAdminSettingsElements();
+    if (!form) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const settings = {};
+      Array.from(form.elements).forEach((element) => {
+        if (!(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement)) return;
+        if (!element.name) return;
+        settings[element.name] = String(element.value || "").trim();
+      });
+
+      try {
+        setAdminSettingsStatus("Guardando...");
+        await window.appApiFetch("/api/admin/settings", {
+          method: "PATCH",
+          body: JSON.stringify({ settings })
+        });
+        setAdminSettingsStatus("Cambios guardados. Refresca la web pública para verlos.");
+      } catch (error) {
+        setAdminSettingsStatus(error instanceof Error ? error.message : "No se pudo guardar.", true);
+      }
+    });
+  }
+
   function renderUserEbooks(items) {
     const target = document.getElementById("userEbooksList");
     if (!target) return;
@@ -963,6 +1025,7 @@
     setupPaymentMethodsForm();
     setupAssociateRegistrationActions();
     setupAdminActions();
+    setupAdminSettingsForm();
     setupUserEbooksActions();
     window.toggleCertFields(false);
     await loadOfferFromReferralCode(activeRegistrationCountry);
@@ -972,6 +1035,7 @@
     await loadNetworkTrace();
     await window.refreshDashboardSummary();
     await loadAdminData();
+    await loadAdminSettings();
     await loadUserEbooks();
     await loadUserBenefits();
   });
@@ -980,6 +1044,7 @@
     await loadAssociateOffer();
     await loadAssociateRegistrations();
     await loadAdminData();
+    await loadAdminSettings();
     await loadNetworkTrace();
     await loadUserBenefits();
   });

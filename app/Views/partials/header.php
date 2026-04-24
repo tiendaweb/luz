@@ -7,6 +7,7 @@ require_once __DIR__ . '/../_session.php';
 
 // Siempre usar modo static para navegación real
 $isStaticHeader = true;
+$directorName = (string)($siteSettings['director_name'] ?? 'María Luz Genovese');
 
 ?>
     <!-- NAVBAR -->
@@ -14,12 +15,12 @@ $isStaticHeader = true;
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-20">
                 <a class="flex items-center cursor-pointer" href="/">
-                    <div class="w-11 h-11 bg-teal-600 rounded-xl flex items-center justify-center text-white shadow-lg rotate-3 mr-4">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-lg rotate-3 mr-4" style="background-color: var(--brand-primary);">
                         <i class="fa-solid fa-users-viewfinder text-xl -rotate-3"></i>
                     </div>
                     <div>
                         <h1 class="text-xl font-extrabold text-slate-800 tracking-tight leading-none">Foros PSME</h1>
-                        <p class="text-[10px] uppercase tracking-widest text-teal-600 font-bold mt-1">Dir. Maria Luz Genovese</p>
+                        <p class="text-[10px] uppercase tracking-widest font-bold mt-1" style="color: var(--brand-primary);">Dir. <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></p>
                     </div>
                 </a>
 
@@ -35,12 +36,12 @@ $isStaticHeader = true;
                         <i class="fa-solid fa-circle-user"></i> Mi Área
                     </a>
                     <?php else: ?>
-                    <a href="/login" class="text-teal-600 font-semibold px-5 py-2.5 rounded-full text-sm hover:text-teal-700 transition-colors flex items-center gap-2 border border-teal-600 hover:border-teal-700">
+                    <a href="/login" class="font-semibold px-5 py-2.5 rounded-full text-sm transition-colors flex items-center gap-2 border" style="color: var(--brand-primary); border-color: var(--brand-primary);">
                         <i class="fa-solid fa-right-to-bracket"></i> Ingresar
                     </a>
                     <?php endif; ?>
 
-                    <a href="/inscripcion" class="bg-teal-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-teal-700 shadow-md transition-all flex items-center gap-2">
+                    <a href="/inscripcion" class="text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-md transition-all flex items-center gap-2" style="background-color: var(--brand-primary);">
                         <i class="fa-solid fa-ticket"></i> Inscribirse
                     </a>
                 </div>
@@ -70,9 +71,9 @@ $isStaticHeader = true;
                 <?php if ($_viewIsLoggedIn): ?>
                 <a href="/dashboard" onclick="toggleMobileMenu()" class="mobile-user-access-btn bg-slate-900 text-white py-4 rounded-2xl flex items-center justify-center gap-2"><i class="fa-solid fa-circle-user"></i> Mi Área</a>
                 <?php else: ?>
-                <a href="/login" onclick="toggleMobileMenu()" class="text-teal-600 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 border border-teal-600"><i class="fa-solid fa-right-to-bracket"></i> Ingresar</a>
+                <a href="/login" onclick="toggleMobileMenu()" class="font-bold py-4 rounded-2xl flex items-center justify-center gap-2 border" style="color: var(--brand-primary); border-color: var(--brand-primary);"><i class="fa-solid fa-right-to-bracket"></i> Ingresar</a>
                 <?php endif; ?>
-                <a href="/inscripcion" onclick="toggleMobileMenu()" class="bg-teal-600 text-white py-4 rounded-2xl flex items-center justify-center gap-2"><i class="fa-solid fa-ticket"></i> Inscribirse a los Foros</a>
+                <a href="/inscripcion" onclick="toggleMobileMenu()" class="text-white py-4 rounded-2xl flex items-center justify-center gap-2" style="background-color: var(--brand-primary);"><i class="fa-solid fa-ticket"></i> Inscribirse a los Foros</a>
             </div>
         </div>
     </div>

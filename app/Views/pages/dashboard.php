@@ -241,31 +241,38 @@ ob_start();
                 <div id="dashTab-settings-content" class="hidden admin-only space-y-8">
                     <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
                         <h3 class="text-2xl font-bold text-slate-900 mb-6">Ajustes del Sistema</h3>
-                        <div class="space-y-6">
+                        <form id="adminSettingsForm" class="space-y-6">
                             <div class="border-b border-slate-200 pb-6">
-                                <h4 class="font-bold text-slate-900 mb-4">Configuración General</h4>
+                                <h4 class="font-bold text-slate-900 mb-4">Contacto Público</h4>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-bold text-slate-700 mb-2">Nombre del Sitio</label>
-                                        <input type="text" value="Foros PSME" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium focus:ring-2 focus:ring-teal-500">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-bold text-slate-700 mb-2">Email de Soporte</label>
-                                        <input type="email" value="soporte@forospsme.com" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium focus:ring-2 focus:ring-teal-500">
-                                    </div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Teléfono principal</label><input name="public_phone_primary" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Teléfono secundario</label><input name="public_phone_secondary" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Email principal</label><input name="public_email_primary" type="email" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Email soporte</label><input name="public_email_support" type="email" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
                                 </div>
                             </div>
                             <div class="border-b border-slate-200 pb-6">
-                                <h4 class="font-bold text-slate-900 mb-4">Configuración de Seguridad</h4>
-                                <label class="flex items-center gap-3 cursor-pointer">
-                                    <input type="checkbox" checked class="w-5 h-5 rounded text-teal-600">
-                                    <span class="font-bold text-slate-700">Requerir verificación de email</span>
-                                </label>
+                                <h4 class="font-bold text-slate-900 mb-4">Directora y textos</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Nombre de la directora</label><input name="director_name" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Título profesional</label><input name="director_title" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Ubicación</label><input name="director_location" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div class="md:col-span-2"><label class="block text-sm font-bold text-slate-700 mb-2">Texto corto (footer/home)</label><textarea name="contact_short_text" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></textarea></div>
+                                    <div class="md:col-span-2"><label class="block text-sm font-bold text-slate-700 mb-2">Texto CTA de contacto</label><textarea name="contact_cta_text" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium"></textarea></div>
+                                </div>
                             </div>
-                            <button class="w-full px-6 py-3 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all">
+                            <div class="border-b border-slate-200 pb-6">
+                                <h4 class="font-bold text-slate-900 mb-4">Marca visual</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Color principal</label><input name="brand_color_primary" type="color" class="w-full h-12 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                    <div><label class="block text-sm font-bold text-slate-700 mb-2">Color acento</label><input name="brand_color_accent" type="color" class="w-full h-12 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
+                                </div>
+                            </div>
+                            <p id="adminSettingsStatus" class="text-sm text-slate-600">Cargando valores...</p>
+                            <button type="submit" class="w-full px-6 py-3 rounded-xl bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all">
                                 <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
