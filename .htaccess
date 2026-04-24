@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    RewriteEngine On
+    RewriteBase /
+
+    # Archivos y directorios físicos se sirven directamente
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Assets (CSS, JS, imágenes) desde /public/assets
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L,QSA]
+
+    # API routes desde /public/api
+    RewriteRule ^api/(.*)$ public/api/$1 [L,QSA]
+
+    # Páginas PHP individuales (proxy al router)
+    RewriteRule ^login/?$ login.php [L,QSA]
+    RewriteRule ^foros/?$ foros.php [L,QSA]
+    RewriteRule ^directora/?$ directora.php [L,QSA]
+    RewriteRule ^blog/?$ blog.php [L,QSA]
+    RewriteRule ^dashboard/?$ dashboard.php [L,QSA]
+    RewriteRule ^inscripcion/?$ inscripcion.php [L,QSA]
+
+    # Índice por defecto
+    RewriteRule ^/?$ index.php [L,QSA]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    # Si mod_rewrite no está disponible, los archivos .php en la raíz deben servirse automáticamente
+    DirectoryIndex index.php login.php foros.php directora.php blog.php dashboard.php inscripcion.php
+</IfModule>

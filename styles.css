@@ -1,0 +1,5 @@
+/*
+  Legacy stylesheet intentionally decoupled.
+  The visual source of truth now lives in index.html (Tailwind + inline utilities)
+  and is driven by internal view navigation via showView(...).
+*/

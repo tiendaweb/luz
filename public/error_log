@@ -1,0 +1,21 @@
+[24-Apr-2026 13:36:40 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 near ",": syntax error in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php:285
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(285): PDO->exec('-- Actualizar t...')
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/auth/login.php(18): api_require_db()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/index.php(57): require('/home/qatpjhul/...')
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php on line 285
+[24-Apr-2026 13:36:43 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 near ",": syntax error in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php:285
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(285): PDO->exec('-- Actualizar t...')
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/auth/login.php(18): api_require_db()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/index.php(57): require('/home/qatpjhul/...')
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php on line 285
+[24-Apr-2026 13:36:53 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1 near ",": syntax error in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php:285
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(285): PDO->exec('-- Actualizar t...')
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/auth/login.php(18): api_require_db()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/index.php(57): require('/home/qatpjhul/...')
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php on line 285
