@@ -11,23 +11,39 @@
 1. **Alta inicial**
    - Toda inscripción nueva crea estado `pending`.
    - Se registra un evento en `registration_status_history` con transición `null -> pending` y actor `system`.
+   - Se guarda snapshot de settings efectivos: país, red, moneda, monto y método de pago.
 
-2. **Transiciones permitidas (PATCH admin/asociado)**
+2. **Aprobaciones por rol y alcance (asociado/red)**
+   - **Admin** puede aprobar/rechazar cualquier inscripción.
+   - **Asociado** solo puede aprobar/rechazar inscripciones de su red asignada.
+   - Si el asociado intenta operar fuera de su red, la API responde `403` y audita intento denegado.
+
+3. **Transiciones permitidas (PATCH admin/asociado)**
    - Estados válidos de destino: `pending`, `approved`, `rejected`.
    - `rejected` requiere **nota obligatoria** (no vacía).
    - `approved` permite nota opcional.
 
-3. **Validación de comprobante para aprobar**
-   - Para pasar a `approved`, se exige comprobante (`payment_proof_base64`) si:
+4. **Validación de comprobante para aprobar (reglas por país/red)**
+   - Para pasar a `approved`, se exige comprobante (`payment_proof_base64`) cuando la regla efectiva del país/red lo indique.
+   - Se considera que exige comprobante si:
      - `needs_cert = 1`, o
-     - la inscripción tiene flujo de pago configurado por referido (`payment_method`, `payment_link` o `price_amount > 0`).
+     - `price_amount > 0`, o
+     - existe `payment_method`/`payment_link` activo para esa combinación país+red.
+   - Si la regla efectiva define monto `0` y sin comprobante requerido, puede aprobarse sin adjunto.
 
-4. **Auditoría de estado**
+5. **Reglas por país (MVP mínimo)**
+   - Países con cobro: requieren método/importe/moneda y comprobante para aprobar.
+   - Países promocionales: permiten monto `0` por campaña vigente y aprobación sin comprobante.
+   - Países sin cobro MVP: no muestran instrucción de pago y no deben bloquear aprobación.
+
+6. **Auditoría de estado y configuración aplicada**
    - Cada cambio real de estado (`from_status != to_status`) se agrega a `registration_status_history`.
    - Se guarda: estado origen, estado destino, nota, rol/usuario revisor y fecha (`created_at`).
+   - Se referencia versión de settings aplicada al momento de la decisión para trazabilidad.
 
-5. **Visualización en dashboard**
+7. **Visualización en dashboard**
    - Admin y asociado ven línea de tiempo con los eventos más recientes del historial por inscripción.
+   - Asociado solo visualiza casos de su red.
 
 ## Casos límite
 
@@ -39,7 +55,7 @@
 ### Corrección de comprobante
 
 - Si una inscripción fue rechazada por comprobante inválido/faltante, puede subir/completar comprobante y volver a `pending`.
-- Solo después de contar con comprobante válido (si aplica la regla) podrá pasar a `approved`.
+- Solo después de contar con comprobante válido (si aplica la regla del país/red) podrá pasar a `approved`.
 
 ### Rechazo sin nota
 
@@ -52,3 +68,8 @@
 ### Cambio al mismo estado
 
 - Se actualiza estado actual, pero no se agrega evento nuevo de historial porque no hay transición efectiva.
+
+### Cambio de settings durante revisión
+
+- Los cambios de settings no alteran retroactivamente el snapshot de inscripciones existentes.
+- El cambio aplica para nuevas inscripciones o para reaperturas explícitas con recálculo.

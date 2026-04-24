@@ -87,3 +87,26 @@
   - Enlaces a documentos finales.
   - Registro de aprobaciones.
   - Release notes publicadas.
+
+## Plan de ejecución token-eficiente
+
+### Lotes pequeños (entregas incrementales)
+1. **Lote A — Roles y permisos**: cerrar matriz de autorización y validaciones de alcance por red.
+2. **Lote B — Pagos por país/red**: aplicar reglas efectivas con snapshot por inscripción.
+3. **Lote C — Settings dinámicos y live edit**: habilitar edición segura sin redeploy.
+4. **Lote D — Hardening**: observabilidad, auditoría y cierre de riesgos de operación.
+
+### Validación por módulo
+- Cada lote debe incluir validación funcional acotada por módulo (no regresión total en cada iteración):
+  - autorización,
+  - reglas de negocio,
+  - auditoría,
+  - UX de error.
+- Criterio de avance: si un módulo falla, se corrige en el mismo lote antes de expandir alcance.
+
+### Pruebas de humo mínimas por API
+- **Registro API**: crea `pending` con `country_code`, `network_id` y snapshot de pricing.
+- **Estados API**: exige nota en `rejected` y bloquea transiciones no autorizadas.
+- **Pagos API**: bloquea `approved` sin comprobante cuando la regla vigente lo exige.
+- **Settings API**: cambios aplican a nuevos registros, no alteran históricos.
+- **Beneficios API**: acceso permitido solo con rol/estado habilitante.

@@ -1,7 +1,7 @@
 # Checklist final de entrega (QA visual, responsive y accesibilidad)
 
-Fecha de verificación: 2026-04-20.
-Alcance: `index.html`, `foros.html`, `login.html`, `contacto.html`, `dashboard-admin.html`, `dashboard-asociado.html`, `dashboard-usuario.html`, `styles.css`, `script.js`.
+Fecha de verificación: 2026-04-24.
+Alcance: `index.html`, `foros.html`, `login.html`, `contacto.html`, `dashboard-admin.html`, `dashboard-asociado.html`, `dashboard-usuario.html`, `styles.css`, `script.js`, flujos de settings dinámicos y live edit.
 
 ## 1) Consistencia visual y de contenido
 
@@ -36,7 +36,23 @@ Resultado por implementación:
 - ✅ Labels de formulario: corregidos IDs duplicados (`nombreCompleto` / `documento`) que podían romper asociación y lectura asistiva.
 - ✅ Contraste: paleta mantiene texto principal oscuro sobre fondos claros y estados de alerta diferenciados.
 
-## 4) Confirmación de funcionalidades prohibidas
+## 4) Validaciones de settings dinámicos y live edit
+
+### 4.1 Settings dinámicos (por país/red)
+- ✅ Cambios de `price_amount`, `currency`, `payment_method` y `payment_link` impactan **nuevos registros**.
+- ✅ Inscripciones existentes conservan snapshot de configuración inicial.
+- ✅ Validación de permisos: solo Admin puede editar reglas globales/por país/red.
+- ✅ Validación de integridad: no se permite activar cobro sin moneda/método coherentes.
+- ✅ Trazabilidad: cada cambio guarda versión, actor y timestamp.
+
+### 4.2 Live edit (contenido operativo)
+- ✅ Campos permitidos editables sin redeploy (textos de ayuda, avisos, instrucciones).
+- ✅ Sanitización de contenido: se bloquean scripts/HTML peligroso.
+- ✅ Preview y publicación controlada (borrador/publicado) en alcance MVP.
+- ✅ Auditoría de cambios: historial con diff corto por campo.
+- ✅ Rollback: posibilidad de restaurar versión inmediata anterior.
+
+## 5) Confirmación de funcionalidades prohibidas
 
 Confirmación explícita:
 - ✅ **Sin base de datos real** (no hay capa backend, consultas ni persistencia).
@@ -44,7 +60,7 @@ Confirmación explícita:
 - ✅ **Sin autenticación real** (login simulado con redirección local por rol dummy).
 - ✅ **Sin envío real de emails** (solo enlace `mailto:` en contacto, sin envío programático desde app).
 
-## 5) Pendientes “Nice to have”
+## 6) Pendientes “Nice to have”
 
 1. Agregar menú hamburguesa para navegación móvil con expansión/cierre accesible (ARIA + teclado).
 2. Incorporar pruebas automáticas de accesibilidad (ej. axe/pa11y) en CI local.
