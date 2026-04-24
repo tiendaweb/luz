@@ -21,6 +21,19 @@ ob_start();
                 <input type="hidden" id="referralCodeInput" name="referralCode" value="">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">País para medios de pago *</label>
+                    <select id="registrationCountrySelect" name="countryCode" class="w-full bg-slate-100 border-none rounded-xl p-4 font-medium focus:ring-2 focus:ring-teal-500">
+                        <option value="AR">Argentina (AR)</option>
+                        <option value="CO">Colombia (CO)</option>
+                        <option value="MX">México (MX)</option>
+                        <option value="PE">Perú (PE)</option>
+                        <option value="US">Estados Unidos (US)</option>
+                        <option value="CL">Chile (CL)</option>
+                        <option value="UY">Uruguay (UY)</option>
+                    </select>
+                </div>
+
                     <div class="col-span-1 md:col-span-2">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Foro Elegido *</label>
                         <select name="forumId" id="forumIdSelect" class="w-full bg-slate-100 border-none rounded-xl p-4 font-medium focus:ring-2 focus:ring-teal-500" required>
