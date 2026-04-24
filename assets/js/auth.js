@@ -2,6 +2,7 @@
   const normalizeRole = (roleName) => window.__navigation?.normalizeRole(roleName) || "guest";
 
   let csrfToken = null;
+  const roleVisibilitySelectors = ["user-only", "associate-only", "admin-only"];
 
   function getErrorMessage(payload) {
     if (payload && typeof payload.error === "object" && payload.error.message) return payload.error.message;
@@ -48,11 +49,23 @@
     return result.data;
   }
 
+  function syncDashboardByRole(roleName) {
+    const role = normalizeRole(roleName);
+    roleVisibilitySelectors.forEach((className) => {
+      const shouldShow = className === `${role}-only`;
+      document.querySelectorAll(`.${className}`).forEach((node) => {
+        node.classList.toggle("hidden", !shouldShow);
+      });
+    });
+    return role;
+  }
+
   function applyRoleUI(roleName, options = {}) {
     const role = normalizeRole(roleName);
     const { redirectToDashboard = false } = options;
 
     document.body.setAttribute("data-active-role", role);
+    syncDashboardByRole(role);
 
     const userBtn = document.querySelector(".user-access-btn");
     const mobileUserBtn = document.querySelector(".mobile-user-access-btn");
@@ -99,7 +112,7 @@
   }
 
   window.appApiFetch = apiFetch;
-  window.__auth = { applyRoleUI };
+  window.__auth = { applyRoleUI, syncDashboardByRole };
 
   window.setRole = async (roleName) => {
     const role = normalizeRole(roleName);
@@ -127,23 +140,45 @@
   };
 
   window.addEventListener("DOMContentLoaded", async () => {
+    let view = "home";
+    let role = normalizeRole(document.body.getAttribute("data-active-role") || "guest");
+
     // Handle SPA navigation only if navigation.js is loaded
     if (window.__navigation && window.__navigation.parseHashState) {
-      const { view, role } = window.__navigation.parseHashState();
+      const hashState = window.__navigation.parseHashState();
+      view = hashState.view;
       document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
       document.getElementById(`view-${view}`)?.classList.add("active");
     }
 
+    const initialRole = document.body.getAttribute("data-active-role") || "guest";
+    window.__auth.syncDashboardByRole(initialRole);
     if (window.setDashTab) {
-      window.setDashTab("overview");
+      window.setDashTab(window.__navigation?.getDefaultDashTabByRole(initialRole) || "overview");
     }
     try {
       const me = await apiFetch("/api/auth/me");
       const sessionRole = me.user?.role || role;
       applyRoleUI(sessionRole, { redirectToDashboard: false });
+      window.__auth.syncDashboardByRole(sessionRole);
+      if (window.setDashTab) {
+        window.setDashTab(window.__navigation?.getDefaultDashTabByRole(sessionRole) || "overview");
+      }
     } catch (_error) {
       applyRoleUI(role, { redirectToDashboard: false });
+      window.__auth.syncDashboardByRole(role);
+      if (window.setDashTab) {
+        window.setDashTab(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
+      }
     }
     window.__navigation.updateHash(view);
+  });
+
+  window.addEventListener("app:role-changed", (event) => {
+    const role = event.detail?.role || document.body.getAttribute("data-active-role") || "guest";
+    window.__auth.syncDashboardByRole(role);
+    if (window.setDashTab) {
+      window.setDashTab(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
+    }
   });
 })();

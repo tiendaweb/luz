@@ -7,6 +7,12 @@
     const validRoles = new Set(["guest", "user", "associate", "admin"]);
     return validRoles.has(roleName) ? roleName : "guest";
   };
+  const allowedTabsByRole = {
+    guest: ["overview"],
+    user: ["overview", "myforums", "ebooks"],
+    associate: ["overview", "referrals", "myreferrals", "validatepayments"],
+    admin: ["overview", "registrations", "adminvalidate", "blog", "pages", "settings", "associates", "users"]
+  };
 
   function closeMobileMenu() {
     document.getElementById("mobileMenu")?.classList.add("hidden");
@@ -60,13 +66,17 @@
   };
 
   window.setDashTab = (tabName) => {
+    const role = normalizeRole(document.body.getAttribute("data-active-role") || "guest");
+    const allowedTabs = allowedTabsByRole[role] || allowedTabsByRole.guest;
+    const normalizedTab = allowedTabs.includes(tabName) ? tabName : (window.__navigation?.getDefaultDashTabByRole(role) || "overview");
+
     // Hide all tab content
     document.querySelectorAll('[id^="dashTab-"][id$="-content"]').forEach((tab) => {
       tab.classList.add("hidden");
     });
 
     // Show the selected tab
-    const selectedTab = document.getElementById(`dashTab-${tabName}-content`);
+    const selectedTab = document.getElementById(`dashTab-${normalizedTab}-content`);
     if (selectedTab) {
       selectedTab.classList.remove("hidden");
     }
@@ -76,20 +86,32 @@
       btn.classList.remove("bg-slate-100", "text-teal-700");
       btn.classList.add("text-slate-700");
     });
-    const selectedBtn = document.getElementById(`dashTab-${tabName}`);
+    const selectedBtn = document.getElementById(`dashTab-${normalizedTab}`);
     if (selectedBtn) {
       selectedBtn.classList.add("bg-slate-100");
       selectedBtn.classList.add("text-teal-700");
     }
+
+    return normalizedTab;
   };
 
-  window.__navigation = { parseHashState, updateHash, closeMobileMenu, normalizeRole, normalizeView };
+  function getDefaultDashTabByRole(roleName) {
+    const role = normalizeRole(roleName);
+    if (role === "admin") return "registrations";
+    if (role === "associate") {
+      return document.getElementById("dashTab-myreferrals-content") ? "myreferrals" : "referrals";
+    }
+    if (role === "user") return "myforums";
+    return "overview";
+  }
+
+  window.__navigation = { parseHashState, updateHash, closeMobileMenu, normalizeRole, normalizeView, getDefaultDashTabByRole };
 
   window.addEventListener("hashchange", () => {
-    const { view, role } = parseHashState();
+    const { view } = parseHashState();
     document.querySelectorAll(".view-section").forEach((section) => section.classList.remove("active"));
     document.getElementById(`view-${view}`)?.classList.add("active");
-    window.__auth?.applyRoleUI(role, { redirectToDashboard: false });
+    window.__auth?.syncDashboardByRole?.(document.body.getAttribute("data-active-role") || "guest");
     closeMobileMenu();
   });
 })();
