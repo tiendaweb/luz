@@ -20,10 +20,14 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET') {
     $statusFilter = trim((string)($_GET['status'] ?? 'all'));
-    $allowedStatuses = ['pending', 'approved', 'rejected'];
+    $allowedStatuses = ['pending', 'payment_submitted', 'approved', 'rejected'];
 
     $sql = 'SELECT registrations.id, registrations.full_name, registrations.document_id, registrations.forum_slot,
                    registrations.needs_cert, registrations.created_at,
+                   registrations.payment_proof_name,
+                   registrations.payment_proof_mime,
+                   registrations.payment_proof_size,
+                   registrations.payment_proof_base64,
                    COALESCE(registration_admin_state.status, "pending") AS status,
                    registration_admin_state.note,
                    registration_admin_state.updated_by_user_id,
@@ -49,6 +53,16 @@ if ($method === 'GET') {
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     $items = api_attach_registration_history($pdo, $stmt->fetchAll());
+
+    foreach ($items as &$item) {
+        $proofBase64 = trim((string)($item['payment_proof_base64'] ?? ''));
+        $proofMime = trim((string)($item['payment_proof_mime'] ?? ''));
+        $item['has_payment_proof'] = $proofBase64 !== '';
+        $item['payment_proof_preview'] = ($proofBase64 !== '' && $proofMime !== '')
+            ? ('data:' . $proofMime . ';base64,' . $proofBase64)
+            : null;
+    }
+    unset($item);
 
     api_json(['ok' => true, 'items' => $items]);
 }

@@ -12,7 +12,7 @@ function api_set_registration_status(PDO $pdo, int $registrationId, string $stat
         return ['ok' => false, 'error' => 'Registro inválido.'];
     }
 
-    if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+    if (!in_array($status, ['pending', 'payment_submitted', 'approved', 'rejected'], true)) {
         return ['ok' => false, 'error' => 'Estado inválido.'];
     }
     if ($status === 'rejected' && ($note === null || trim($note) === '')) {

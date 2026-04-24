@@ -258,6 +258,7 @@
           <div class="flex items-center gap-2">
             <select data-action="status" data-id="${item.id}" class="rounded-lg border border-slate-300 px-2 py-1 text-xs">
               <option value="pending" ${item.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+              <option value="payment_submitted" ${item.status === 'payment_submitted' ? 'selected' : ''}>Comprobante enviado</option>
               <option value="approved" ${item.status === 'approved' ? 'selected' : ''}>Aprobada</option>
               <option value="rejected" ${item.status === 'rejected' ? 'selected' : ''}>Rechazada</option>
             </select>
@@ -312,6 +313,13 @@
     `).join("");
   }
 
+  function statusLabel(status) {
+    if (status === "approved") return "Aprobada";
+    if (status === "rejected") return "Rechazada";
+    if (status === "payment_submitted") return "Comprobante enviado";
+    return "Pendiente";
+  }
+
   async function loadAssociateRegistrations() {
     if (document.body.getAttribute("data-active-role") !== "associate") return;
     const filter = document.getElementById("associateRegistrationsFilter");
@@ -355,7 +363,13 @@
     }
 
     target.innerHTML = items.slice(0, 20).map((item) => {
-      const statusClass = item.status === "approved" ? "text-emerald-700" : item.status === "rejected" ? "text-rose-700" : "text-amber-700";
+      const statusClass = item.status === "approved"
+        ? "text-emerald-700"
+        : item.status === "rejected"
+          ? "text-rose-700"
+          : item.status === "payment_submitted"
+            ? "text-blue-700"
+            : "text-amber-700";
       return `
         <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -365,7 +379,7 @@
               <p class="text-xs text-slate-500">Comprobante: ${item.payment_proof_name || "No adjunto"} · ${item.price_amount || "—"} ${item.currency_code || ""}</p>
             </div>
             <div class="text-left md:text-right">
-              <p class="text-xs font-bold uppercase ${statusClass}">${item.status || "pending"}</p>
+              <p class="text-xs font-bold uppercase ${statusClass}">${statusLabel(item.status || "pending")}</p>
               <p class="text-xs text-slate-500">${item.updated_at ? new Date(item.updated_at).toLocaleString() : "Sin fecha de actualización"}</p>
             </div>
           </div>
@@ -437,9 +451,26 @@
       validatePaymentsBox.innerHTML = pendingItems.length
         ? pendingItems.map((item) => `
           <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p class="font-bold text-slate-900">#${item.id} · ${item.full_name || "Referido sin nombre"}</p>
-            <p class="text-xs text-slate-500">${item.email || "sin email"} · ${item.document_id || "sin documento"}</p>
-            <p class="text-xs text-slate-500">Ref: ${item.referral_code || "—"} · Estado: ${item.status || "pending"}</p>
+            <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p class="font-bold text-slate-900">#${item.id} · ${item.full_name || "Referido sin nombre"}</p>
+                <p class="text-xs text-slate-500">${item.document_id || "sin documento"} · ${item.forum_slot || "foro sin asignar"}</p>
+                <p class="text-xs text-slate-500">Estado: ${statusLabel(item.status || "pending")} · Ref: ${item.referral_code || "—"}</p>
+                <p class="text-xs text-slate-500 mt-1">Esperado: ${item.price_amount || "—"} ${item.currency_code || ""} · ${item.payment_method || "método no informado"}</p>
+                ${item.payment_link ? `<a class="text-xs text-teal-700 underline" href="${item.payment_link}" target="_blank" rel="noopener noreferrer">Link de pago esperado</a>` : ""}
+              </div>
+              <div class="space-y-2 md:text-right">
+                ${item.payment_proof_preview ? (
+                  String(item.payment_proof_mime || "").includes("image/")
+                    ? `<img src="${item.payment_proof_preview}" alt="Comprobante ${item.id}" class="h-28 w-28 rounded-lg border border-slate-200 object-cover md:ml-auto">`
+                    : `<a href="${item.payment_proof_preview}" target="_blank" rel="noopener noreferrer" class="inline-block rounded-lg bg-slate-200 px-3 py-1 text-xs font-bold text-slate-700">Ver comprobante</a>`
+                ) : '<p class="text-xs text-rose-600 font-semibold">Sin comprobante adjunto</p>'}
+                <div class="flex gap-2 md:justify-end">
+                  <button data-action="associate-approve" data-id="${item.id}" class="rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white">Aprobar</button>
+                  <button data-action="associate-reject" data-id="${item.id}" class="rounded-lg bg-rose-600 px-3 py-1 text-xs font-bold text-white">Rechazar</button>
+                </div>
+              </div>
+            </div>
           </article>
         `).join("")
         : '<p class="text-slate-500">No hay comprobantes pendientes por validar.</p>';
@@ -449,10 +480,57 @@
       ? list.slice(0, 8).map((item) => `
         <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
           <p class="font-bold text-slate-900">${item.full_name || "Referido sin nombre"}</p>
-          <p class="text-xs text-slate-500">Estado: ${item.status || "pending"} · Ref: ${item.referral_code || "—"}</p>
+          <p class="text-xs text-slate-500">Estado: ${statusLabel(item.status || "pending")} · Ref: ${item.referral_code || "—"}</p>
         </article>
       `).join("")
       : '<p class="text-slate-500">Aún no tienes historial de referidos.</p>';
+  }
+
+  function renderAssociateNetworkTrace(items) {
+    const target = document.getElementById("associateNetworkTraceList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-slate-500">Aún no hay relaciones de red registradas.</p>';
+      return;
+    }
+    target.innerHTML = items.slice(0, 20).map((item) => `
+      <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <p class="text-sm font-bold text-slate-800">${item.inviter_name || "Asociado"} → ${item.referred_name || "Referido"}</p>
+        <p class="text-xs text-slate-500">Registro #${item.registration_id} · Ref: ${item.referral_code || "—"} · Estado: ${statusLabel(item.status || "pending")}</p>
+      </article>
+    `).join("");
+  }
+
+  function renderAdminNetworkTrace(items) {
+    const target = document.getElementById("adminNetworkTraceList");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-slate-500">Sin trazabilidad disponible.</p>';
+      return;
+    }
+    target.innerHTML = items.slice(0, 30).map((item) => `
+      <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+        <p class="text-sm font-bold text-slate-800">${item.inviter_name || "Usuario"} (${item.inviter_role || "sin rol"}) → ${item.referred_name || "Referido"}</p>
+        <p class="text-xs text-slate-500">Registro #${item.registration_id} · Ref: ${item.referral_code || "—"} · Estado: ${statusLabel(item.status || "pending")}</p>
+      </article>
+    `).join("");
+  }
+
+  async function loadNetworkTrace() {
+    const role = document.body.getAttribute("data-active-role");
+    try {
+      if (role === "associate") {
+        const result = await window.appApiFetch("/api/associate/network-trace");
+        renderAssociateNetworkTrace(result.items || []);
+      }
+      if (role === "admin") {
+        const result = await window.appApiFetch("/api/admin/network-trace");
+        renderAdminNetworkTrace(result.items || []);
+      }
+    } catch (_error) {
+      renderAssociateNetworkTrace([]);
+      renderAdminNetworkTrace([]);
+    }
   }
 
   function renderUserPaymentStatus(items) {
@@ -509,6 +587,7 @@
       renderAdminRegistrations(registrations.items || []);
       renderAdminAssociates(associates.items || []);
       renderAdminPayments(registrations.items || []);
+      await loadNetworkTrace();
     } catch (_error) {
       // noop
     }
@@ -576,13 +655,16 @@
 
   function setupAssociateRegistrationActions() {
     const list = document.getElementById("associateRegistrationsList");
+    const paymentsList = document.getElementById("associatePaymentsContainer");
     const refresh = document.getElementById("refreshAssociateRegistrations");
+    const refreshPayments = document.getElementById("refreshAssociatePayments");
     const filter = document.getElementById("associateRegistrationsFilter");
 
     refresh?.addEventListener("click", () => loadAssociateRegistrations());
+    refreshPayments?.addEventListener("click", () => loadAssociateRegistrations());
     filter?.addEventListener("change", () => loadAssociateRegistrations());
 
-    list?.addEventListener("click", async (event) => {
+    const handleAssociateReviewClick = async (event) => {
       const target = event.target;
       if (!(target instanceof HTMLElement)) return;
 
@@ -609,7 +691,11 @@
       });
       loadAssociateRegistrations();
       loadAdminData();
-    });
+      loadNetworkTrace();
+    };
+
+    list?.addEventListener("click", handleAssociateReviewClick);
+    paymentsList?.addEventListener("click", handleAssociateReviewClick);
   }
 
   function setupAdminActions() {
@@ -883,6 +969,7 @@
     await loadAssociateOffer();
     await loadReferralLink();
     await loadAssociateRegistrations();
+    await loadNetworkTrace();
     await window.refreshDashboardSummary();
     await loadAdminData();
     await loadUserEbooks();
@@ -893,6 +980,7 @@
     await loadAssociateOffer();
     await loadAssociateRegistrations();
     await loadAdminData();
+    await loadNetworkTrace();
     await loadUserBenefits();
   });
 })();
