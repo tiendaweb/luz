@@ -17,6 +17,8 @@ if ($method === 'GET') {
     $rows = $pdo->query(
         'SELECT registrations.id, registrations.full_name, registrations.document_id, registrations.forum_slot,
                 registrations.needs_cert, registrations.created_at,
+                registrations.payment_proof_name, registrations.payment_proof_mime,
+                registrations.payment_proof_size, registrations.payment_proof_base64,
                 COALESCE(registration_admin_state.status, "pending") AS status,
                 registration_admin_state.note,
                 registration_admin_state.updated_by_user_id,
@@ -34,6 +36,15 @@ if ($method === 'GET') {
          ORDER BY registrations.id DESC'
     )->fetchAll();
     $rows = api_attach_registration_history($pdo, $rows);
+    foreach ($rows as &$row) {
+        $proofBase64 = trim((string)($row['payment_proof_base64'] ?? ''));
+        $proofMime = trim((string)($row['payment_proof_mime'] ?? ''));
+        $row['has_payment_proof'] = $proofBase64 !== '';
+        $row['payment_proof_preview'] = ($proofBase64 !== '' && $proofMime !== '')
+            ? ('data:' . $proofMime . ';base64,' . $proofBase64)
+            : null;
+    }
+    unset($row);
 
     api_json(['ok' => true, 'items' => $rows]);
 }
@@ -47,7 +58,7 @@ if ($method === 'PATCH') {
     if ($registrationId < 1) {
         api_json(['ok' => false, 'error' => 'Registro inválido.'], 422);
     }
-    if (!in_array($status, ['pending', 'approved', 'rejected'], true)) {
+    if (!in_array($status, ['pending', 'payment_submitted', 'approved', 'rejected'], true)) {
         api_json(['ok' => false, 'error' => 'Estado inválido.'], 422);
     }
 

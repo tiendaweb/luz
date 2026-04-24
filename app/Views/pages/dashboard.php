@@ -281,6 +281,12 @@ ob_start();
                         <div id="adminAssociatesList" class="space-y-4">
                             <p class="text-slate-500">Cargando asociados...</p>
                         </div>
+                        <div class="mt-8 border-t border-slate-100 pt-6">
+                            <h4 class="text-lg font-bold text-slate-900 mb-4">Trazabilidad de red (quién invitó a quién)</h4>
+                            <div id="adminNetworkTraceList" class="space-y-3">
+                                <p class="text-slate-500">Cargando trazabilidad...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -375,6 +381,7 @@ ob_start();
                                 <select id="associateRegistrationsFilter" class="px-4 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-50">
                                     <option value="all">Todos los estados</option>
                                     <option value="pending">Pendientes</option>
+                                    <option value="payment_submitted">Comprobante enviado</option>
                                     <option value="approved">Aprobadas</option>
                                     <option value="rejected">Rechazadas</option>
                                 </select>
@@ -394,15 +401,18 @@ ob_start();
                     <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-2xl font-bold text-slate-900">Validar Pagos de Referidos</h3>
-                            <button class="px-4 py-2 rounded-lg bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all">
+                            <button id="refreshAssociatePayments" class="px-4 py-2 rounded-lg bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all">
                                 <i class="fa-solid fa-refresh"></i> Refrescar
                             </button>
                         </div>
-                        <div class="mb-6">
-                            <input type="text" placeholder="Buscar por email o número de transacción..." class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50 font-medium focus:ring-2 focus:ring-teal-500">
-                        </div>
                         <div id="associatePaymentsContainer" class="space-y-4">
                             <p class="text-slate-500">Cargando comprobantes de pago...</p>
+                        </div>
+                        <div class="mt-8 border-t border-slate-100 pt-6">
+                            <h4 class="text-lg font-bold text-slate-900 mb-4">Trazabilidad de red (quién invité)</h4>
+                            <div id="associateNetworkTraceList" class="space-y-3">
+                                <p class="text-slate-500">Cargando trazabilidad...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
