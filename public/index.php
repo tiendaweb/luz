@@ -36,6 +36,7 @@ $routes = [
     'api/admin/content-prompts/list' => __DIR__ . '/api/admin/content-prompts/list.php',
     'api/admin/content-prompts/create' => __DIR__ . '/api/admin/content-prompts/create.php',
     'api/admin/content-prompts/delete' => __DIR__ . '/api/admin/content-prompts/delete.php',
+    'api/admin/settings' => __DIR__ . '/api/admin/settings.php',
 ];
 
 $routeKey = null;

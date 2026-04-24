@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../Support/SiteSettings.php';
+
 /**
- * @param array{title?:string,metaDescription?:string,bodyClass?:string,content:string,role?:string,scripts?:array<string>} $config
+ * @param array{title?:string,metaDescription?:string,bodyClass?:string,content:string,role?:string,scripts?:array<string>,siteSettings?:array<string,string>} $config
  */
 function render_main_layout(array $config): void
 {
@@ -13,6 +15,9 @@ function render_main_layout(array $config): void
     $content = $config['content'] ?? '';
     $role = $config['role'] ?? 'guest';
     $scripts = $config['scripts'] ?? [];
+    $siteSettings = is_array($config['siteSettings'] ?? null) ? $config['siteSettings'] : app_public_site_settings();
+    $brandPrimary = (string)($siteSettings['brand_color_primary'] ?? '#0d9488');
+    $brandAccent = (string)($siteSettings['brand_color_accent'] ?? '#0f766e');
 
     $headerMode = 'static';
     ?>
@@ -29,6 +34,7 @@ function render_main_layout(array $config): void
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        :root { --brand-primary: <?= htmlspecialchars($brandPrimary, ENT_QUOTES, 'UTF-8') ?>; --brand-accent: <?= htmlspecialchars($brandAccent, ENT_QUOTES, 'UTF-8') ?>; }
 
         /* Role-based visibility */
         .admin-only, .associate-only, .user-only { display: none !important; }

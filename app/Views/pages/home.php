@@ -3,6 +3,12 @@ declare(strict_types=1);
 require_once __DIR__ . '/../_session.php';
 require_once __DIR__ . '/../layouts/main.php';
 
+$settings = $_viewSiteSettings ?? [];
+$contactShortText = (string)($settings['contact_short_text'] ?? 'Comunidad de debate y fortalecimiento psicosocial en Latinoamérica.');
+$contactCtaText = (string)($settings['contact_cta_text'] ?? 'Escribinos para coordinar entrevistas, consultas o información de próximos foros.');
+$publicPhone = (string)($settings['public_phone_primary'] ?? '+54 9 11 4000-0000');
+$publicEmail = (string)($settings['public_email_primary'] ?? 'contacto@forospsme.com');
+
 ob_start();
 ?>
 
@@ -21,7 +27,7 @@ ob_start();
                 Únete a la comunidad de debate, teoría y reflexión grupal más activa de LATAM.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <a href="/inscripcion" class="bg-teal-600 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-teal-700 shadow-xl shadow-teal-200 transition-all flex items-center justify-center gap-3">
+                <a href="/inscripcion" class="text-white px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-teal-200 transition-all flex items-center justify-center gap-3" style="background-color: var(--brand-primary);">
                     Inscribirse al Foro <i class="fa-solid fa-arrow-right"></i>
                 </a>
                 <a href="/foros" class="bg-white border-2 border-slate-200 text-slate-700 px-10 py-5 rounded-2xl font-bold text-lg hover:border-teal-600 hover:text-teal-600 transition-all text-center">
@@ -84,6 +90,22 @@ ob_start();
                 <div class="text-4xl text-teal-600 mb-6"><i class="fa-solid fa-heart-pulse"></i></div>
                 <h4 class="text-xl font-bold mb-4">Soporte Colectivo</h4>
                 <p class="text-slate-600">Un espacio seguro diseñado también para el cuidado de quienes cuidan a otros.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contacto rápido -->
+<section class="py-16 bg-slate-50">
+    <div class="max-w-5xl mx-auto px-4">
+        <div class="rounded-3xl bg-white border border-slate-200 p-8 md:p-10 shadow-sm">
+            <h3 class="text-2xl font-bold text-slate-900 mb-4">Contacto</h3>
+            <p class="text-slate-600 mb-4"><?= htmlspecialchars($contactShortText, ENT_QUOTES, 'UTF-8') ?></p>
+            <p class="text-slate-600 mb-6"><?= htmlspecialchars($contactCtaText, ENT_QUOTES, 'UTF-8') ?></p>
+            <div class="flex flex-col md:flex-row md:items-center gap-3 text-sm font-semibold">
+                <span><i class="fa-solid fa-phone mr-2"></i><?= htmlspecialchars($publicPhone, ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="hidden md:inline text-slate-300">•</span>
+                <span><i class="fa-solid fa-envelope mr-2"></i><?= htmlspecialchars($publicEmail, ENT_QUOTES, 'UTF-8') ?></span>
             </div>
         </div>
     </div>
