@@ -60,6 +60,13 @@ if ($method === 'POST' || $method === 'PUT') {
     $accountType = trim((string)($input['accountType'] ?? ''));
     $currency = trim((string)($input['currency'] ?? 'ARS'));
     $aliasOrReference = trim((string)($input['aliasOrReference'] ?? ''));
+    $paymentSummary = implode(' · ', array_values(array_filter([
+        $bankName !== '' ? 'Banco: ' . $bankName : null,
+        $accountHolder !== '' ? 'Titular: ' . $accountHolder : null,
+        $accountNumber !== '' ? 'Cuenta: ' . $accountNumber : null,
+        $aliasOrReference !== '' ? 'Ref: ' . $aliasOrReference : null,
+        $currency !== '' ? 'Moneda: ' . $currency : null,
+    ], static fn($value): bool => is_string($value) && trim($value) !== '')));
 
     if ($bankName === '') {
         api_error('Nombre del banco es obligatorio', 422, 'validation_error');
@@ -119,6 +126,50 @@ if ($method === 'POST' || $method === 'PUT') {
                 'currency' => $currency,
                 'alias_or_reference' => $aliasOrReference,
             ]);
+        }
+
+        $offerStmt = $pdo->prepare(
+            'SELECT id FROM associate_offers WHERE user_id = :user_id LIMIT 1'
+        );
+        $offerStmt->execute(['user_id' => $userId]);
+        $offerExists = $offerStmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($offerExists)) {
+            $syncOffer = $pdo->prepare(
+                'UPDATE associate_offers
+                 SET payment_method = :payment_method,
+                     updated_at = CURRENT_TIMESTAMP
+                 WHERE user_id = :user_id'
+            );
+            $syncOffer->execute([
+                'payment_method' => $paymentSummary,
+                'user_id' => $userId,
+            ]);
+        } else {
+            for ($attempt = 0; $attempt < 5; $attempt++) {
+                $generatedCode = strtoupper(sprintf('ASC%d%s', $userId, bin2hex(random_bytes(2))));
+                $insertOffer = $pdo->prepare(
+                    'INSERT INTO associate_offers (
+                        user_id, referral_code, payment_method, payment_link, price_amount, currency_code, updated_at
+                    ) VALUES (
+                        :user_id, :referral_code, :payment_method, :payment_link, :price_amount, :currency_code, CURRENT_TIMESTAMP
+                    ) ON CONFLICT(user_id) DO NOTHING'
+                );
+
+                $insertOffer->execute([
+                    'user_id' => $userId,
+                    'referral_code' => $generatedCode,
+                    'payment_method' => $paymentSummary,
+                    'payment_link' => '/inscripcion',
+                    'price_amount' => 0,
+                    'currency_code' => $currency !== '' ? $currency : 'USD',
+                ]);
+
+                $offerStmt->execute(['user_id' => $userId]);
+                if (is_array($offerStmt->fetch(PDO::FETCH_ASSOC))) {
+                    break;
+                }
+            }
         }
 
         $pdo->commit();
