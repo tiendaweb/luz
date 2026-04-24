@@ -11,7 +11,7 @@
     guest: ["overview"],
     user: ["overview", "myforums", "ebooks"],
     associate: ["overview", "referrals", "myreferrals", "validatepayments"],
-    admin: ["overview", "registrations", "adminvalidate", "blog", "pages", "settings", "associates", "users"]
+    admin: ["overview", "registrations", "admin-ebooks", "adminvalidate", "blog", "pages", "settings", "associates", "users"]
   };
 
   function closeMobileMenu() {

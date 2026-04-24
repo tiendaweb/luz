@@ -43,6 +43,14 @@ $routes = [
     'api/admin/content-prompts/create' => __DIR__ . '/api/admin/content-prompts/create.php',
     'api/admin/content-prompts/delete' => __DIR__ . '/api/admin/content-prompts/delete.php',
     'api/admin/settings' => __DIR__ . '/api/admin/settings.php',
+    'api/admin/ebooks/list' => __DIR__ . '/api/admin/ebooks/list.php',
+    'api/admin/ebooks/create' => __DIR__ . '/api/admin/ebooks/create.php',
+    'api/admin/ebooks/update' => __DIR__ . '/api/admin/ebooks/update.php',
+    'api/admin/ebooks/delete' => __DIR__ . '/api/admin/ebooks/delete.php',
+    'api/admin/forum-ebooks/list' => __DIR__ . '/api/admin/forum-ebooks/list.php',
+    'api/admin/forum-ebooks/create' => __DIR__ . '/api/admin/forum-ebooks/create.php',
+    'api/admin/forum-ebooks/update' => __DIR__ . '/api/admin/forum-ebooks/update.php',
+    'api/admin/forum-ebooks/delete' => __DIR__ . '/api/admin/forum-ebooks/delete.php',
 ];
 
 $routeKey = null;

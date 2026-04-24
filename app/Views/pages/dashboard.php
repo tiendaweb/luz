@@ -59,6 +59,9 @@ ob_start();
  <button id="dashTab-registrations" onclick="setDashTab('registrations')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-clipboard-list mr-3"></i> Gestión Inscripciones
  </button>
+ <button id="dashTab-admin-ebooks" onclick="setDashTab('admin-ebooks')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <i class="fa-solid fa-book-open mr-3"></i> eBooks por Foro
+ </button>
  <button id="dashTab-adminvalidate" onclick="setDashTab('adminvalidate')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-credit-card mr-3"></i> Validar Pagos
  </button>
@@ -177,6 +180,75 @@ ob_start();
  <p class="text-slate-600 mb-6">Gestiona todas las inscripciones de los usuarios a los foros.</p>
  <div id="adminRegistrationsList" class="space-y-4">
  <p class="text-slate-500">Cargando inscripciones...</p>
+ </div>
+ </div>
+ </div>
+
+
+ <!-- Tab: Admin - eBooks por Foro -->
+ <div id="dashTab-admin-ebooks-content" class="hidden admin-only space-y-8">
+ <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100 space-y-6">
+ <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+ <h3 class="text-2xl font-bold text-slate-900">Gestión de eBooks por Foro</h3>
+ <button id="refreshAdminEbooks" class="px-4 py-2 rounded-lg btn-primary font-bold transition-all">
+ <i class="fa-solid fa-refresh"></i> Refrescar
+ </button>
+ </div>
+ <p class="text-slate-600">Crea/edita eBooks y asígnalos a uno o varios foros publicados.</p>
+ <form id="adminEbookForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 border border-slate-200 rounded-2xl p-4 bg-slate-50">
+ <input type="hidden" name="id">
+ <div class="md:col-span-2">
+ <label class="block text-sm font-bold text-slate-700 mb-1">Título</label>
+ <input name="title" type="text" required class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ </div>
+ <div class="md:col-span-2">
+ <label class="block text-sm font-bold text-slate-700 mb-1">Descripción</label>
+ <textarea name="description" rows="2" class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white"></textarea>
+ </div>
+ <div>
+ <label class="block text-sm font-bold text-slate-700 mb-1">Proveedor</label>
+ <select name="provider" class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ <option value="local">Local (storage/ebooks)</option>
+ <option value="external">Externo (HTTPS)</option>
+ </select>
+ </div>
+ <div>
+ <label class="block text-sm font-bold text-slate-700 mb-1">Umbral asistencia (%)</label>
+ <input name="min_attendance" type="number" min="0" max="100" step="0.01" value="75" class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ </div>
+ <div class="provider-local">
+ <label class="block text-sm font-bold text-slate-700 mb-1">Archivo local</label>
+ <input name="local_path" type="text" placeholder="ej: guia-practica-foro-manana.pdf" class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ </div>
+ <div class="provider-external hidden">
+ <label class="block text-sm font-bold text-slate-700 mb-1">URL externa HTTPS</label>
+ <input name="external_url" type="url" placeholder="https://..." class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ </div>
+ <div>
+ <label class="block text-sm font-bold text-slate-700 mb-1">Estado</label>
+ <select name="status" class="w-full px-4 py-2 rounded-xl border border-slate-300 bg-white">
+ <option value="published">Publicado</option>
+ <option value="draft">Borrador</option>
+ </select>
+ </div>
+ <div>
+ <label class="inline-flex items-center gap-2 mt-7 text-sm text-slate-700 font-semibold">
+ <input name="requires_approved" type="checkbox" checked>
+ Requiere aprobado (o cumple umbral)
+ </label>
+ </div>
+ <div class="md:col-span-2">
+ <label class="block text-sm font-bold text-slate-700 mb-2">Foros asignados</label>
+ <div id="adminEbookForumChecks" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm"></div>
+ </div>
+ <div class="md:col-span-2 flex gap-2">
+ <button type="submit" class="px-4 py-2 rounded-lg btn-primary font-bold">Guardar eBook</button>
+ <button id="adminEbookFormReset" type="button" class="px-4 py-2 rounded-lg border border-slate-300 font-bold">Limpiar</button>
+ </div>
+ </form>
+ <p id="adminEbooksStatus" class="text-sm text-slate-600"></p>
+ <div id="adminEbooksList" class="space-y-3">
+ <p class="text-slate-500">Cargando eBooks...</p>
  </div>
  </div>
  </div>

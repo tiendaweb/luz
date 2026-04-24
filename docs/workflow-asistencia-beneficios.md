@@ -45,3 +45,7 @@ La tabla `forum_attendance` registra por sesión:
 - Índice único parcial en `registrations(user_id, forum_id)` cuando `user_id` y `forum_id` no son `NULL`.
 - Validación previa al alta para evitar duplicados por usuario+foro.
 - Resolución de `forum_id` real desde payload explícito (`forumId`) con fallback desde `forumSlot`.
+
+
+## Gestión admin de eBooks por foro
+Ver detalle operativo en `docs/workflow-ebooks-por-foro.md`.

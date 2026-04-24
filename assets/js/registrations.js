@@ -1129,6 +1129,204 @@
     }
   }
 
+  function getAdminEbookElements() {
+    return {
+      form: document.getElementById("adminEbookForm"),
+      list: document.getElementById("adminEbooksList"),
+      status: document.getElementById("adminEbooksStatus"),
+      checks: document.getElementById("adminEbookForumChecks"),
+      refresh: document.getElementById("refreshAdminEbooks"),
+      reset: document.getElementById("adminEbookFormReset")
+    };
+  }
+
+  let adminForumsCache = [];
+  let adminForumAssignmentsCache = [];
+
+  function setAdminEbooksStatus(message, isError = false) {
+    const { status } = getAdminEbookElements();
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle("text-rose-700", isError);
+    status.classList.toggle("text-emerald-700", !isError);
+  }
+
+  function toggleProviderFields(provider) {
+    const { form } = getAdminEbookElements();
+    if (!form) return;
+    form.querySelectorAll(".provider-local").forEach((node) => node.classList.toggle("hidden", provider !== "local"));
+    form.querySelectorAll(".provider-external").forEach((node) => node.classList.toggle("hidden", provider !== "external"));
+  }
+
+  function renderAdminEbookForumChecks(selectedForumIds = []) {
+    const { checks } = getAdminEbookElements();
+    if (!checks) return;
+    checks.innerHTML = adminForumsCache.map((forum) => {
+      const checked = selectedForumIds.includes(Number(forum.id)) ? "checked" : "";
+      return `<label class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"><input type="checkbox" data-forum-id="${forum.id}" ${checked}> ${forum.title} <span class="text-xs text-slate-500">(${forum.code})</span></label>`;
+    }).join("");
+  }
+
+  async function syncForumAssignments(ebookId, selectedForumIds) {
+    const current = adminForumAssignmentsCache.filter((item) => Number(item.ebook_id) === Number(ebookId));
+    const currentByForum = new Map(current.map((item) => [Number(item.forum_id), item]));
+
+    for (const forumId of selectedForumIds) {
+      const existing = currentByForum.get(Number(forumId));
+      if (!existing || !existing.is_active) {
+        await window.appApiFetch('/api/admin/forum-ebooks/create', {
+          method: 'POST',
+          body: JSON.stringify({ forum_id: Number(forumId), ebook_id: Number(ebookId), is_active: true })
+        });
+      }
+    }
+
+    for (const item of current) {
+      if (!selectedForumIds.includes(Number(item.forum_id))) {
+        await window.appApiFetch(`/api/admin/forum-ebooks/delete?id=${encodeURIComponent(item.id)}`, { method: 'DELETE' });
+      }
+    }
+  }
+
+  function fillAdminEbookForm(item) {
+    const { form } = getAdminEbookElements();
+    if (!form) return;
+    form.id.value = item.id || "";
+    form.title.value = item.title || "";
+    form.description.value = item.description || "";
+    form.provider.value = item.provider || "local";
+    form.local_path.value = item.local_path || "";
+    form.external_url.value = item.external_url || "";
+    form.min_attendance.value = item.min_attendance ?? 75;
+    form.status.value = item.status || "published";
+    form.requires_approved.checked = Boolean(item.requires_approved);
+    toggleProviderFields(form.provider.value);
+    renderAdminEbookForumChecks(Array.isArray(item.forum_ids) ? item.forum_ids.map((id) => Number(id)) : []);
+  }
+
+  function clearAdminEbookForm() {
+    const { form } = getAdminEbookElements();
+    if (!form) return;
+    form.reset();
+    form.id.value = "";
+    form.provider.value = "local";
+    form.min_attendance.value = "75";
+    form.requires_approved.checked = true;
+    toggleProviderFields("local");
+    renderAdminEbookForumChecks([]);
+  }
+
+  async function loadAdminEbooks() {
+    if (document.body.getAttribute("data-active-role") !== "admin") return;
+    const { list } = getAdminEbookElements();
+    if (!list) return;
+    try {
+      const [ebooksResult, forumsResult, assignmentsResult] = await Promise.all([
+        window.appApiFetch('/api/admin/ebooks/list'),
+        window.appApiFetch('/api/forums/list?per_page=20'),
+        window.appApiFetch('/api/admin/forum-ebooks/list')
+      ]);
+      const ebooks = Array.isArray(ebooksResult.items) ? ebooksResult.items : [];
+      adminForumsCache = Array.isArray(forumsResult.items) ? forumsResult.items : [];
+      adminForumAssignmentsCache = Array.isArray(assignmentsResult.items) ? assignmentsResult.items : [];
+      renderAdminEbookForumChecks([]);
+
+      if (ebooks.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-500">No hay eBooks cargados.</p>';
+        return;
+      }
+
+      list.innerHTML = ebooks.map((item) => `
+        <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="font-bold text-slate-800">${item.title}</p>
+              <p class="text-xs text-slate-500">Proveedor: ${item.provider} · Umbral: ${item.min_attendance}% · Estado: ${item.status}</p>
+              <p class="text-xs text-slate-500">Foros: ${(item.forum_codes || []).join(', ') || 'sin asignar'}</p>
+            </div>
+            <div class="flex gap-2">
+              <button data-action="edit-ebook" data-id="${item.id}" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-bold">Editar</button>
+              <button data-action="delete-ebook" data-id="${item.id}" class="rounded-lg bg-rose-600 px-3 py-1 text-xs font-bold text-white">Eliminar</button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+
+      list.querySelectorAll('[data-action="edit-ebook"]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const selected = ebooks.find((item) => Number(item.id) === Number(button.dataset.id || 0));
+          if (!selected) return;
+          fillAdminEbookForm(selected);
+          setAdminEbooksStatus('eBook cargado para edición.');
+        });
+      });
+
+      list.querySelectorAll('[data-action="delete-ebook"]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          if (!window.confirm('¿Eliminar este eBook?')) return;
+          try {
+            await window.appApiFetch(`/api/admin/ebooks/delete?id=${encodeURIComponent(button.dataset.id || '')}`, { method: 'DELETE' });
+            await loadAdminEbooks();
+            clearAdminEbookForm();
+            setAdminEbooksStatus('eBook eliminado correctamente.');
+          } catch (error) {
+            setAdminEbooksStatus(error instanceof Error ? error.message : 'No se pudo eliminar.', true);
+          }
+        });
+      });
+    } catch (error) {
+      list.innerHTML = '<p class="text-xs text-rose-700">No se pudo cargar el catálogo admin.</p>';
+      setAdminEbooksStatus(error instanceof Error ? error.message : 'No se pudo cargar eBooks.', true);
+    }
+  }
+
+  function setupAdminEbooksActions() {
+    const { form, refresh, reset } = getAdminEbookElements();
+    if (!form) return;
+
+    form.provider.addEventListener('change', () => toggleProviderFields(String(form.provider.value || 'local')));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const selectedForumIds = Array.from(form.querySelectorAll('[data-forum-id]:checked')).map((input) => Number(input.getAttribute('data-forum-id') || 0)).filter((id) => id > 0);
+      const payload = {
+        id: Number(form.id.value || 0),
+        title: String(form.title.value || '').trim(),
+        description: String(form.description.value || '').trim(),
+        provider: String(form.provider.value || 'local'),
+        local_path: String(form.local_path.value || '').trim(),
+        external_url: String(form.external_url.value || '').trim(),
+        min_attendance: Number(form.min_attendance.value || 75),
+        status: String(form.status.value || 'published'),
+        requires_approved: Boolean(form.requires_approved.checked)
+      };
+
+      const isEdit = payload.id > 0;
+      const endpoint = isEdit ? '/api/admin/ebooks/update' : '/api/admin/ebooks/create';
+      const method = isEdit ? 'PATCH' : 'POST';
+
+      try {
+        const result = await window.appApiFetch(endpoint, { method, body: JSON.stringify(payload) });
+        const ebookId = isEdit ? payload.id : Number(result.id || 0);
+        if (ebookId > 0) {
+          await syncForumAssignments(ebookId, selectedForumIds);
+        }
+        await loadAdminEbooks();
+        clearAdminEbookForm();
+        setAdminEbooksStatus(isEdit ? 'eBook actualizado correctamente.' : 'eBook creado correctamente.');
+      } catch (error) {
+        setAdminEbooksStatus(error instanceof Error ? error.message : 'No se pudo guardar el eBook.', true);
+      }
+    });
+
+    refresh?.addEventListener('click', () => loadAdminEbooks());
+    reset?.addEventListener('click', () => {
+      clearAdminEbookForm();
+      setAdminEbooksStatus('');
+    });
+  }
+
+
   function setupUserEbooksActions() {
     // Setup user ebooks actions (placeholder for future ebook functionality)
     const ebooksContainer = document.getElementById("userEbooksList");
@@ -1144,6 +1342,7 @@
     setupAssociateRegistrationActions();
     setupAdminActions();
     setupAdminSettingsForm();
+    setupAdminEbooksActions();
     setupUserEbooksActions();
     window.toggleCertFields(false);
     await loadOfferFromReferralCode(activeRegistrationCountry);
@@ -1154,6 +1353,7 @@
     await window.refreshDashboardSummary();
     await loadAdminData();
     await loadAdminSettings();
+    await loadAdminEbooks();
     await loadUserEbooks();
     await loadUserBenefits();
   });
@@ -1163,6 +1363,7 @@
     await loadAssociateRegistrations();
     await loadAdminData();
     await loadAdminSettings();
+    await loadAdminEbooks();
     await loadNetworkTrace();
     await loadUserBenefits();
   });
