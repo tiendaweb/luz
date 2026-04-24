@@ -31,6 +31,23 @@
 
 ## Casos límite
 
+## Compatibilidad con flags de usuario (`user_admin_flags`)
+
+Para la gestión administrativa de usuarios se agregan flags explícitos por usuario:
+
+- `is_validated`
+- `is_paid`
+- `updated_at`
+- `updated_by_user_id`
+
+### Regla de precedencia
+
+1. **Si existe registro en `user_admin_flags` para el usuario**, los flags explícitos (`is_validated`, `is_paid`) son la fuente de verdad en el dashboard admin.
+2. **Si no existe registro explícito**, se usa compatibilidad hacia atrás con `registration_admin_state`:
+   - `legacy_is_validated = true` cuando el usuario tiene al menos una inscripción en estado `approved`.
+   - `legacy_is_paid = true` cuando tiene al menos una inscripción en `payment_submitted` o `approved`.
+3. Al guardar desde el tab de usuarios, siempre se crea/actualiza `user_admin_flags`, y desde ese momento prevalece el valor explícito.
+
 ### Reapertura de inscripción
 
 - `rejected -> pending` o `approved -> pending` está permitido para reabrir revisión.

@@ -300,15 +300,17 @@ ob_start();
  <!-- Tab: Admin - Usuarios -->
  <div id="dashTab-users-content" class="hidden admin-only space-y-8">
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
- <div class="flex items-center justify-between mb-6">
+ <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
  <h3 class="text-2xl font-bold text-slate-900">Gestión de Usuarios</h3>
  <div class="flex gap-2">
- <input type="text" placeholder="Buscar usuario..." class="px-4 py-2 rounded-lg border border-slate-300 bg-slate-50 font-medium focus:ring-2 focus:ring-[var(--color-accent)]">
- <button class="px-4 py-2 rounded-lg btn-primary font-bold transition-all">
- <i class="fa-solid fa-search"></i>
+ <input id="adminUsersSearch" type="text" placeholder="Buscar usuario..." class="px-4 py-2 rounded-lg border border-slate-300 bg-slate-50 font-medium focus:ring-2 focus:ring-[var(--color-accent)]">
+ <button id="refreshAdminUsers" class="px-4 py-2 rounded-lg btn-primary font-bold transition-all">
+ <i class="fa-solid fa-refresh"></i>
  </button>
  </div>
  </div>
+ <p class="text-slate-600 mb-4">Define flags manuales de <span class="font-bold">Validado</span> y <span class="font-bold">Pago</span>. Si un usuario aún no tiene flags explícitos, se mostrará el valor heredado desde el estado de inscripción.</p>
+ <div id="adminUsersFeedback" class="hidden rounded-xl px-4 py-3 text-sm font-semibold mb-4"></div>
  <div id="usersList" class="space-y-4">
  <p class="text-slate-500">Cargando usuarios...</p>
  </div>
