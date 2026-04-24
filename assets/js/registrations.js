@@ -756,6 +756,9 @@
         <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <p class="font-bold text-slate-800">${item.title}</p>
+            <p class="mt-1 inline-flex items-center rounded-full bg-indigo-100 px-2 py-1 text-[11px] font-semibold text-indigo-700">
+              Foro: ${item.forum_title || item.forum_code || "Sin foro asignado"}
+            </p>
             <p class="text-xs text-slate-600">${item.description || "Sin descripción."}</p>
             <p class="text-[11px] text-slate-500 mt-1">${item.access_reason || ""}</p>
           </div>
