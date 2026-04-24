@@ -2,6 +2,57 @@
   let signatureCtx = null;
   let signatureIsDrawing = false;
   let activeReferralOffer = null;
+  let activeRegistrationCountry = "AR";
+
+  function normalizeCountryCode(value) {
+    const raw = String(value || "").trim().toUpperCase();
+    return /^[A-Z]{2}$/.test(raw) ? raw : "";
+  }
+
+  function inferCountryFromLocale() {
+    const locales = Array.isArray(navigator.languages) && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || ""];
+
+    for (const locale of locales) {
+      const match = String(locale).match(/[-_]([A-Z]{2})$/i);
+      if (match?.[1]) {
+        const normalized = normalizeCountryCode(match[1]);
+        if (normalized) return normalized;
+      }
+    }
+
+    return "AR";
+  }
+
+  function resolveRegistrationCountry() {
+    const params = new URLSearchParams(window.location.search);
+    const countryFromQuery = normalizeCountryCode(params.get("country"));
+    if (countryFromQuery) return countryFromQuery;
+
+    const selector = document.getElementById("registrationCountrySelect");
+    if (selector instanceof HTMLSelectElement) {
+      const selected = normalizeCountryCode(selector.value);
+      if (selected) return selected;
+    }
+
+    return inferCountryFromLocale();
+  }
+
+  function setupRegistrationCountrySelector() {
+    const selector = document.getElementById("registrationCountrySelect");
+    if (!(selector instanceof HTMLSelectElement)) return;
+
+    const preferredCountry = resolveRegistrationCountry();
+    const hasOption = Array.from(selector.options).some((option) => option.value === preferredCountry);
+    selector.value = hasOption ? preferredCountry : "AR";
+    activeRegistrationCountry = normalizeCountryCode(selector.value) || "AR";
+
+    selector.addEventListener("change", () => {
+      activeRegistrationCountry = normalizeCountryCode(selector.value) || "AR";
+      loadOfferFromReferralCode(activeRegistrationCountry);
+    });
+  }
 
   function showRegisterFeedback(type, message) {
     const box = document.getElementById("registerFormAlert");
@@ -69,13 +120,14 @@
     }
 
     notice.classList.remove("hidden");
-    notice.textContent = `Inscripción con referido de ${offer.associateName}. Precio aplicado: ${offer.priceAmount} ${offer.currencyCode}. Método: ${offer.paymentMethod}.`;
-    paymentInstructions.innerHTML = `<i class="fa-solid fa-link mr-2"></i> Pago con referido (${offer.referralCode}): ${offer.paymentMethod}.`;
+    const appliedCountry = offer.countryCode || activeRegistrationCountry;
+    notice.textContent = `Inscripción con referido de ${offer.associateName}. Precio aplicado: ${offer.priceAmount} ${offer.currencyCode}. Método: ${offer.paymentMethod}. País: ${appliedCountry}.`;
+    paymentInstructions.innerHTML = `<i class="fa-solid fa-link mr-2"></i> Pago con referido (${offer.referralCode}) para ${appliedCountry}: ${offer.paymentMethod}.`;
     paymentLink.href = offer.paymentLink;
     paymentLink.textContent = `Pagar ${offer.priceAmount} ${offer.currencyCode}`;
   }
 
-  async function loadOfferFromReferralCode() {
+  async function loadOfferFromReferralCode(countryOverride = "") {
     const params = new URLSearchParams(window.location.search);
     const code = (params.get("ref") || "").trim();
     if (!code) {
@@ -84,7 +136,9 @@
     }
 
     try {
-      const result = await window.appApiFetch(`/api/referrals/offer?code=${encodeURIComponent(code)}`);
+      const country = normalizeCountryCode(countryOverride) || resolveRegistrationCountry();
+      activeRegistrationCountry = country || "AR";
+      const result = await window.appApiFetch(`/api/referrals/offer?code=${encodeURIComponent(code)}&country=${encodeURIComponent(activeRegistrationCountry)}`);
       applyReferralOfferUI(result.offer || null);
     } catch (_error) {
       applyReferralOfferUI(null);
@@ -152,7 +206,7 @@
       form.paymentMethod.value = offer.paymentMethod;
       form.paymentLink.value = offer.paymentLink;
       const preview = document.getElementById("associateReferralPreview");
-      if (preview) preview.textContent = `${window.location.origin}/?ref=${offer.referralCode}`;
+      if (preview) preview.textContent = `${window.location.origin}/inscripcion?ref=${offer.referralCode}&country=AR`;
     } catch (_error) {
       // noop
     }
@@ -177,7 +231,7 @@
       try {
         await window.appApiFetch("/api/associate/offer", { method: "POST", body: JSON.stringify(payload) });
         status.textContent = "Configuración guardada.";
-        preview.textContent = `${window.location.origin}/?ref=${payload.referralCode}`;
+        preview.textContent = `${window.location.origin}/inscripcion?ref=${payload.referralCode}&country=AR`;
       } catch (error) {
         status.textContent = error instanceof Error ? error.message : "No se pudo guardar.";
       }
@@ -799,7 +853,8 @@
     if (!referralInput) return;
 
     try {
-      const result = await window.appApiFetch("/api/associate/referral-link");
+      const country = encodeURIComponent(activeRegistrationCountry || "AR");
+      const result = await window.appApiFetch(`/api/associate/referral-link?country=${country}`);
       if (result.referralLink) {
         referralInput.value = result.referralLink;
       }
@@ -816,6 +871,7 @@
   }
 
   window.addEventListener("DOMContentLoaded", async () => {
+    setupRegistrationCountrySelector();
     setupRegistrationForm();
     setupAssociateOfferForm();
     setupPaymentMethodsForm();
@@ -823,7 +879,7 @@
     setupAdminActions();
     setupUserEbooksActions();
     window.toggleCertFields(false);
-    await loadOfferFromReferralCode();
+    await loadOfferFromReferralCode(activeRegistrationCountry);
     await loadAssociateOffer();
     await loadReferralLink();
     await loadAssociateRegistrations();
