@@ -77,7 +77,7 @@
       userBtn?.classList.add("hidden");
       mobileUserBtn?.classList.add("hidden");
 
-      if (window.location.hash.includes("view-dashboard")) {
+      if (window.location.hash.includes("view-dashboard") && typeof window.showView === "function") {
         window.showView("home");
       }
       return role;
@@ -136,7 +136,11 @@
     }
     alert("Sesión cerrada");
     applyRoleUI("guest", { redirectToDashboard: false });
-    window.showView("home");
+    if (typeof window.showView === "function") {
+      window.showView("home");
+      return;
+    }
+    window.location.href = "/";
   };
 
   window.addEventListener("DOMContentLoaded", async () => {
@@ -171,7 +175,9 @@
         window.setDashTab(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
       }
     }
-    window.__navigation.updateHash(view);
+    if (window.__navigation?.updateHash) {
+      window.__navigation.updateHash(view);
+    }
   });
 
   window.addEventListener("app:role-changed", (event) => {

@@ -7,13 +7,36 @@ declare(strict_types=1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Foros LATAM PSME | Salud Mental y Emocional</title>
+    <script>
+        tailwind = window.tailwind || {};
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f7f2eb',
+                            100: '#ede3d7',
+                            200: '#dcc8b0',
+                            300: '#c9aa86',
+                            400: '#b58b63',
+                            500: '#a06f48',
+                            600: '#86583a',
+                            700: '#6a4530',
+                            800: '#503624',
+                            900: '#3b281b'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .gradient-teal { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); }
+        .gradient-teal { background: linear-gradient(135deg, #a06f48 0%, #6a4530 100%); }
         .card-shadow { transition: all 0.3s ease; box-shadow: 0 10px 30px -15px rgba(0,0,0,0.1); }
         .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.15); }
         .role-badge { display: none; }
