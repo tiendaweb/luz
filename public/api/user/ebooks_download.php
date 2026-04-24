@@ -14,10 +14,11 @@ if (!$user) {
 }
 
 $ebookId = (int)($_GET['ebook_id'] ?? 0);
+$forumId = (int)($_GET['forum_id'] ?? 0);
 $expiresAt = (int)($_GET['expires'] ?? 0);
 $token = trim((string)($_GET['token'] ?? ''));
 
-if ($ebookId <= 0 || $expiresAt <= 0 || $token === '') {
+if ($ebookId <= 0 || $forumId <= 0 || $expiresAt <= 0 || $token === '') {
     api_json(['ok' => false, 'error' => 'Parámetros incompletos.'], 422);
 }
 
@@ -29,20 +30,24 @@ if ($expiresAt < time()) {
     api_json(['ok' => false, 'error' => 'El enlace expiró. Solicita uno nuevo.'], 403);
 }
 
-$expectedToken = api_ebook_sign_token($userId, $ebookId, $expiresAt);
+$expectedToken = api_ebook_sign_token($userId, $ebookId, $forumId, $expiresAt);
 if (!hash_equals($expectedToken, $token)) {
     api_ebook_log_download($pdo, $userId, $ebookId, false, 'Token inválido');
     api_json(['ok' => false, 'error' => 'Token inválido.'], 403);
 }
 
 $stmt = $pdo->prepare(
-    "SELECT id, title, provider, local_path, external_url, min_attendance, requires_approved
+    "SELECT ebooks.id, ebooks.title, ebooks.provider, ebooks.local_path, ebooks.external_url, ebooks.min_attendance, ebooks.requires_approved
      FROM ebooks
-     WHERE id = :ebook_id
-       AND status = 'published'
+     INNER JOIN forum_ebooks
+       ON forum_ebooks.ebook_id = ebooks.id
+      AND forum_ebooks.forum_id = :forum_id
+      AND forum_ebooks.is_active = 1
+     WHERE ebooks.id = :ebook_id
+       AND ebooks.status = 'published'
      LIMIT 1"
 );
-$stmt->execute(['ebook_id' => $ebookId]);
+$stmt->execute(['ebook_id' => $ebookId, 'forum_id' => $forumId]);
 $ebook = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!is_array($ebook)) {
@@ -50,7 +55,7 @@ if (!is_array($ebook)) {
     api_json(['ok' => false, 'error' => 'Ebook no disponible.'], 404);
 }
 
-$permission = api_user_ebook_permission($pdo, $userId, $ebook);
+$permission = api_user_ebook_permission($pdo, $userId, $ebook, $forumId);
 if (($permission['has_access'] ?? false) !== true) {
     api_ebook_log_download($pdo, $userId, $ebookId, false, 'Sin autorización vigente');
     api_json(['ok' => false, 'error' => 'No tienes acceso a este ebook.'], 403);

@@ -14,9 +14,9 @@ function api_ebook_token_secret(): string
     return 'luz-ebooks-secret-change-me';
 }
 
-function api_ebook_sign_token(int $userId, int $ebookId, int $expiresAt): string
+function api_ebook_sign_token(int $userId, int $ebookId, int $forumId, int $expiresAt): string
 {
-    $payload = $userId . ':' . $ebookId . ':' . $expiresAt;
+    $payload = $userId . ':' . $ebookId . ':' . $forumId . ':' . $expiresAt;
     return hash_hmac('sha256', $payload, api_ebook_token_secret());
 }
 
@@ -34,7 +34,7 @@ function api_ebook_log_download(PDO $pdo, ?int $userId, ?int $ebookId, bool $gra
     ]);
 }
 
-function api_user_ebook_permission(PDO $pdo, int $userId, array $ebook): array
+function api_user_ebook_permission(PDO $pdo, int $userId, array $ebook, int $forumId): array
 {
     $manualStmt = $pdo->prepare(
         'SELECT access_granted, reason, expires_at
@@ -61,36 +61,60 @@ function api_user_ebook_permission(PDO $pdo, int $userId, array $ebook): array
         }
     }
 
-    $approvedStmt = $pdo->prepare(
-        'SELECT COUNT(*)
+    $registrationStmt = $pdo->prepare(
+        'SELECT registrations.id
          FROM registrations
-         LEFT JOIN registration_admin_state ON registration_admin_state.registration_id = registrations.id
          WHERE registrations.user_id = :user_id
-           AND COALESCE(registration_admin_state.status, "pending") = "approved"'
+           AND registrations.forum_id = :forum_id'
     );
-    $approvedStmt->execute(['user_id' => $userId]);
+    $registrationStmt->execute([
+        'user_id' => $userId,
+        'forum_id' => $forumId,
+    ]);
+    $registrationIds = $registrationStmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    if ($registrationIds === []) {
+        return [
+            'has_access' => false,
+            'reason' => 'Sin acceso: no estás inscrito/a en el foro de este material.',
+            'via' => 'none',
+            'attendance_percent' => 0.0,
+            'attendance_threshold' => (float)($ebook['min_attendance'] ?? 75),
+        ];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($registrationIds), '?'));
+
+    $approvedStmt = $pdo->prepare(
+        "SELECT COUNT(*)
+         FROM registration_admin_state
+         WHERE registration_id IN ($placeholders)
+           AND status = 'approved'"
+    );
+    $approvedStmt->execute($registrationIds);
     $approvedCount = (int)$approvedStmt->fetchColumn();
     $hasApproved = $approvedCount > 0;
 
     $attendanceStmt = $pdo->prepare(
-        'SELECT MAX(COALESCE(registration_attendance.attendance_percent, 0))
-         FROM registrations
-         LEFT JOIN registration_attendance ON registration_attendance.registration_id = registrations.id
-         WHERE registrations.user_id = :user_id'
+        "SELECT MAX(COALESCE(attendance_percent, 0))
+         FROM registration_attendance
+         WHERE registration_id IN ($placeholders)"
     );
-    $attendanceStmt->execute(['user_id' => $userId]);
+    $attendanceStmt->execute($registrationIds);
     $attendanceMax = (float)$attendanceStmt->fetchColumn();
 
     $minAttendance = (float)($ebook['min_attendance'] ?? 75);
     $attendanceEligible = $attendanceMax >= $minAttendance;
 
-    $hasAccess = $hasApproved || $attendanceEligible;
+    $requiresApproved = (int)($ebook['requires_approved'] ?? 1) === 1;
+    $hasAccess = $requiresApproved ? ($hasApproved || $attendanceEligible) : $attendanceEligible;
 
     $reason = $hasAccess
         ? ($hasApproved
-            ? 'Acceso habilitado por inscripción aprobada.'
-            : sprintf('Acceso habilitado por asistencia (%.2f%% ≥ %.2f%%).', $attendanceMax, $minAttendance))
-        : sprintf('Sin acceso: requiere estado aprobado o asistencia mínima de %.2f%%.', $minAttendance);
+            ? 'Acceso habilitado por inscripción aprobada en el foro vinculado.'
+            : sprintf('Acceso habilitado por asistencia en el foro vinculado (%.2f%% ≥ %.2f%%).', $attendanceMax, $minAttendance))
+        : ($requiresApproved
+            ? sprintf('Sin acceso: requiere estado aprobado o asistencia mínima de %.2f%% en este foro.', $minAttendance)
+            : sprintf('Sin acceso: requiere asistencia mínima de %.2f%% en este foro.', $minAttendance));
 
     return [
         'has_access' => $hasAccess,
