@@ -3,6 +3,7 @@
   let signatureIsDrawing = false;
   let activeReferralOffer = null;
   let activeRegistrationCountry = "AR";
+  let adminUsersCache = [];
 
   function normalizeCountryCode(value) {
     const raw = String(value || "").trim().toUpperCase();
@@ -388,6 +389,81 @@
     }).join("");
   }
 
+  function setAdminUsersFeedback(message, isError = false) {
+    const box = document.getElementById("adminUsersFeedback");
+    if (!box) return;
+    if (!message) {
+      box.classList.add("hidden");
+      box.textContent = "";
+      return;
+    }
+
+    box.classList.remove("hidden", "bg-emerald-50", "text-emerald-700", "border-emerald-200", "bg-rose-50", "text-rose-700", "border-rose-200", "border");
+    box.classList.add("border");
+    if (isError) {
+      box.classList.add("bg-rose-50", "text-rose-700", "border-rose-200");
+    } else {
+      box.classList.add("bg-emerald-50", "text-emerald-700", "border-emerald-200");
+    }
+    box.textContent = message;
+  }
+
+  function renderAdminUsers(items) {
+    const target = document.getElementById("usersList");
+    if (!target) return;
+
+    const searchValue = String((document.getElementById("adminUsersSearch")?.value || "")).trim().toLowerCase();
+    const sourceList = Array.isArray(items) ? items : [];
+    const filtered = sourceList.filter((item) => {
+      if (!searchValue) return true;
+      const haystack = [
+        item.full_name || "",
+        item.email || "",
+        item.role || "",
+        String(item.id || ""),
+      ].join(" ").toLowerCase();
+      return haystack.includes(searchValue);
+    });
+
+    if (filtered.length === 0) {
+      target.innerHTML = '<p class="text-xs text-slate-500">Sin usuarios para mostrar.</p>';
+      return;
+    }
+
+    target.innerHTML = filtered.map((item) => {
+      const explicitBadge = item.has_explicit_flags
+        ? '<span class="rounded-full bg-sky-100 px-2 py-1 text-[11px] font-bold text-sky-700">Flags explícitos</span>'
+        : '<span class="rounded-full bg-amber-100 px-2 py-1 text-[11px] font-bold text-amber-700">Heredado de inscripción</span>';
+      const updatedBy = item.updated_by_user_id ? ` · actualizado por #${item.updated_by_user_id}` : "";
+      const updatedAt = item.updated_at ? new Date(item.updated_at).toLocaleString() : "Sin cambios manuales";
+      return `
+        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="font-bold text-slate-900">#${item.id} · ${item.full_name || "Usuario sin nombre"}</p>
+              <p class="text-xs text-slate-500">${item.email || "sin email"} · Rol: ${item.role || "—"}</p>
+              <p class="mt-2 text-xs text-slate-500">Última actualización: ${updatedAt}${updatedBy}</p>
+              <div class="mt-2">${explicitBadge}</div>
+            </div>
+            <div class="flex flex-col gap-3 md:items-end">
+              <label class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                <input data-action="toggle-validated" data-id="${item.id}" type="checkbox" class="h-4 w-4" ${item.is_validated ? "checked" : ""}>
+                Validado
+              </label>
+              <label class="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                <input data-action="toggle-paid" data-id="${item.id}" type="checkbox" class="h-4 w-4" ${item.is_paid ? "checked" : ""}>
+                Pago
+              </label>
+              <button data-action="save-user-flags" data-id="${item.id}" class="rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white hover:bg-slate-700">
+                Guardar
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
   function renderAssociateNetwork(items, referralLink) {
     const overview = document.getElementById("associateNetworkOverview");
     const byCountry = document.getElementById("associateReferralCountryList");
@@ -580,13 +656,16 @@
   async function loadAdminData() {
     if (document.body.getAttribute("data-active-role") !== "admin") return;
     try {
-      const [registrations, associates] = await Promise.all([
+      const [registrations, associates, users] = await Promise.all([
         window.appApiFetch("/api/admin/registrations"),
-        window.appApiFetch("/api/admin/associates")
+        window.appApiFetch("/api/admin/associates"),
+        window.appApiFetch("/api/admin/users")
       ]);
       renderAdminRegistrations(registrations.items || []);
       renderAdminAssociates(associates.items || []);
       renderAdminPayments(registrations.items || []);
+      adminUsersCache = Array.isArray(users.items) ? users.items : [];
+      renderAdminUsers(adminUsersCache);
       await loadNetworkTrace();
     } catch (_error) {
       // noop
@@ -764,9 +843,14 @@
     const regList = document.getElementById("adminRegistrationsList");
     const refreshRegs = document.getElementById("refreshAdminRegistrations");
     const refreshAssoc = document.getElementById("refreshAdminAssociates");
+    const refreshUsers = document.getElementById("refreshAdminUsers");
+    const usersList = document.getElementById("usersList");
+    const usersSearch = document.getElementById("adminUsersSearch");
 
     refreshRegs?.addEventListener("click", () => loadAdminData());
     refreshAssoc?.addEventListener("click", () => loadAdminData());
+    refreshUsers?.addEventListener("click", () => loadAdminData());
+    usersSearch?.addEventListener("input", () => renderAdminUsers(adminUsersCache));
 
     regList?.addEventListener("change", async (event) => {
       const target = event.target;
@@ -795,6 +879,37 @@
       await window.appApiFetch(`/api/admin/registrations?id=${encodeURIComponent(target.dataset.id || '')}`, { method: "DELETE" });
       loadAdminData();
       window.refreshDashboardSummary();
+    });
+
+    usersList?.addEventListener("click", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || target.dataset.action !== "save-user-flags") return;
+
+      const userId = Number(target.dataset.id || 0);
+      if (!userId) return;
+
+      const validatedInput = usersList.querySelector(`input[data-action="toggle-validated"][data-id="${userId}"]`);
+      const paidInput = usersList.querySelector(`input[data-action="toggle-paid"][data-id="${userId}"]`);
+      if (!(validatedInput instanceof HTMLInputElement) || !(paidInput instanceof HTMLInputElement)) {
+        setAdminUsersFeedback("No se encontraron los toggles seleccionados.", true);
+        return;
+      }
+
+      try {
+        setAdminUsersFeedback("Guardando cambios...");
+        await window.appApiFetch("/api/admin/users", {
+          method: "PATCH",
+          body: JSON.stringify({
+            userId,
+            isValidated: validatedInput.checked,
+            isPaid: paidInput.checked
+          })
+        });
+        await loadAdminData();
+        setAdminUsersFeedback("Cambios guardados correctamente.");
+      } catch (error) {
+        setAdminUsersFeedback(error instanceof Error ? error.message : "No se pudo guardar los flags.", true);
+      }
     });
   }
 
