@@ -113,10 +113,26 @@
   window.refreshDashboardSummary = async () => {
     try {
       const { summary } = await window.appApiFetch("/api/dashboard/summary");
-      const statNodes = document.querySelectorAll("#view-dashboard .grid > div h4");
-      if (statNodes[0]) statNodes[0].textContent = String(summary.registrations_total ?? 0);
-      if (statNodes[1]) statNodes[1].textContent = String(summary.cert_requests_total ?? 0);
-      if (statNodes[2]) statNodes[2].textContent = String(summary.users_total ?? 0);
+      const adminCards = document.getElementById("adminKpiCards");
+      if (adminCards) {
+        adminCards.innerHTML = `
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Inscripciones Totales</p>
+            <h3 class="text-3xl font-extrabold text-slate-900 mb-4">${summary.registrations_total ?? 0}</h3>
+            <p class="text-sm text-slate-600">Base de inscripciones registradas.</p>
+          </div>
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Pagos Pendientes</p>
+            <h3 class="text-3xl font-extrabold text-amber-600 mb-4">${summary.pending_payments_total ?? 0}</h3>
+            <p class="text-sm text-slate-600">Comprobantes por revisión administrativa.</p>
+          </div>
+          <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Usuarios Registrados</p>
+            <h3 class="text-3xl font-extrabold text-teal-600 mb-4">${summary.users_total ?? 0}</h3>
+            <p class="text-sm text-slate-600">Total de cuentas activas en plataforma.</p>
+          </div>
+        `;
+      }
     } catch (_error) {
       // silencioso: mantenemos datos mock si no hay backend disponible
     }
@@ -251,8 +267,12 @@
     try {
       const result = await window.appApiFetch(`/api/associate/registrations${query}`);
       renderAssociateRegistrations(result.items || []);
+      const referralInput = document.getElementById("myReferralCode");
+      const referralLink = referralInput instanceof HTMLInputElement ? String(referralInput.value || `${window.location.origin}/`) : `${window.location.origin}/`;
+      renderAssociateNetwork(result.items || [], referralLink);
     } catch (_error) {
       renderAssociateRegistrations([]);
+      renderAssociateNetwork([], `${window.location.origin}/`);
     }
   }
 
@@ -272,6 +292,159 @@
     `).join("");
   }
 
+  function renderAdminPayments(items) {
+    const target = document.getElementById("adminPaymentsContainer");
+    if (!target) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      target.innerHTML = '<p class="text-slate-500">No hay pagos para validar en este momento.</p>';
+      return;
+    }
+
+    target.innerHTML = items.slice(0, 20).map((item) => {
+      const statusClass = item.status === "approved" ? "text-emerald-700" : item.status === "rejected" ? "text-rose-700" : "text-amber-700";
+      return `
+        <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="font-bold text-slate-900">#${item.id} · ${item.full_name || "Registro sin nombre"}</p>
+              <p class="text-xs text-slate-500">${item.email || "sin email"} · ${item.document_id || "sin documento"}</p>
+              <p class="text-xs text-slate-500">Comprobante: ${item.payment_proof_name || "No adjunto"} · ${item.price_amount || "—"} ${item.currency_code || ""}</p>
+            </div>
+            <div class="text-left md:text-right">
+              <p class="text-xs font-bold uppercase ${statusClass}">${item.status || "pending"}</p>
+              <p class="text-xs text-slate-500">${item.updated_at ? new Date(item.updated_at).toLocaleString() : "Sin fecha de actualización"}</p>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderAssociateNetwork(items, referralLink) {
+    const overview = document.getElementById("associateNetworkOverview");
+    const byCountry = document.getElementById("associateReferralCountryList");
+    const pendingBox = document.getElementById("associatePendingApprovals");
+    const historyBox = document.getElementById("associateHistoryList");
+    const validatePaymentsBox = document.getElementById("associatePaymentsContainer");
+    if (!overview || !byCountry || !pendingBox || !historyBox) return;
+
+    const list = Array.isArray(items) ? items : [];
+    const total = list.length;
+    const pending = list.filter((item) => item.status === "pending").length;
+    const approved = list.filter((item) => item.status === "approved").length;
+
+    overview.innerHTML = `
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Total Referidos</p>
+        <h3 class="text-3xl font-extrabold text-slate-900 mb-4">${total}</h3>
+        <p class="text-sm text-slate-600">Contactos acumulados en tu red.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Pendientes</p>
+        <h3 class="text-3xl font-extrabold text-amber-600 mb-4">${pending}</h3>
+        <p class="text-sm text-slate-600">Pagos por revisar y aprobar.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Aprobadas</p>
+        <h3 class="text-3xl font-extrabold text-emerald-600 mb-4">${approved}</h3>
+        <p class="text-sm text-slate-600">Inscripciones validadas por tu equipo.</p>
+      </div>
+    `;
+
+    const countryMap = list.reduce((acc, item) => {
+      const key = String(item.country_code || "LATAM").toUpperCase();
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    const countries = Object.entries(countryMap);
+    byCountry.innerHTML = countries.length
+      ? countries.map(([country, count]) => `
+        <article class="rounded-xl bg-slate-50 border border-slate-100 p-4 flex items-center justify-between">
+          <div>
+            <p class="font-bold text-slate-900">${country}</p>
+            <p class="text-xs text-slate-500">${count} referidos registrados</p>
+          </div>
+          <input readonly value="${referralLink}${referralLink.includes("?") ? "&" : "?"}country=${country}" class="w-56 px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-mono">
+        </article>
+      `).join("")
+      : '<p class="text-slate-500">Aún no hay distribución por países.</p>';
+
+    const pendingItems = list.filter((item) => item.status === "pending").slice(0, 6);
+    pendingBox.innerHTML = pendingItems.length
+      ? pendingItems.map((item) => `
+        <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+          <p class="font-bold text-slate-900">${item.full_name || "Referido sin nombre"}</p>
+          <p class="text-xs text-slate-500">${item.email || "sin email"} · ${item.forum_slot || "foro sin asignar"}</p>
+        </article>
+      `).join("")
+      : '<p class="text-slate-500">No hay pagos pendientes por aprobar.</p>';
+
+    if (validatePaymentsBox) {
+      validatePaymentsBox.innerHTML = pendingItems.length
+        ? pendingItems.map((item) => `
+          <article class="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <p class="font-bold text-slate-900">#${item.id} · ${item.full_name || "Referido sin nombre"}</p>
+            <p class="text-xs text-slate-500">${item.email || "sin email"} · ${item.document_id || "sin documento"}</p>
+            <p class="text-xs text-slate-500">Ref: ${item.referral_code || "—"} · Estado: ${item.status || "pending"}</p>
+          </article>
+        `).join("")
+        : '<p class="text-slate-500">No hay comprobantes pendientes por validar.</p>';
+    }
+
+    historyBox.innerHTML = list.length
+      ? list.slice(0, 8).map((item) => `
+        <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+          <p class="font-bold text-slate-900">${item.full_name || "Referido sin nombre"}</p>
+          <p class="text-xs text-slate-500">Estado: ${item.status || "pending"} · Ref: ${item.referral_code || "—"}</p>
+        </article>
+      `).join("")
+      : '<p class="text-slate-500">Aún no tienes historial de referidos.</p>';
+  }
+
+  function renderUserPaymentStatus(items) {
+    const target = document.getElementById("userPaymentStatus");
+    if (!target) return;
+
+    const list = Array.isArray(items) ? items : [];
+    const active = list[0] || null;
+    if (!active) {
+      target.innerHTML = `
+        <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+          <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Estado de Pago</p>
+          <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Sin registro</h3>
+          <p class="text-sm text-slate-600">Aún no encontramos inscripciones activas.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const paymentStatus = active.admin_status || active.status || "pending";
+    const progress = Number(active.attendance_percent || 0);
+    const originReferral = active.referral_code || "Registro directo";
+    const benefits = active.benefits || {};
+
+    target.innerHTML = `
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Estado de Pago</p>
+        <h3 class="text-3xl font-extrabold text-slate-900 mb-4">${paymentStatus}</h3>
+        <p class="text-sm text-slate-600">Inscripción: ${active.forum_slot || `Foro #${active.forum_id || "—"}`}</p>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Referido de Origen</p>
+        <h3 class="text-2xl font-extrabold text-teal-600 mb-4">${originReferral}</h3>
+        <p class="text-sm text-slate-600">Código aplicado en tu registro.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Progreso y Beneficios</p>
+        <h3 class="text-3xl font-extrabold text-slate-900 mb-4">${progress}%</h3>
+        <div class="mt-4 w-full bg-slate-200 rounded-full h-2 mb-3">
+          <div class="bg-teal-600 h-2 rounded-full" style="width: ${Math.max(0, Math.min(progress, 100))}%"></div>
+        </div>
+        <p class="text-xs text-slate-600">${benefits.ebooks_enabled ? "✅ eBooks habilitados" : "🔒 eBooks bloqueados"} · ${benefits.certificate_enabled ? "✅ Certificado habilitado" : "🔒 Certificado pendiente"}</p>
+      </div>
+    `;
+  }
+
   async function loadAdminData() {
     if (document.body.getAttribute("data-active-role") !== "admin") return;
     try {
@@ -281,6 +454,7 @@
       ]);
       renderAdminRegistrations(registrations.items || []);
       renderAdminAssociates(associates.items || []);
+      renderAdminPayments(registrations.items || []);
     } catch (_error) {
       // noop
     }
@@ -456,8 +630,10 @@
     try {
       const result = await window.appApiFetch("/api/registrations/me");
       renderUserBenefits(result.items || []);
+      renderUserPaymentStatus(result.items || []);
     } catch (_error) {
       renderUserBenefits([]);
+      renderUserPaymentStatus([]);
     }
   }
 

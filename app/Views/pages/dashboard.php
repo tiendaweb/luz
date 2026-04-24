@@ -90,46 +90,75 @@ ob_start();
             <main class="lg:col-span-3 space-y-8">
                 <!-- Tab: Overview/Resumen - Para todos los roles -->
                 <div id="dashTab-overview-content" class="space-y-8">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-                            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Estado Inscripción</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Confirmada</h3>
-                            <div class="flex items-center gap-2 text-green-600 font-bold">
-                                <i class="fa-solid fa-check-circle"></i> Pagado
+                    <div class="admin-only hidden space-y-8">
+                        <div id="adminKpiCards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                                <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">KPIs</p>
+                                <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Cargando...</h3>
+                                <p class="text-sm text-slate-600">Resumen general de operación.</p>
                             </div>
                         </div>
                         <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-                            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sesiones Completadas</p>
-                            <h3 class="text-3xl font-extrabold text-teal-600">4 de 8</h3>
-                            <div class="mt-4 w-full bg-slate-200 rounded-full h-2">
-                                <div class="bg-teal-600 h-2 rounded-full" style="width: 50%"></div>
+                            <h3 class="text-2xl font-bold text-slate-900 mb-6">Módulos Administrativos</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="adminModuleOverview">
+                                <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                                    <p class="font-bold text-slate-900">Gestión de Asociados</p>
+                                    <p class="text-sm text-slate-600">Administra altas, datos comerciales y desempeño.</p>
+                                </article>
+                                <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                                    <p class="font-bold text-slate-900">Pagos</p>
+                                    <p class="text-sm text-slate-600">Supervisa aprobaciones y comprobantes pendientes.</p>
+                                </article>
+                                <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                                    <p class="font-bold text-slate-900">Páginas</p>
+                                    <p class="text-sm text-slate-600">Controla contenido público y páginas institucionales.</p>
+                                </article>
+                                <article class="rounded-xl bg-slate-50 border border-slate-100 p-4">
+                                    <p class="font-bold text-slate-900">Blog y Ajustes</p>
+                                    <p class="text-sm text-slate-600">Publica novedades y configura parámetros del sistema.</p>
+                                </article>
                             </div>
-                        </div>
-                        <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-                            <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Certificado</p>
-                            <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Pendiente</h3>
-                            <p class="text-sm text-slate-600">Al 75% de asistencia</p>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
-                        <h3 class="text-2xl font-bold text-slate-900 mb-6">Próximas Sesiones</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <p class="font-bold text-slate-900">Sesión 5: Análisis de caso</p>
-                                    <p class="text-sm text-slate-500">14 de mayo, 19:00 hs</p>
-                                </div>
-                                <button class="px-4 py-2 rounded-lg bg-teal-600 text-white font-bold hover:bg-teal-700 transition-all">
-                                    <i class="fa-solid fa-video"></i> Conectar
-                                </button>
+                    <div class="associate-only hidden space-y-8">
+                        <div id="associateNetworkOverview" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                                <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Red de Referidos</p>
+                                <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Cargando...</h3>
+                                <p class="text-sm text-slate-600">Resumen de tu red comercial.</p>
                             </div>
-                            <div class="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <p class="font-bold text-slate-900">Sesión 6: Reflexión grupal</p>
-                                    <p class="text-sm text-slate-500">21 de mayo, 19:00 hs</p>
+                        </div>
+
+                        <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                            <h3 class="text-2xl font-bold text-slate-900 mb-6">Link Referido por País</h3>
+                            <div id="associateReferralCountryList" class="space-y-4">
+                                <p class="text-slate-500">Cargando países y links...</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                                <h3 class="text-2xl font-bold text-slate-900 mb-6">Pagos Pendientes por Aprobar</h3>
+                                <div id="associatePendingApprovals" class="space-y-4">
+                                    <p class="text-slate-500">Cargando pendientes...</p>
                                 </div>
-                                <p class="text-xs font-bold text-slate-500">Próxima en 3 días</p>
+                            </div>
+                            <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                                <h3 class="text-2xl font-bold text-slate-900 mb-6">Historial de Referidos</h3>
+                                <div id="associateHistoryList" class="space-y-4">
+                                    <p class="text-slate-500">Cargando historial...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-only hidden space-y-8">
+                        <div id="userPaymentStatus" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
+                                <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Estado de Pago</p>
+                                <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Cargando...</h3>
+                                <p class="text-sm text-slate-600">Verificando tus datos de inscripción.</p>
                             </div>
                         </div>
                     </div>
