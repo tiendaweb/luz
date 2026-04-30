@@ -1141,49 +1141,67 @@
     const status = document.getElementById("paymentMethodsStatus");
     if (!form || !status) return;
 
-    // Load existing payment methods if available
+    const setFieldError = (name, message = "") => {
+      const field = form.querySelector(`[name="${name}"]`);
+      const error = document.getElementById(`paymentError-${name}`);
+      if (field) field.classList.toggle("border-rose-400", Boolean(message));
+      if (error) error.textContent = message;
+    };
+    const clearErrors = () => ["countryCode","methodType","bankName","accountHolder","accountNumber","aliasOrReference","paymentEmail"].forEach((n) => setFieldError(n, ""));
+
     window.appApiFetch("/api/associate/payment-methods")
       .then(result => {
         if (result.data) {
+          form.countryCode && (form.countryCode.value = result.data.countryCode || "AR");
+          form.methodType && (form.methodType.value = result.data.methodType || "bank_transfer");
           form.bankName.value = result.data.bankName || "";
           form.accountHolder.value = result.data.accountHolder || "";
           form.accountNumber.value = result.data.accountNumber || "";
           form.accountType.value = result.data.accountType || "";
           form.currency.value = result.data.currency || "ARS";
           form.aliasOrReference.value = result.data.aliasOrReference || "";
+          form.paymentEmail && (form.paymentEmail.value = result.data.paymentEmail || "");
         }
       })
-      .catch(() => {
-        // Silently fail if not an associate
-      });
+      .catch(() => {});
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      clearErrors();
       try {
         status.textContent = "Guardando...";
+        status.className = "text-sm text-slate-600";
         await window.appApiFetch("/api/associate/payment-methods", {
           method: "POST",
           body: JSON.stringify({
+            countryCode: String(form.countryCode?.value || "AR"),
+            methodType: String(form.methodType?.value || "bank_transfer"),
             bankName: String(form.bankName.value || ""),
             accountHolder: String(form.accountHolder.value || ""),
             accountNumber: String(form.accountNumber.value || ""),
             accountType: String(form.accountType.value || ""),
             currency: String(form.currency.value || "ARS"),
             aliasOrReference: String(form.aliasOrReference.value || ""),
+            paymentEmail: String(form.paymentEmail?.value || ""),
           })
         });
         status.textContent = "✓ Datos guardados exitosamente";
-        status.classList.remove("text-slate-600");
-        status.classList.add("text-amber-600", "font-bold");
+        status.className = "text-sm text-amber-600 font-bold";
       } catch (error) {
-        status.textContent = "✗ Error al guardar: " + (error instanceof Error ? error.message : "Error desconocido");
-        status.classList.remove("text-slate-600");
-        status.classList.add("text-rose-600", "font-bold");
+        const message = error instanceof Error ? error.message : "Error desconocido";
+        try {
+          const payload = JSON.parse(message);
+          if (payload?.field) setFieldError(payload.field, payload.error || "Campo inválido");
+          status.textContent = `✗ ${payload?.error || "Error de validación"}`;
+        } catch (_e) {
+          status.textContent = "✗ Error al guardar: " + message;
+        }
+        status.className = "text-sm text-rose-600 font-bold";
       }
     });
   }
 
-  async function loadReferralLink() {
+async function loadReferralLink() {
     const referralInput = document.getElementById("myReferralCode");
     if (!referralInput) return;
 
