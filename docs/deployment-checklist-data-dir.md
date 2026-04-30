@@ -32,3 +32,8 @@ Ejecutar antes de iniciar la API en cualquier entorno (dev/staging/prod):
    - `error.details.pending_migrations` con archivos faltantes.
 
 > Nota: el startup de la API verifica versión de esquema en cada arranque/carga de bootstrap para alertar antes de procesar tráfico real.
+
+
+11. Mensaje esperado en frontend ante `schema_outdated` (alineado con UI):
+   - `Ejecutá en la raíz del proyecto: php scripts/migrate.php`
+   - Si la API incluye `error.details.pending_migrations`, mostrar ese listado para soporte.
