@@ -125,6 +125,7 @@ function render_main_layout(array $config): void
     </div>
 <?php endif; ?>
 <script src="/assets/js/admin-theme-widget.js"></script>
+<script src="/assets/js/content-editor.js"></script>
 <?php foreach ($scripts as $script): ?>
     <script src="<?= htmlspecialchars($script, ENT_QUOTES, 'UTF-8') ?>"></script>
 <?php endforeach; ?>

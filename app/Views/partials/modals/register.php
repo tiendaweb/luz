@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../../Support/ContentBlocks.php'; ?>
     <!-- MODAL: REGISTRO A FOROS -->
     <div id="registerModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
         <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl max-h-[90vh] overflow-y-auto">

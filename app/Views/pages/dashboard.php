@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../_session.php';
 require_once __DIR__ . '/../layouts/main.php';
+require_once __DIR__ . '/../../Support/ContentBlocks.php';
 
 if (!$_viewIsLoggedIn) {
     header('Location: /login', true, 302);
@@ -23,7 +24,7 @@ ob_start();
  <nav class="space-y-2 border-t border-slate-100 pt-6">
  <!-- Common for all roles -->
  <button id="dashTab-overview" onclick="setDashTab('overview')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-all">
- <i class="fa-solid fa-chart-line mr-3"></i> Resumen
+ <i class="fa-solid fa-chart-line mr-3"></i> <?= htmlspecialchars(content_block_value('dashboard','menu_overview','Resumen'), ENT_QUOTES, 'UTF-8') ?>
  </button>
 
  <!-- Mi Perfil para todos -->
@@ -97,14 +98,14 @@ ob_start();
 
  <!-- Contenido Principal -->
  <main class="lg:col-span-3 space-y-8">
- <!-- Tab: Overview/Resumen - Para todos los roles -->
+ <!-- Tab: Overview/<?= htmlspecialchars(content_block_value('dashboard','menu_overview','Resumen'), ENT_QUOTES, 'UTF-8') ?> - Para todos los roles -->
  <div id="dashTab-overview-content" class="space-y-8">
  <div class="admin-only hidden space-y-8">
  <div id="adminKpiCards" class="grid grid-cols-1 md:grid-cols-3 gap-6">
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
  <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">KPIs</p>
  <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Cargando...</h3>
- <p class="text-sm text-slate-600">Resumen general de operación.</p>
+ <p class="text-sm text-slate-600"><?= htmlspecialchars(content_block_value('dashboard','menu_overview','Resumen'), ENT_QUOTES, 'UTF-8') ?> general de operación.</p>
  </div>
  </div>
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
@@ -135,7 +136,7 @@ ob_start();
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
  <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Red de Referidos</p>
  <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Cargando...</h3>
- <p class="text-sm text-slate-600">Resumen de tu red comercial.</p>
+ <p class="text-sm text-slate-600"><?= htmlspecialchars(content_block_value('dashboard','menu_overview','Resumen'), ENT_QUOTES, 'UTF-8') ?> de tu red comercial.</p>
  </div>
  </div>
 

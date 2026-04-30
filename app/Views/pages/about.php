@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../_session.php';
 require_once __DIR__ . '/../layouts/main.php';
+require_once __DIR__ . '/../../Support/ContentBlocks.php';
 
 $settings = $_viewSiteSettings ?? [];
 $directorName = (string)($settings['director_name'] ?? 'María Luz Genovese');
@@ -31,7 +32,7 @@ ob_start();
                 </div>
             </div>
             <div>
-                <h3 class="text-3xl font-bold text-[#5C4A3D] mb-6">Sobre <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></h3>
+                <h3 class="text-3xl font-bold text-[#5C4A3D] mb-6"><span data-content-key="about_title" data-content-context="about"><?= htmlspecialchars(content_block_value('about','about_title','Sobre ' . $directorName), ENT_QUOTES, 'UTF-8') ?></span></h3>
                 <div class="prose prose-slate space-y-4 text-[#826F60]">
                     <p class="text-lg leading-relaxed">
                         Psicóloga Social con especialización en contextos comunitarios y problemáticas de salud mental y emocional. Ha trabajado durante más de 15 años en la construcción de espacios de reflexión grupal y fortalecimiento psicosocial en Argentina y América Latina.
