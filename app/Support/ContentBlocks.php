@@ -16,9 +16,20 @@ function content_blocks_for_context(string $context, string $locale = 'es'): arr
     }
 
     $pdo = db();
-    $stmt = $pdo->prepare('SELECT block_key, value, content_type, version FROM content_blocks WHERE context = :context AND locale = :locale');
-    $stmt->execute(['context' => $context, 'locale' => $locale]);
-    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    try {
+        $stmt = $pdo->prepare('SELECT block_key, value, content_type, version FROM content_blocks WHERE context = :context AND locale = :locale');
+        $stmt->execute(['context' => $context, 'locale' => $locale]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $exception) {
+        $message = strtolower($exception->getMessage());
+        if (strpos($message, 'no such table: content_blocks') === false) {
+            throw $exception;
+        }
+
+        $contentBlockCache[$cacheKey] = [];
+        return [];
+    }
 
     $blocks = [];
     foreach ($rows as $row) {
