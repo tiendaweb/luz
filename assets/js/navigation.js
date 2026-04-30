@@ -9,9 +9,9 @@
   };
   const allowedTabsByRole = {
     guest: ["overview"],
-    user: ["overview", "myforums", "ebooks"],
-    associate: ["overview", "referrals", "myreferrals", "validatepayments"],
-    admin: ["overview", "registrations", "adminvalidate", "blog", "pages", "settings", "associates", "users"]
+    user: ["overview", "profile", "myforums", "ebooks"],
+    associate: ["overview", "profile", "referrals", "myreferrals", "validatepayments"],
+    admin: ["overview", "profile", "registrations", "adminvalidate", "blog", "pages", "settings", "associates", "users"]
   };
 
   function closeMobileMenu() {
@@ -98,11 +98,9 @@
 
   function getDefaultDashTabByRole(roleName) {
     const role = normalizeRole(roleName);
-    if (role === "admin") return "registrations";
-    if (role === "associate") {
-      return document.getElementById("dashTab-myreferrals-content") ? "myreferrals" : "referrals";
-    }
-    if (role === "user") return "myforums";
+    if (role === "admin") return "profile";
+    if (role === "associate") return "profile";
+    if (role === "user") return "profile";
     return "overview";
   }
 
