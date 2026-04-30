@@ -4,6 +4,17 @@ Este README describe **el estado real de la base actual** (frontend + backend PH
 
 ---
 
+## Mapa único de estado funcional (fuente de verdad)
+
+Para evitar contradicciones entre onboarding técnico y alcance funcional, el estado por feature se mantiene en:
+
+- `docs/estado-mvp-actual.md`
+
+Resumen ejecutivo alineado:
+- **Listo**: login/sesión, referidos, certificados y ebooks (con endpoints y consumo frontend activo).
+- **Parcial**: pagos (hay configuración + comprobante, falta pasarela transaccional end-to-end).
+- **Pendiente**: integraciones externas productivas complementarias (ej. notificaciones transaccionales).
+
 ## Estado actual (implementado hoy)
 
 ### Frontend
