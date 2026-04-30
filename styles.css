@@ -1,5 +1,68 @@
-/*
-  Legacy stylesheet intentionally decoupled.
-  The visual source of truth now lives in index.html (Tailwind + inline utilities)
-  and is driven by internal view navigation via showView(...).
-*/
+:root {
+  --color-primary: #faf5f0;
+  --color-primary-700: #d9b9a0;
+  --color-primary-contrast: #4e3b2a;
+  --color-accent: #8a5a2b;
+  --color-accent-700: #6f4620;
+  --color-accent-contrast: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #475569;
+  --color-status-approved-bg: #dcfce7;
+  --color-status-approved-text: #14532d;
+  --color-status-pending-bg: #fef3c7;
+  --color-status-pending-text: #78350f;
+  --color-status-rejected-bg: #fee2e2;
+  --color-status-rejected-text: #7f1d1d;
+}
+
+body { font-family: 'Plus Jakarta Sans', sans-serif; color: var(--color-text); }
+.glass { background: rgba(255,255,255,.95); backdrop-filter: blur(10px); }
+.bg-brand { background-color: var(--color-primary); }
+.text-brand { color: var(--color-primary-contrast); }
+.text-muted { color: var(--color-text-muted); }
+.border-brand { border-color: var(--color-border); }
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 78%, #000 22%);
+  transition: all .2s ease;
+}
+.btn-primary:hover { background-color: var(--color-accent-700); transform: translateY(-1px); }
+.btn-primary:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 40%, #fff 60%);
+  outline-offset: 2px;
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover { border-color: var(--color-accent); color: var(--color-accent); }
+
+.nav-link-accent:hover { color: var(--color-accent-700); }
+.card-surface { background: var(--color-surface); border: 1px solid var(--color-border); }
+
+.status-badge { display:inline-flex; align-items:center; border-radius:999px; padding:.2rem .65rem; font-size:.75rem; font-weight:700; }
+.status-badge--approved, .badge-approved { background: var(--color-status-approved-bg); color: var(--color-status-approved-text); }
+.status-badge--pending, .badge-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); }
+.status-badge--rejected, .badge-rejected { background: var(--color-status-rejected-bg); color: var(--color-status-rejected-text); }
+
+/* Role-based visibility */
+.admin-only, .associate-only, .user-only { display:none !important; }
+body[data-active-role="admin"] .admin-only,
+body[data-active-role="associate"] .associate-only,
+body[data-active-role="user"] .user-only { display:block !important; }
+body[data-active-role="admin"] .admin-only.hidden,
+body[data-active-role="associate"] .associate-only.hidden,
+body[data-active-role="user"] .user-only.hidden { display:none !important; }
+body[data-active-role="admin"] .admin-only.space-y-2,
+body[data-active-role="associate"] .associate-only.space-y-2,
+body[data-active-role="user"] .user-only.space-y-2 { display:flex !important; flex-direction:column; gap:.5rem; }
+
+.alert-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); border-color: color-mix(in srgb, var(--color-status-pending-text) 40%, #fff 60%); }
+.alert-rejected { background: var(--color-status-rejected-bg); color: var(--color-status-rejected-text); border-color: color-mix(in srgb, var(--color-status-rejected-text) 35%, #fff 65%); }

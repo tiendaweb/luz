@@ -54,49 +54,9 @@ function render_main_layout(array $config): void
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        :root { --color-primary: <?= htmlspecialchars($brandPrimary, ENT_QUOTES, 'UTF-8') ?>; --color-primary-contrast: #4E3B2A; --color-accent: <?= htmlspecialchars($brandAccent, ENT_QUOTES, 'UTF-8') ?>; }
-        .bg-brand { background-color: var(--color-primary); }
-        .text-brand { color: var(--color-primary-contrast); }
-        .btn-primary {
-            background-color: var(--color-accent);
-            color: var(--color-primary);
-            border: 1px solid color-mix(in srgb, var(--color-accent) 80%, #000 20%);
-            transition: all 0.2s ease;
-        }
-        .btn-primary:hover {
-            background-color: color-mix(in srgb, var(--color-accent) 88%, #000 12%);
-            transform: translateY(-1px);
-        }
-        .btn-primary:focus-visible {
-            outline: 2px solid color-mix(in srgb, var(--color-accent) 65%, #fff 35%);
-            outline-offset: 2px;
-        }
-
-        /* Role-based visibility — only the active role's elements are visible. */
-        .admin-only, .associate-only, .user-only { display: none !important; }
-
-        body[data-active-role="admin"] .admin-only { display: block !important; }
-        body[data-active-role="admin"] .admin-only.hidden { display: none !important; }
-
-        body[data-active-role="associate"] .associate-only { display: block !important; }
-        body[data-active-role="associate"] .associate-only.hidden { display: none !important; }
-
-        body[data-active-role="user"] .user-only { display: block !important; }
-        body[data-active-role="user"] .user-only.hidden { display: none !important; }
-
-        /* Stacked sub-menus need flex layout, but ONLY for the active role.
-           Without the body[data-active-role=...] prefix this rule would unhide every
-           role's menu because of `display: flex !important`. */
-        body[data-active-role="admin"] .admin-only.space-y-2,
-        body[data-active-role="associate"] .associate-only.space-y-2,
-        body[data-active-role="user"] .user-only.space-y-2 {
-            display: flex !important;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
+        :root { --color-primary: <?= htmlspecialchars($brandPrimary, ENT_QUOTES, 'UTF-8') ?>; --color-accent: <?= htmlspecialchars($brandAccent, ENT_QUOTES, 'UTF-8') ?>; }
     </style>
 </head>
 <body class="<?= htmlspecialchars($bodyClass, ENT_QUOTES, 'UTF-8') ?>" data-active-role="<?= htmlspecialchars($role, ENT_QUOTES, 'UTF-8') ?>">

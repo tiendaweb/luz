@@ -299,7 +299,7 @@ async function loadUserForums() {
               <p class="text-sm text-slate-600">Asistencia: ${reg.attendance_percent}% (${reg.sessions_with_attendance}/${reg.sessions_total} sesiones)</p>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold ${
-              reg.admin_status === 'approved' ? 'bg-amber-100 text-amber-700' : 'bg-yellow-100 text-yellow-700'
+              reg.admin_status === 'approved' ? 'status-badge status-badge--approved' : 'status-badge status-badge--pending'
             }">
               ${reg.admin_status === 'approved' ? 'Confirmada' : 'Pendiente'}
             </span>
@@ -384,8 +384,8 @@ async function loadAssociateReferralsList() {
               </div>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
-              reg.status === 'approved' ? 'bg-amber-100 text-amber-700' :
-              reg.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+              reg.status === 'approved' ? 'status-badge status-badge--approved' :
+              reg.status === 'pending' ? 'status-badge status-badge--pending' :
               'bg-red-100 text-red-700'
             }">
               ${reg.status === 'approved' ? 'Aprobada' : reg.status === 'pending' ? 'Pendiente' : 'Rechazada'}
@@ -420,10 +420,10 @@ async function loadAssociatePayments() {
               <h4 class="font-bold text-slate-900">${reg.full_name}</h4>
               <p class="text-sm text-slate-600">Foro: ${reg.forum_slot}</p>
             </div>
-            <span class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">Pendiente</span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold status-badge status-badge--pending">Pendiente</span>
           </div>
           <div class="flex gap-2">
-            <button onclick="approveRegistration(${reg.id})" class="flex-1 px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm hover:bg-amber-200">
+            <button onclick="approveRegistration(${reg.id})" class="flex-1 px-3 py-2 rounded-lg status-badge status-badge--approved font-bold text-sm hover:bg-amber-200">
               <i class="fa-solid fa-check mr-1"></i> Aprobar
             </button>
             <button onclick="rejectRegistration(${reg.id})" class="flex-1 px-3 py-2 rounded-lg bg-red-100 text-red-700 font-bold text-sm hover:bg-red-200">
@@ -491,7 +491,7 @@ async function loadAdminPayments() {
             <p class="text-sm text-slate-600">${reg.forum_slot}</p>
           </div>
           <span class="px-3 py-1 rounded-full text-xs font-bold ${
-            reg.status === 'approved' ? 'bg-amber-100 text-amber-700' : 'bg-yellow-100 text-yellow-700'
+            reg.status === 'approved' ? 'status-badge status-badge--approved' : 'status-badge status-badge--pending'
           }">
             ${reg.status === 'approved' ? 'Confirmada' : 'Pendiente'}
           </span>
@@ -520,13 +520,13 @@ async function loadAdminBlog() {
             <p class="text-xs text-slate-500 mt-2">Publicado: ${new Date(post.created_at).toLocaleDateString('es-AR')}</p>
           </div>
           <span class="px-3 py-1 rounded-full text-xs font-bold ${
-            post.status === 'published' ? 'bg-amber-100 text-amber-700' : 'bg-slate-300 text-slate-700'
+            post.status === 'published' ? 'status-badge status-badge--approved' : 'bg-slate-300 text-slate-700'
           }">
             ${post.status === 'published' ? 'Publicado' : 'Borrador'}
           </span>
         </div>
         <div class="flex gap-2">
-          <button onclick="editBlogPost(${post.id})" class="px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm">
+          <button onclick="editBlogPost(${post.id})" class="px-3 py-2 rounded-lg status-badge status-badge--approved font-bold text-sm">
             <i class="fa-solid fa-edit"></i> Editar
           </button>
           <button onclick="deleteBlogPost(${post.id})" class="px-3 py-2 rounded-lg bg-red-100 text-red-700 font-bold text-sm">
@@ -557,13 +557,13 @@ async function loadAdminPages() {
             <p class="text-sm text-slate-600">${(page.content_html || 'Sin contenido').substring(0, 100)}...</p>
           </div>
           <span class="px-3 py-1 rounded-full text-xs font-bold ${
-            page.status === 'published' ? 'bg-amber-100 text-amber-700' : 'bg-slate-300 text-slate-700'
+            page.status === 'published' ? 'status-badge status-badge--approved' : 'bg-slate-300 text-slate-700'
           }">
             ${page.status === 'published' ? 'Publicada' : 'Borrador'}
           </span>
         </div>
         <div class="flex gap-2">
-          <button onclick="editPage(${page.id})" class="px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm">
+          <button onclick="editPage(${page.id})" class="px-3 py-2 rounded-lg status-badge status-badge--approved font-bold text-sm">
             <i class="fa-solid fa-edit"></i> Editar
           </button>
           <button onclick="deletePage(${page.id})" class="px-3 py-2 rounded-lg bg-red-100 text-red-700 font-bold text-sm">
@@ -613,7 +613,7 @@ async function loadAdminAssociates() {
               <p><strong>Desde:</strong> (cargando...)</p>
             </div>
           </div>
-          <button onclick="viewAssociateDetails(${assoc.id})" class="px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm">
+          <button onclick="viewAssociateDetails(${assoc.id})" class="px-3 py-2 rounded-lg status-badge status-badge--approved font-bold text-sm">
             Ver Detalles
           </button>
         </div>
@@ -643,7 +643,7 @@ async function loadAdminUsers() {
               <p><strong>Estado Pago:</strong> ${user.is_paid ? '✓ Pagado' : user.legacy_is_paid ? '✓ Herencia' : '✗ Pendiente'}</p>
             </div>
           </div>
-          <button onclick="viewUserDetails(${user.id})" class="px-3 py-2 rounded-lg bg-amber-100 text-amber-700 font-bold text-sm">
+          <button onclick="viewUserDetails(${user.id})" class="px-3 py-2 rounded-lg status-badge status-badge--approved font-bold text-sm">
             Ver Detalles
           </button>
         </div>
@@ -806,12 +806,12 @@ function showCertificatesAlert(message, isError = false) {
     box.classList.add('hidden');
     return;
   }
-  box.classList.remove('hidden', 'bg-amber-50', 'text-amber-700', 'border-amber-200', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'border');
+  box.classList.remove('hidden', 'alert-pending', 'alert-rejected', 'border');
   box.classList.add('border');
   if (isError) {
-    box.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+    box.classList.add('alert-rejected');
   } else {
-    box.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+    box.classList.add('alert-pending');
   }
   box.textContent = message;
 }
@@ -949,12 +949,12 @@ function showViewCertsAlert(message, isError = false) {
     box.classList.add('hidden');
     return;
   }
-  box.classList.remove('hidden', 'bg-amber-50', 'text-amber-700', 'border-amber-200', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'border');
+  box.classList.remove('hidden', 'alert-pending', 'alert-rejected', 'border');
   box.classList.add('border');
   if (isError) {
-    box.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+    box.classList.add('alert-rejected');
   } else {
-    box.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+    box.classList.add('alert-pending');
   }
   box.textContent = message;
 }
@@ -966,12 +966,12 @@ function showSignaturesAlert(message, isError = false) {
     box.classList.add('hidden');
     return;
   }
-  box.classList.remove('hidden', 'bg-amber-50', 'text-amber-700', 'border-amber-200', 'bg-rose-50', 'text-rose-700', 'border-rose-200', 'border');
+  box.classList.remove('hidden', 'alert-pending', 'alert-rejected', 'border');
   box.classList.add('border');
   if (isError) {
-    box.classList.add('bg-rose-50', 'text-rose-700', 'border-rose-200');
+    box.classList.add('alert-rejected');
   } else {
-    box.classList.add('bg-amber-50', 'text-amber-700', 'border-amber-200');
+    box.classList.add('alert-pending');
   }
   box.textContent = message;
 }
