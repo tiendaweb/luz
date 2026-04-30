@@ -61,9 +61,15 @@ final class CertificateRenderer
             $variables['signatureDataUrl'] = SignatureGenerator::generateFakeSignature($variables['participantName']);
         }
 
+        $version = self::resolveTemplateVersion($data['templateVersion'] ?? null);
+        $editableTemplatePath = dirname(__DIR__, 2) . '/templates/certificates/' . $version . '/' . $type . '.html';
+        if (is_file($editableTemplatePath)) {
+            return self::renderEditableTemplate($editableTemplatePath, $variables);
+        }
+
         $templatePath = __DIR__ . '/../Templates/certificates/' . $type . '.php';
         if (!is_file($templatePath)) {
-            throw new RuntimeException('Plantilla de certificado no encontrada: ' . $templatePath);
+            throw new RuntimeException('Plantilla de certificado no encontrada: ' . $templatePath . ' ni editable: ' . $editableTemplatePath);
         }
 
         ob_start();
@@ -76,6 +82,36 @@ final class CertificateRenderer
         }
 
         return $html;
+    }
+
+    private static function resolveTemplateVersion(mixed $rawVersion): string
+    {
+        $candidate = strtolower(trim((string)$rawVersion));
+        if ($candidate === '' || !preg_match('/^v[0-9]+$/', $candidate)) {
+            return 'v1';
+        }
+
+        return $candidate;
+    }
+
+    private static function renderEditableTemplate(string $templatePath, array $variables): string
+    {
+        $template = file_get_contents($templatePath);
+        if ($template === false) {
+            throw new RuntimeException('No se pudo leer la plantilla editable: ' . $templatePath);
+        }
+
+        $replacements = [
+            '{{participant_name}}' => htmlspecialchars($variables['participantName'], ENT_QUOTES, 'UTF-8'),
+            '{{forum_code}}' => htmlspecialchars($variables['forumCode'], ENT_QUOTES, 'UTF-8'),
+            '{{forum_title}}' => htmlspecialchars($variables['forumTitle'], ENT_QUOTES, 'UTF-8'),
+            '{{date_issued}}' => htmlspecialchars($variables['dateIssued'], ENT_QUOTES, 'UTF-8'),
+            '{{signature_data_url}}' => htmlspecialchars($variables['signatureDataUrl'], ENT_QUOTES, 'UTF-8'),
+            '{{director_name}}' => htmlspecialchars($variables['directorName'], ENT_QUOTES, 'UTF-8'),
+            '{{director_signature}}' => htmlspecialchars($variables['directorSignature'], ENT_QUOTES, 'UTF-8'),
+        ];
+
+        return strtr($template, $replacements);
     }
 
     /**
