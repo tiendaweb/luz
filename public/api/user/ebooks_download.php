@@ -26,13 +26,13 @@ $pdo = api_require_db();
 $userId = (int)$user['id'];
 
 if ($expiresAt < time()) {
-    api_ebook_log_download($pdo, $userId, $ebookId, false, 'Token expirado');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, 'Token expirado', 'download');
     api_json(['ok' => false, 'error' => 'El enlace expiró. Solicita uno nuevo.'], 403);
 }
 
 $expectedToken = api_ebook_sign_token($userId, $ebookId, $forumId, $expiresAt);
 if (!hash_equals($expectedToken, $token)) {
-    api_ebook_log_download($pdo, $userId, $ebookId, false, 'Token inválido');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, 'Token inválido', 'download');
     api_json(['ok' => false, 'error' => 'Token inválido.'], 403);
 }
 
@@ -51,13 +51,13 @@ $stmt->execute(['ebook_id' => $ebookId, 'forum_id' => $forumId]);
 $ebook = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!is_array($ebook)) {
-    api_ebook_log_download($pdo, $userId, $ebookId, false, 'Ebook inexistente');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, 'Ebook inexistente', 'download');
     api_json(['ok' => false, 'error' => 'Ebook no disponible.'], 404);
 }
 
 $permission = api_user_ebook_permission($pdo, $userId, $ebook, $forumId);
 if (($permission['has_access'] ?? false) !== true) {
-    api_ebook_log_download($pdo, $userId, $ebookId, false, 'Sin autorización vigente');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, (string)($permission['reason'] ?? 'Sin autorización vigente'), 'download');
     api_json(['ok' => false, 'error' => 'No tienes acceso a este ebook.'], 403);
 }
 
@@ -65,11 +65,11 @@ $provider = (string)$ebook['provider'];
 if ($provider === 'external') {
     $externalUrl = trim((string)($ebook['external_url'] ?? ''));
     if ($externalUrl === '') {
-        api_ebook_log_download($pdo, $userId, $ebookId, false, 'URL externa vacía');
+        api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, 'URL externa vacía', 'download');
         api_json(['ok' => false, 'error' => 'URL externa no configurada.'], 500);
     }
 
-    api_ebook_log_download($pdo, $userId, $ebookId, true, 'Redirect external');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, true, 'Redirect external', 'download');
     header('Location: ' . $externalUrl, true, 302);
     exit;
 }
@@ -79,14 +79,14 @@ $baseStorage = realpath(__DIR__ . '/../../../storage/ebooks') ?: (__DIR__ . '/..
 $filePath = realpath($baseStorage . '/' . ltrim($relativePath, '/'));
 
 if ($relativePath === '' || $filePath === false || !str_starts_with($filePath, (string)$baseStorage) || !is_file($filePath)) {
-    api_ebook_log_download($pdo, $userId, $ebookId, false, 'Archivo local no disponible');
+    api_ebook_log_access($pdo, $userId, $forumId, $ebookId, false, 'Archivo local no disponible', 'download');
     api_json(['ok' => false, 'error' => 'Archivo no disponible en el servidor.'], 404);
 }
 
 $filename = basename($filePath);
 $filesize = filesize($filePath) ?: 0;
 
-api_ebook_log_download($pdo, $userId, $ebookId, true, 'Download local file');
+api_ebook_log_access($pdo, $userId, $forumId, $ebookId, true, 'Download local file', 'download');
 header('Content-Type: application/octet-stream');
 header('Content-Length: ' . $filesize);
 header('Content-Disposition: attachment; filename="' . $filename . '"');
