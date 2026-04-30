@@ -52,13 +52,26 @@ Resultado por implementación:
 - ✅ Auditoría de cambios: historial con diff corto por campo.
 - ✅ Rollback: posibilidad de restaurar versión inmediata anterior.
 
-## 5) Confirmación de funcionalidades prohibidas
+## 5) Estado real de capacidades (actualizado)
 
 Confirmación explícita:
-- ✅ **Sin base de datos real** (no hay capa backend, consultas ni persistencia).
-- ✅ **Sin pagos reales** (no hay integración con pasarelas; solo texto/campos simulados).
-- ✅ **Sin autenticación real** (login simulado con redirección local por rol dummy).
-- ✅ **Sin envío real de emails** (solo enlace `mailto:` en contacto, sin envío programático desde app).
+- ✅ **Backend y base de datos reales en entorno local/demo** (API PHP + SQLite con persistencia en registros, sesiones y módulos de gestión).
+- ✅ **Autenticación real de aplicación** (login con verificación de contraseña, sesión activa y endpoint de contexto `/api/auth/me`).
+- ⚠️ **Pagos aún sin pasarela transaccional real** (existe gestión de métodos/ofertas y carga de comprobantes, pero no cobro automático end-to-end).
+- ⚠️ **Email transaccional no implementado** (sin proveedor SMTP/servicio externo integrado en esta base).
+
+### 5.1 Capacidades reales hoy
+
+- **Auth real**: `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`.
+- **Referidos operativos**: `/api/associate/referral-link`, `/api/referrals/offer`.
+- **Inscripciones persistentes**: `/api/registrations/create`, `/api/registrations/me`.
+- **Certificados operativos**: `/api/admin/certificates`, `/api/user/certificates`, `/api/admin/certificate-view`.
+- **Ebooks operativos**: `/api/user/ebooks`, `/api/user/ebooks_download`.
+
+### 5.2 Capacidades aún simuladas
+
+- **Pago automático por pasarela**: no existe endpoint de captura/confirmación de webhook de proveedor externo; el flujo actual depende de configuración manual y comprobantes.
+- **Notificaciones/email productivo**: no hay endpoint de envío transaccional integrado con proveedor real.
 
 ## 6) Pendientes “Nice to have”
 
