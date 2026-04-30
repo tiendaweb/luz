@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../_session.php';
 require_once __DIR__ . '/../layouts/main.php';
+require_once __DIR__ . '/../../Support/ContentBlocks.php';
 
 ob_start();
 ?>
@@ -9,8 +10,8 @@ ob_start();
 <section class="py-24 animate-fadeIn bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-20">
-            <h2 class="text-5xl font-extrabold text-stone-900 mb-6 tracking-tight">Foro LATAM 2026</h2>
-            <p class="text-xl text-stone-600 max-w-2xl mx-auto">Agenda viva desde API: próximos encuentros, plataforma y horarios por zona.</p>
+            <h2 class="text-5xl font-extrabold text-stone-900 mb-6 tracking-tight"><?= htmlspecialchars(content_block_value('forums','title','Foro LATAM 2026'), ENT_QUOTES, 'UTF-8') ?></h2>
+            <p class="text-xl text-stone-600 max-w-2xl mx-auto"><?= htmlspecialchars(content_block_value('forums','subtitle','Agenda viva desde API: próximos encuentros, plataforma y horarios por zona.'), ENT_QUOTES, 'UTF-8') ?></p>
         </div>
 
         <div id="forumsApiAlert" class="hidden mb-8 rounded-2xl border border-stone-200 bg-stone-50 p-4 text-sm font-semibold text-stone-800"></div>

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/../_session.php';
 require_once __DIR__ . '/../layouts/main.php';
+require_once __DIR__ . '/../../Support/ContentBlocks.php';
 
 $settings = $_viewSiteSettings ?? [];
 $contactShortText = (string)($settings['contact_short_text'] ?? 'Comunidad de debate y fortalecimiento psicosocial en Latinoamérica.');
@@ -18,13 +19,13 @@ ob_start();
  <div class="lg:w-1/2 text-center lg:text-left mb-16 lg:mb-0">
  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand text-brand text-sm font-bold mb-6 border border-[var(--color-accent)]/20">
  <span class="flex h-2 w-2 rounded-full bg-[var(--color-accent)] animate-pulse"></span>
- Inscripciones Abiertas - Ciclo Mayo 2026
+ <span data-content-key="hero_badge" data-content-context="home" data-content-type="text"><?= htmlspecialchars(content_block_value('home','hero_badge','Inscripciones Abiertas - Ciclo Mayo 2026'), ENT_QUOTES, 'UTF-8') ?></span>
  </div>
  <h1 class="text-5xl lg:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
- Foros Internacionales de <span class="text-brand">Salud Mental.</span>
+ <span data-content-key="hero_title" data-content-context="home" data-content-type="text"><?= htmlspecialchars(content_block_value('home','hero_title','Foros Internacionales de Salud Mental.'), ENT_QUOTES, 'UTF-8') ?></span>
  </h1>
  <p class="text-xl text-slate-600 mb-10 max-w-xl leading-relaxed">
- Únete a la comunidad de debate, teoría y reflexión grupal más activa de LATAM.
+ <span data-content-key="hero_subtitle" data-content-context="home" data-content-type="textarea"><?= htmlspecialchars(content_block_value('home','hero_subtitle','Únete a la comunidad de debate, teoría y reflexión grupal más activa de LATAM.'), ENT_QUOTES, 'UTF-8') ?></span>
  </p>
  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
  <a href="/inscripcion" class="btn-primary px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-[color:color-mix(in_srgb,var(--color-accent)_35%,transparent)] flex items-center justify-center gap-3">
