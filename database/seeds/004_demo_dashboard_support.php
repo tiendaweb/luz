@@ -82,6 +82,38 @@ return static function (PDO $pdo): void {
         ]);
     }
 
+
+
+    // Cadena demo de referidos para pruebas realistas
+    $createUserStmt = $pdo->prepare(
+        'INSERT INTO users (full_name, email, document_id, role_id, password_hash, created_at, updated_at)
+         SELECT :full_name, :email, :document_id, :role_id, :password_hash, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+         WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = :email)'
+    );
+    $roleIdStmt = $pdo->prepare('SELECT id FROM roles WHERE slug = :slug LIMIT 1');
+    $roleIdStmt->execute(['slug' => 'user']);
+    $userRoleId = (int)$roleIdStmt->fetchColumn();
+    $demoChain = [
+        ['name' => 'Referido Demo 1', 'email' => 'referido1.demo@psme.test', 'doc' => 'DEMO-REF-001', 'status' => 'approved'],
+        ['name' => 'Referido Demo 2', 'email' => 'referido2.demo@psme.test', 'doc' => 'DEMO-REF-002', 'status' => 'pending'],
+        ['name' => 'Referido Demo 3', 'email' => 'referido3.demo@psme.test', 'doc' => 'DEMO-REF-003', 'status' => 'rejected'],
+    ];
+    foreach ($demoChain as $index => $demo) {
+        $createUserStmt->execute(['full_name'=>$demo['name'],'email'=>$demo['email'],'document_id'=>$demo['doc'],'role_id'=>$userRoleId,'password_hash'=>password_hash('demo1234', PASSWORD_BCRYPT)]);
+        $idStmt=$pdo->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
+        $idStmt->execute(['email'=>$demo['email']]);
+        $demoUserId=(int)$idStmt->fetchColumn();
+        $registrationStmt->execute(['user_id'=>$demoUserId,'forum_id'=>(int)$forumId,'forum_slot'=>'morning','full_name'=>$demo['name'],'document_id'=>$demo['doc'],'needs_cert'=>1,'payment_proof_name'=>$demo['status']==='approved'?'proof.pdf':null,'payment_proof_mime'=>$demo['status']==='approved'?'application/pdf':null,'payment_proof_size'=>$demo['status']==='approved'?1024:null,'payment_proof_base64'=>$demo['status']==='approved'?base64_encode('proof-'.$index):null,'acceptance_checked'=>1,'signature_data_url'=>'data:image/png;base64,'.base64_encode('demo-signature-'.$index)]);
+        $registrationIdStmt->execute(['user_id'=>$demoUserId,'forum_id'=>(int)$forumId]);
+        $demoRegId=(int)$registrationIdStmt->fetchColumn();
+        $metaStmt=$pdo->prepare('INSERT INTO registration_meta (registration_id, referral_code, referrer_user_id, network_id, country_code) VALUES (:registration_id,:referral_code,:referrer_user_id,:network_id,:country_code) ON CONFLICT(registration_id) DO UPDATE SET referral_code=excluded.referral_code, referrer_user_id=excluded.referrer_user_id, network_id=excluded.network_id, country_code=excluded.country_code');
+        $metaStmt->execute(['registration_id'=>$demoRegId,'referral_code'=>'ASOCIADO2026','referrer_user_id'=>(int)$associateId,'network_id'=>1,'country_code'=>$index===0?'AR':($index===1?'CL':'PE')]);
+        $seedStateStmt = $pdo->prepare('INSERT INTO registration_admin_state (registration_id, status, note, updated_by_user_id, updated_by_role) VALUES (:registration_id,:status,:note,:updated_by_user_id,:updated_by_role) ON CONFLICT(registration_id) DO UPDATE SET status=excluded.status, note=excluded.note, updated_by_user_id=excluded.updated_by_user_id, updated_by_role=excluded.updated_by_role, updated_at=CURRENT_TIMESTAMP');
+        $seedStateStmt->execute(['registration_id'=>$demoRegId,'status'=>$demo['status'],'note'=>$demo['status']==='rejected'?'Rechazado en demo':null,'updated_by_user_id'=>(int)$associateId,'updated_by_role'=>'admin']);
+        $seedHistoryStmt = $pdo->prepare('INSERT INTO registration_status_history (registration_id, from_status, to_status, note, reviewed_by_user_id, reviewed_by_role, created_at) VALUES (:registration_id,:from_status,:to_status,:note,:reviewed_by_user_id,:reviewed_by_role,CURRENT_TIMESTAMP)');
+        $seedHistoryStmt->execute(['registration_id'=>$demoRegId,'from_status'=>'pending','to_status'=>$demo['status'],'note'=>$demo['status']==='rejected'?'Rechazado en demo':null,'reviewed_by_user_id'=>(int)$associateId,'reviewed_by_role'=>'admin']);
+    }
+
     $messageStmt = $pdo->prepare(
         'INSERT INTO messages (sender_user_id, subject, body)
          SELECT :sender_user_id, :subject, :body

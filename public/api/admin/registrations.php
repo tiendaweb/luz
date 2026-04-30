@@ -28,7 +28,13 @@ if ($method === 'GET') {
                 registration_meta.payment_link,
                 registration_meta.price_amount,
                 registration_meta.currency_code,
-                users.full_name AS referrer_name
+                registration_meta.network_id,
+                registration_meta.country_code,
+                users.full_name AS referrer_name,
+                users.email AS referrer_email,
+                registrations.created_at AS referred_created_at,
+                CASE WHEN COALESCE(registration_admin_state.status, "pending") = "approved" THEN 1 ELSE 0 END AS referred_is_approved,
+                CASE WHEN registrations.payment_proof_base64 IS NOT NULL AND TRIM(registrations.payment_proof_base64) <> "" THEN 1 ELSE 0 END AS converted_to_purchase
          FROM registrations
          LEFT JOIN registration_admin_state ON registration_admin_state.registration_id = registrations.id
          LEFT JOIN registration_meta ON registration_meta.registration_id = registrations.id

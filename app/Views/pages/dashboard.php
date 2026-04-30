@@ -184,6 +184,13 @@ ob_start();
  </button>
  </div>
  <p class="text-slate-600 mb-6">Gestiona todas las inscripciones de los usuarios a los foros.</p>
+ <div class="mb-4">
+ <select id="adminRegistrationsFilter" class="px-4 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-50">
+ <option value="all">Referidos: todos</option>
+ <option value="approved">Referidos aprobados</option>
+  <option value="rejected">Referidos rechazados</option>
+ </select>
+ </div>
  <div id="adminRegistrationsList" class="space-y-4">
  <p class="text-slate-500">Cargando inscripciones...</p>
  </div>
@@ -461,8 +468,8 @@ ob_start();
  <option value="all">Todos los estados</option>
  <option value="pending">Pendientes</option>
  <option value="payment_submitted">Comprobante enviado</option>
- <option value="approved">Aprobadas</option>
- <option value="rejected">Rechazadas</option>
+ <option value="approved">Referidos aprobados</option>
+  <option value="rejected">Referidos rechazados</option>
  </select>
  <button id="refreshAssociateRegistrations" class="ml-2 px-4 py-2 rounded-lg btn-primary font-bold transition-all">
  <i class="fa-solid fa-refresh"></i> Refrescar
