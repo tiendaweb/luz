@@ -35,9 +35,6 @@ $stmt = $pdo->prepare(
       AND ebooks.status = 'published'
      INNER JOIN forums
        ON forums.id = forum_ebooks.forum_id
-     INNER JOIN registrations
-       ON registrations.forum_id = forum_ebooks.forum_id
-      AND registrations.user_id = :user_id
      WHERE forum_ebooks.is_active = 1
      GROUP BY ebooks.id, forums.id
      ORDER BY ebooks.created_at DESC, ebooks.id DESC, forums.starts_at DESC, forums.id DESC"
@@ -50,6 +47,16 @@ foreach ($rows as $ebook) {
     $forumId = (int)$ebook['forum_id'];
     $permission = api_user_ebook_permission($pdo, $userId, $ebook, $forumId);
     $ebookId = (int)$ebook['id'];
+
+    api_ebook_log_access(
+        $pdo,
+        $userId,
+        $forumId,
+        $ebookId,
+        (bool)($permission['has_access'] ?? false),
+        (string)($permission['reason'] ?? 'Sin motivo explícito'),
+        'list'
+    );
 
     $downloadUrl = null;
     if (($permission['has_access'] ?? false) === true) {
@@ -80,6 +87,6 @@ api_json([
     'ok' => true,
     'items' => $items,
     'policy' => [
-        'grant_if' => 'status=approved OR attendance>=umbral',
+        'grant_if' => 'attendance>=umbral OR autorización manual OR estado premium',
     ],
 ]);
