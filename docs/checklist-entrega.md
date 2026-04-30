@@ -80,3 +80,29 @@ Confirmación explícita:
 3. Añadir validaciones de formulario más estrictas (patrones, mensajes por campo con `aria-describedby`).
 4. Implementar `caption` y/o descripciones adicionales en tablas para contexto semántico ampliado.
 5. Incluir página de estado “Demo/Simulado” para reforzar que no existe operación transaccional real.
+
+---
+
+## 7) Checklist de release con bloqueo de deploy (E2E aceptación)
+
+Comando único obligatorio:
+
+```bash
+bash scripts/run-acceptance.sh
+```
+
+Criterio de salida:
+- Revisar `tests/e2e/reports/final-report.json`.
+- Si `critical_failed=true` o `no_deploy=true` ⇒ **NO DEPLOY**.
+- Si cualquier módulo reporta `status=fail` ⇒ **NO DEPLOY**.
+
+Casos críticos mínimos:
+- Auth (`login/logout/me`) por rol.
+- Navegación SPA por hash.
+- CRUD admin (`pages/blog/users/registrations`).
+- Flujos asociado y usuario.
+- Certificados (admin y usuario).
+
+Evidencia de auditoría requerida para release:
+- `tests/e2e/reports/final-report.json`
+- `tests/e2e/reports/final-report.md`
