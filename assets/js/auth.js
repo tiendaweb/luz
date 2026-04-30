@@ -12,9 +12,36 @@
   let csrfToken = null;
   const roleVisibilitySelectors = ["user-only", "associate-only", "admin-only"];
 
+  function formatSchemaOutdatedError(payload, fallbackMessage) {
+    const errorPayload = payload && typeof payload.error === "object" ? payload.error : null;
+    if (!errorPayload || errorPayload.code !== "schema_outdated") {
+      return fallbackMessage;
+    }
+
+    const baseMessage = errorPayload.message || fallbackMessage;
+    const lines = [
+      baseMessage,
+      "",
+      "Ejecutá en la raíz del proyecto: php scripts/migrate.php"
+    ];
+
+    const pendingMigrations = Array.isArray(errorPayload.details?.pending_migrations)
+      ? errorPayload.details.pending_migrations.filter((item) => typeof item === "string" && item.trim() !== "")
+      : [];
+
+    if (pendingMigrations.length > 0) {
+      lines.push("", `Migraciones pendientes: ${pendingMigrations.join(", ")}`);
+    }
+
+    return lines.join(" ");
+  }
+
   function getErrorMessage(payload) {
-    if (payload && typeof payload.error === "object" && payload.error.message) return payload.error.message;
-    return payload?.error || "Error de comunicación con el servidor.";
+    const fallbackMessage = payload?.error || "Error de comunicación con el servidor.";
+    if (payload && typeof payload.error === "object" && payload.error.message) {
+      return formatSchemaOutdatedError(payload, payload.error.message);
+    }
+    return formatSchemaOutdatedError(payload, fallbackMessage);
   }
 
   function updateSecurityState(payload) {
