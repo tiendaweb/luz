@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../_bootstrap.php';
-require_once __DIR__ . '/../../app/Services/SignatureGenerator.php';
+require_once __DIR__ . '/../../../app/Services/SignatureGenerator.php';
 
 $user = api_current_user();
 if (!is_array($user) || ($user['role'] ?? '') !== 'admin') {
