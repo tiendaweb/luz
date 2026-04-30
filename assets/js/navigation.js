@@ -96,6 +96,42 @@
     return normalizedTab;
   };
 
+  const dashboardActionHandlers = {
+    logout: () => window.logout?.(),
+    "refresh-registrations": () => window.dashboardTabs?.loadData?.("registrations"),
+    "refresh-adminvalidate": () => window.dashboardTabs?.loadData?.("adminvalidate")
+  };
+
+  const runDashboardAction = (actionName) => {
+    if (!actionName) return;
+    if (dashboardActionHandlers[actionName]) {
+      dashboardActionHandlers[actionName]();
+      return;
+    }
+    if (actionName.startsWith("refresh-")) {
+      const tabName = actionName.replace("refresh-", "");
+      window.dashboardTabs?.loadData?.(tabName);
+    }
+  };
+
+  const onDashboardSidebarClick = (event) => {
+    const trigger = event.target.closest("[data-tab], [data-action]");
+    if (!trigger) return;
+    if (!event.currentTarget.contains(trigger)) return;
+
+    const tabName = trigger.getAttribute("data-tab");
+    if (tabName) {
+      setDashboardTab(tabName);
+      return;
+    }
+
+    const actionName = trigger.getAttribute("data-action");
+    runDashboardAction(actionName);
+  };
+
+  const sidebarRoot = document.querySelector("aside");
+  sidebarRoot?.addEventListener("click", onDashboardSidebarClick);
+
   function getDefaultDashTabByRole(roleName) {
     const role = normalizeRole(roleName);
     if (role === "admin") return "profile";
@@ -115,6 +151,8 @@
   };
 
   window.dashboardTabs = window.dashboardTabs || {};
+  // Legacy shim: keep wrapper until all HTML views stop invoking global calls directly.
+  // Retirement target: after 2026-06-30 audit verifies no inline onclick usage remains.
   window.dashboardTabs.set = setDashboardTab;
 
   window.addEventListener("hashchange", () => {
