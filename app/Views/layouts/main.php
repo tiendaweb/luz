@@ -75,6 +75,56 @@ function render_main_layout(array $config): void
         <?= $content ?>
     </main>
 <?php require __DIR__ . '/../partials/footer.php'; ?>
+<?php if ($role === 'admin'): ?>
+    <button id="adminThemeWidgetButton" type="button" class="fixed bottom-6 right-6 z-[70] w-14 h-14 rounded-full text-white shadow-xl hover:scale-105 transition-transform" style="background-color: var(--color-accent);" aria-label="Abrir panel de tema">
+        <i class="fa-solid fa-palette text-lg"></i>
+    </button>
+
+    <div id="adminThemeWidgetModal" class="fixed inset-0 z-[80] hidden" aria-hidden="true">
+        <div class="absolute inset-0 bg-slate-900/50" data-theme-close></div>
+        <div class="relative max-w-3xl mx-auto mt-12 bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[86vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-slate-900">Theme rápido (Admin)</h3>
+                <button type="button" class="text-slate-500 hover:text-slate-900" data-theme-close><i class="fa-solid fa-xmark text-2xl"></i></button>
+            </div>
+            <form id="adminThemeWidgetForm" class="space-y-6">
+                <section>
+                    <h4 class="font-bold text-slate-800 mb-3">Colores rápidos</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label class="text-sm font-semibold text-slate-700">Primario<input data-theme-input="colors.primary" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Secundario<input data-theme-input="colors.secondary" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Acento<input data-theme-input="colors.accent" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                    </div>
+                </section>
+                <section>
+                    <h4 class="font-bold text-slate-800 mb-3">Tipografía</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="text-sm font-semibold text-slate-700">Fuente
+                            <select data-theme-input="typography.font_family" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2">
+                                <option>Plus Jakarta Sans</option><option>Inter</option><option>Roboto</option><option>Montserrat</option><option>Lato</option>
+                            </select>
+                        </label>
+                        <label class="text-sm font-semibold text-slate-700">Tamaño base
+                            <input data-theme-input="typography.font_size_base" type="text" placeholder="16px" class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2"/>
+                        </label>
+                    </div>
+                </section>
+                <section>
+                    <h4 class="font-bold text-slate-800 mb-3">Vista previa</h4>
+                    <div id="adminThemeWidgetPreview" class="rounded-2xl border border-slate-200 p-4" style="background: var(--color-surface); color: var(--color-text);">
+                        <p class="font-bold mb-2">Así se verá el tema</p>
+                        <button type="button" class="px-4 py-2 rounded-full text-white" style="background: var(--color-accent);">Botón ejemplo</button>
+                    </div>
+                </section>
+                <div class="flex flex-wrap gap-3 justify-end">
+                    <button type="button" id="adminThemeWidgetReset" class="px-4 py-2 rounded-xl border border-slate-300 font-semibold">Restablecer</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl text-white font-bold" style="background: var(--color-accent);">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+<?php endif; ?>
+<script src="/assets/js/admin-theme-widget.js"></script>
 <?php foreach ($scripts as $script): ?>
     <script src="<?= htmlspecialchars($script, ENT_QUOTES, 'UTF-8') ?>"></script>
 <?php endforeach; ?>
