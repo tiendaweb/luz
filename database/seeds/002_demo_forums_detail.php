@@ -3,6 +3,12 @@
 declare(strict_types=1);
 
 return static function (PDO $pdo): void {
+
+    $forumInsertStmt = $pdo->prepare(
+        'INSERT INTO forums (code, title, description, platform_type, platform_url, timezone, status, speaker_json, starts_at)
+         SELECT :code, :title, :description, :platform_type, :platform_url, :timezone, :status, :speaker_json, :starts_at
+         WHERE NOT EXISTS (SELECT 1 FROM forums WHERE code = :code)'
+    );
     $forumUpdateStmt = $pdo->prepare(
         'UPDATE forums
          SET objective = :objective,
@@ -87,7 +93,49 @@ return static function (PDO $pdo): void {
                 ],
             ],
         ],
+        [
+            'code' => 'evening_premium',
+            'objective' => 'Desarrollar estrategias avanzadas de coordinación clínica para equipos que requieren supervisión especializada.',
+            'topics_json' => json_encode([
+                'Supervisión de casos críticos',
+                'Diseño de planes de intervención escalonada',
+                'Derivación y seguimiento interdisciplinario',
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            'modality' => 'Virtual en vivo por Zoom (cupo premium)',
+            'requirements' => 'Acceso por evaluación previa. Incluye materiales premium, sesión de preguntas extendida y mentoría posterior.',
+            'seats_total' => 40,
+            'seats_available' => 12,
+            'cta_label' => 'Aplicar al foro premium',
+            'cta_url' => '/#view-forums',
+            'guests' => [
+                [
+                    'full_name' => 'Maria Luz Genovese',
+                    'role' => 'Directora y moderadora',
+                    'bio' => 'Psicóloga Social especializada en coordinación de grupos operativos y salud mental comunitaria.',
+                    'sort_order' => 1,
+                ],
+                [
+                    'full_name' => 'Lic. Andrea Sosa',
+                    'role' => 'Supervisora clínica invitada',
+                    'bio' => 'Especialista en intervención clínica breve y acompañamiento a equipos de alto desgaste.',
+                    'sort_order' => 2,
+                ],
+            ],
+        ]
     ];
+
+
+    $forumInsertStmt->execute([
+        'code' => 'evening_premium',
+        'title' => 'Foro Premium Nocturno',
+        'description' => 'Cohorte intensiva con beneficios exclusivos y seguimiento personalizado para casos complejos.',
+        'platform_type' => 'zoom',
+        'platform_url' => 'https://zoom.us/j/psme-premium-noche',
+        'timezone' => 'America/Mexico_City',
+        'status' => 'published',
+        'speaker_json' => '[{"name":"Maria Luz Genovese","role":"Directora"},{"name":"Lic. Andrea Sosa","role":"Supervisora clínica"}]',
+        'starts_at' => '2026-05-10T01:00:00Z',
+    ]);
 
     $forumIdStmt = $pdo->prepare('SELECT id FROM forums WHERE code = :code LIMIT 1');
 
