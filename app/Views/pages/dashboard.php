@@ -269,6 +269,10 @@ ob_start();
  <div id="dashTab-settings-content" class="hidden admin-only space-y-8">
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
  <h3 class="text-2xl font-bold text-slate-900 mb-6">Ajustes del Sistema</h3>
+ <div class="flex gap-2 mb-6">
+  <button id="settings-subtab-general" type="button" class="px-4 py-2 rounded-lg bg-slate-100 font-bold" onclick="setSettingsSubtab('general')">General</button>
+  <button id="settings-subtab-styles" type="button" class="px-4 py-2 rounded-lg font-bold" onclick="setSettingsSubtab('styles')">Estilos</button>
+ </div>
  <form id="adminSettingsForm" class="space-y-6">
  <div class="border-b border-slate-200 pb-6">
  <h4 class="font-bold text-slate-900 mb-4">Contacto Público</h4>
@@ -301,10 +305,30 @@ ob_start();
  <i class="fa-solid fa-save mr-2"></i> Guardar Cambios
  </button>
  </form>
+ <div id="settingsStylesPanel" class="hidden space-y-4">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+   <div><label class="block text-sm font-bold mb-2">Color primario</label><input name="theme_colors_primary" type="color" class="w-full h-12 rounded-xl border"></div>
+   <div><label class="block text-sm font-bold mb-2">Color secundario</label><input name="theme_colors_secondary" type="color" class="w-full h-12 rounded-xl border"></div>
+   <div><label class="block text-sm font-bold mb-2">Color acento</label><input name="theme_colors_accent" type="color" class="w-full h-12 rounded-xl border"></div>
+   <div><label class="block text-sm font-bold mb-2">Tipografía</label><select name="theme_typography_font_family" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50"><option>Plus Jakarta Sans</option><option>Inter</option><option>Roboto</option><option>Montserrat</option><option>Lato</option></select></div>
+   <div><label class="block text-sm font-bold mb-2">Radio (md)</label><input name="theme_radius_md" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50" placeholder="16px"></div>
+   <div><label class="block text-sm font-bold mb-2">Sombra tarjeta</label><input name="theme_shadows_card" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50"></div>
+   <div><label class="block text-sm font-bold mb-2">Espaciado (md)</label><input name="theme_spacing_md" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50"></div>
+   <div><label class="block text-sm font-bold mb-2">Tamaño botón</label><select name="theme_buttons_size" class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-slate-50"><option value="sm">sm</option><option value="md">md</option><option value="lg">lg</option></select></div>
+  </div>
+  <div id="themePreview" class="rounded-2xl border border-slate-200 p-4">
+   <p class="font-bold mb-2">Preview instantáneo</p><button type="button" class="btn-primary">Botón de ejemplo</button>
+  </div>
+  <div class="flex gap-2">
+   <button type="button" id="saveThemeBtn" class="px-6 py-3 rounded-xl btn-primary font-bold">Guardar estilos</button>
+   <button type="button" id="resetThemeBtn" class="px-6 py-3 rounded-xl btn-secondary font-bold">Restablecer tema por defecto</button>
+  </div>
+  <p id="themeStatus" class="text-sm text-slate-600"></p>
+ </div>
  </div>
  </div>
 
- <!-- Tab: Admin - Asociados -->
+<!-- Tab: Admin - Asociados -->
  <div id="dashTab-associates-content" class="hidden admin-only space-y-8">
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
  <div class="flex items-center justify-between mb-6">
