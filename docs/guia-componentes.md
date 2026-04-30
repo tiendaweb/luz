@@ -4,13 +4,44 @@
 
 Paleta centralizada en `:root`:
 
-- `--color-primary`, `--color-primary-700`, `--color-primary-contrast`
-- `--color-accent`, `--color-accent-700`, `--color-accent-contrast`
-- `--color-surface`, `--color-surface-muted`, `--color-border`
-- `--color-text`, `--color-text-muted`
-- Estados AA: `--color-status-approved-*`, `--color-status-pending-*`, `--color-status-rejected-*`
+### Inventario por categoría
+
+- **Fondo / superficie**: `--color-primary`, `--color-primary-700`, `--color-surface`, `--color-surface-muted`.
+- **Texto**: `--color-text`, `--color-text-muted`, `--color-primary-contrast`, `--color-accent-contrast`.
+- **Bordes**: `--color-border`.
+- **Contraste / énfasis**: `--color-accent`, `--color-accent-700`.
+- **Estados**: `--color-status-approved-bg`, `--color-status-approved-text`, `--color-status-pending-bg`, `--color-status-pending-text`, `--color-status-rejected-bg`, `--color-status-rejected-text`.
 
 > Regla: evitar hex hardcodeado en componentes nuevos.
+
+## Tokens del widget de tema admin
+
+### Editables (valor explícito)
+
+- `colors.primary`, `colors.secondary`, `colors.accent`, `colors.surface`, `colors.text`
+- `colors.border`, `colors.text_muted`
+- `colors.primary_contrast`, `colors.accent_700`, `colors.accent_contrast`
+- `colors.status_approved_bg`, `colors.status_approved_text`
+- `colors.status_pending_bg`, `colors.status_pending_text`
+- `colors.status_rejected_bg`, `colors.status_rejected_text`
+- `typography.font_family`, `typography.font_size_base`
+
+### Derivados automáticos (fallback)
+
+- `--color-primary-700`: mezcla de `primary` hacia negro (~22%) cuando falta `secondary`.
+- `--color-primary-contrast`: contraste automático (texto claro/oscuro) sobre `primary`.
+- `--color-accent-700`: mezcla de `accent` hacia negro (~20%) cuando falta explícito.
+- `--color-accent-contrast`: contraste automático sobre `accent`.
+- `--color-surface-muted`: mezcla sutil de `surface` con tinta oscura (~3%).
+- `--color-border`: mezcla de `surface` con tinta oscura (~12%) cuando no se define.
+- `--color-text-muted`: mezcla de `text` + `surface` (~35%) cuando no se define.
+- Estados (`*_text`): contraste automático sobre su respectivo `*_bg` cuando no se define.
+
+### Precedencia
+
+1. **Valor explícito del admin** (guardado en `/api/admin/theme`).
+2. **Valor derivado automático** (si el explícito falta o está vacío).
+3. **Default del sistema** (si no hay valor persistido).
 
 ## Usos por componente
 

@@ -16,6 +16,17 @@ function admin_theme_defaults(): array
             'accent' => '#8a5a2b',
             'surface' => '#ffffff',
             'text' => '#0f172a',
+            'border' => '#e2e8f0',
+            'text_muted' => '#475569',
+            'primary_contrast' => '#4e3b2a',
+            'accent_700' => '#6f4620',
+            'accent_contrast' => '#ffffff',
+            'status_approved_bg' => '#dcfce7',
+            'status_approved_text' => '#14532d',
+            'status_pending_bg' => '#fef3c7',
+            'status_pending_text' => '#78350f',
+            'status_rejected_bg' => '#fee2e2',
+            'status_rejected_text' => '#7f1d1d',
         ],
         'typography' => [
             'font_family' => 'Plus Jakarta Sans',
@@ -56,7 +67,7 @@ function admin_theme_validate(array $input): array {
     $defaults = admin_theme_defaults();
     $theme = array_replace_recursive($defaults, $input);
 
-    foreach (['primary', 'secondary', 'accent', 'surface', 'text'] as $k) {
+    foreach (['primary', 'secondary', 'accent', 'surface', 'text', 'border', 'text_muted', 'primary_contrast', 'accent_700', 'accent_contrast', 'status_approved_bg', 'status_approved_text', 'status_pending_bg', 'status_pending_text', 'status_rejected_bg', 'status_rejected_text'] as $k) {
         $theme['colors'][$k] = admin_theme_validate_hex('colors.' . $k, (string)($theme['colors'][$k] ?? ''));
     }
 
@@ -105,7 +116,9 @@ $pdo = api_require_db();
 if ($method === 'PUT') {
     api_require_role('admin');
     $input = api_read_json();
-    $theme = admin_theme_validate((array)($input['theme'] ?? []));
+    $existingTheme = admin_theme_read($pdo);
+    $rawTheme = (array)($input['theme'] ?? []);
+    $theme = admin_theme_validate(array_replace_recursive($existingTheme, $rawTheme));
     $stmt = $pdo->prepare('INSERT INTO site_settings (setting_key, value_type, value_text, updated_at) VALUES (:setting_key, :value_type, :value_text, CURRENT_TIMESTAMP) ON CONFLICT(setting_key) DO UPDATE SET value_text = excluded.value_text, value_type = excluded.value_type, updated_at = CURRENT_TIMESTAMP');
     $stmt->execute(['setting_key' => ADMIN_THEME_KEY, 'value_type' => 'json', 'value_text' => json_encode($theme, JSON_UNESCAPED_UNICODE)]);
 }

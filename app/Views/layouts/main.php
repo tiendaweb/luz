@@ -89,11 +89,26 @@ function render_main_layout(array $config): void
             </div>
             <form id="adminThemeWidgetForm" class="space-y-6">
                 <section>
-                    <h4 class="font-bold text-slate-800 mb-3">Colores rápidos</h4>
+                    <h4 class="font-bold text-slate-800 mb-3">Colores</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <label class="text-sm font-semibold text-slate-700">Primario<input data-theme-input="colors.primary" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
                         <label class="text-sm font-semibold text-slate-700">Secundario<input data-theme-input="colors.secondary" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
                         <label class="text-sm font-semibold text-slate-700">Acento<input data-theme-input="colors.accent" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Borde<input data-theme-input="colors.border" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Texto<input data-theme-input="colors.text" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Texto atenuado<input data-theme-input="colors.text_muted" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Contraste primario<input data-theme-input="colors.primary_contrast" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Acento 700<input data-theme-input="colors.accent_700" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Contraste acento<input data-theme-input="colors.accent_contrast" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                    </div>
+                    <h5 class="font-semibold text-slate-700 mt-4 mb-2">Estados</h5>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="text-sm font-semibold text-slate-700">Aprobado fondo<input data-theme-input="colors.status_approved_bg" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Aprobado texto<input data-theme-input="colors.status_approved_text" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Pendiente fondo<input data-theme-input="colors.status_pending_bg" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Pendiente texto<input data-theme-input="colors.status_pending_text" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Rechazado fondo<input data-theme-input="colors.status_rejected_bg" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
+                        <label class="text-sm font-semibold text-slate-700">Rechazado texto<input data-theme-input="colors.status_rejected_text" type="color" class="mt-1 block w-full h-10 rounded-lg border"/></label>
                     </div>
                 </section>
                 <section>

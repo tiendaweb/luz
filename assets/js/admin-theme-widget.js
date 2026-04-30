@@ -11,7 +11,24 @@
   const inputNodes = Array.from(document.querySelectorAll('[data-theme-input]'));
 
   const defaults = {
-    colors: { primary: '#faf5f0', secondary: '#d9b9a0', accent: '#8a5a2b', surface: '#ffffff', text: '#0f172a' },
+    colors: {
+      primary: '#faf5f0',
+      secondary: '#d9b9a0',
+      accent: '#8a5a2b',
+      surface: '#ffffff',
+      text: '#0f172a',
+      border: '#e2e8f0',
+      text_muted: '#475569',
+      primary_contrast: '#4e3b2a',
+      accent_700: '#6f4620',
+      accent_contrast: '#ffffff',
+      status_approved_bg: '#dcfce7',
+      status_approved_text: '#14532d',
+      status_pending_bg: '#fef3c7',
+      status_pending_text: '#78350f',
+      status_rejected_bg: '#fee2e2',
+      status_rejected_text: '#7f1d1d'
+    },
     typography: { font_family: 'Plus Jakarta Sans', font_size_base: '16px' }
   };
 
@@ -29,12 +46,73 @@
 
   const getDeep = (obj, path) => path.split('.').reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : ''), obj);
 
+  const toRgb = (hex) => {
+    if (!/^#[0-9a-fA-F]{6}$/.test(hex || '')) return null;
+    return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
+  };
+  const toHex = (rgb) => `#${rgb.map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+  const mix = (a, b, ratio = 0.5) => {
+    const rgbA = toRgb(a); const rgbB = toRgb(b);
+    if (!rgbA) return b; if (!rgbB) return a;
+    return toHex(rgbA.map((ch, i) => Math.round(ch * (1 - ratio) + rgbB[i] * ratio)));
+  };
+  const luminance = (hex) => {
+    const rgb = toRgb(hex) || [0, 0, 0];
+    const srgb = rgb.map((v) => {
+      const c = v / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+  };
+  const contrastColor = (bg) => (luminance(bg) > 0.45 ? '#0f172a' : '#ffffff');
+  const pick = (value, fallback) => (value && value.trim() ? value : fallback);
+
+  const resolvedColors = () => {
+    const c = draft.colors || {};
+    const primary = pick(c.primary, defaults.colors.primary);
+    const surface = pick(c.surface, defaults.colors.surface);
+    const accent = pick(c.accent, defaults.colors.accent);
+    const text = pick(c.text, defaults.colors.text);
+    return {
+      primary,
+      primary700: pick(c.secondary, mix(primary, '#000000', 0.22)),
+      primaryContrast: pick(c.primary_contrast, contrastColor(primary)),
+      accent,
+      accent700: pick(c.accent_700, mix(accent, '#000000', 0.2)),
+      accentContrast: pick(c.accent_contrast, contrastColor(accent)),
+      surface,
+      surfaceMuted: mix(surface, '#0f172a', 0.03),
+      border: pick(c.border, mix(surface, '#0f172a', 0.12)),
+      text,
+      textMuted: pick(c.text_muted, mix(text, surface, 0.35)),
+      approvedBg: pick(c.status_approved_bg, mix('#22c55e', '#ffffff', 0.8)),
+      approvedText: pick(c.status_approved_text, contrastColor(pick(c.status_approved_bg, '#dcfce7'))),
+      pendingBg: pick(c.status_pending_bg, mix('#f59e0b', '#ffffff', 0.78)),
+      pendingText: pick(c.status_pending_text, contrastColor(pick(c.status_pending_bg, '#fef3c7'))),
+      rejectedBg: pick(c.status_rejected_bg, mix('#ef4444', '#ffffff', 0.8)),
+      rejectedText: pick(c.status_rejected_text, contrastColor(pick(c.status_rejected_bg, '#fee2e2')))
+    };
+  };
+
   const applyPreview = () => {
-    document.documentElement.style.setProperty('--color-primary', draft.colors.primary);
-    document.documentElement.style.setProperty('--color-primary-700', draft.colors.secondary);
-    document.documentElement.style.setProperty('--color-accent', draft.colors.accent);
-    document.documentElement.style.setProperty('--color-surface', draft.colors.surface);
-    document.documentElement.style.setProperty('--color-text', draft.colors.text);
+    const colors = resolvedColors();
+    document.documentElement.style.setProperty('--color-primary', colors.primary);
+    document.documentElement.style.setProperty('--color-primary-700', colors.primary700);
+    document.documentElement.style.setProperty('--color-primary-contrast', colors.primaryContrast);
+    document.documentElement.style.setProperty('--color-accent', colors.accent);
+    document.documentElement.style.setProperty('--color-accent-700', colors.accent700);
+    document.documentElement.style.setProperty('--color-accent-contrast', colors.accentContrast);
+    document.documentElement.style.setProperty('--color-surface', colors.surface);
+    document.documentElement.style.setProperty('--color-surface-muted', colors.surfaceMuted);
+    document.documentElement.style.setProperty('--color-border', colors.border);
+    document.documentElement.style.setProperty('--color-text', colors.text);
+    document.documentElement.style.setProperty('--color-text-muted', colors.textMuted);
+    document.documentElement.style.setProperty('--color-status-approved-bg', colors.approvedBg);
+    document.documentElement.style.setProperty('--color-status-approved-text', colors.approvedText);
+    document.documentElement.style.setProperty('--color-status-pending-bg', colors.pendingBg);
+    document.documentElement.style.setProperty('--color-status-pending-text', colors.pendingText);
+    document.documentElement.style.setProperty('--color-status-rejected-bg', colors.rejectedBg);
+    document.documentElement.style.setProperty('--color-status-rejected-text', colors.rejectedText);
     document.documentElement.style.setProperty('--font-family-base', `${draft.typography.font_family}, sans-serif`);
     document.documentElement.style.setProperty('--font-size-base', draft.typography.font_size_base);
   };
