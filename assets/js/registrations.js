@@ -247,14 +247,18 @@
       return;
     }
 
-    target.innerHTML = items.slice(0, 12).map((item) => `
+    target.innerHTML = items.slice(0, 40).map((item) => `
       <article class="rounded-xl border border-slate-200 bg-slate-50 p-3">
-        <div class="flex items-center justify-between gap-3">
+        <div class="grid gap-3 md:grid-cols-[2fr_1fr_1fr_auto] md:items-center">
           <div>
             <p class="font-bold">#${item.id} · ${item.full_name}</p>
             <p class="text-xs text-slate-500">${item.document_id} · ${item.forum_slot}</p>
             <p class="text-xs text-slate-500">Ref: ${item.referral_code || '—'} · ${item.price_amount || '—'} ${item.currency_code || ''}</p>
             ${renderStatusTimeline(item.status_history)}
+          </div>
+          <div class="text-xs"><p>Pago: <span class="font-bold">${item.has_payment_proof ? 'Adjunto' : 'Pendiente'}</span></p><p>Firma: <span class="font-bold">${item.has_real_signature ? 'Adjunta' : 'Faltante'}</span></p></div>
+          <div class="flex gap-2 text-xs">
+            <button data-action="review-evidence" data-id="${item.id}" class="rounded-lg bg-slate-700 px-2 py-1 font-bold text-white">Ver evidencia</button>
           </div>
           <div class="flex items-center gap-2">
             <select data-action="status" data-id="${item.id}" class="rounded-lg border border-slate-300 px-2 py-1 text-xs">
@@ -661,7 +665,19 @@
         window.appApiFetch("/api/admin/associates"),
         window.appApiFetch("/api/admin/users")
       ]);
-      renderAdminRegistrations(registrations.items || []);
+      const list = (registrations.items || []).map((item) => ({
+        ...item,
+        has_real_signature: Boolean(item.signature_data_url || item.signature_data)
+      }));
+      const filter = String(document.getElementById("adminRegistrationsFilter")?.value || "all");
+      const filtered = list.filter((item) => {
+        if (filter === "missing_signature") return !item.has_real_signature;
+        if (filter === "payment_pending") return !item.has_payment_proof;
+        if (filter === "evidence_rejected") return item.payment_proof_status === "rejected" || item.signature_status === "rejected";
+        if (filter === "approved" || filter === "rejected") return item.status === filter;
+        return true;
+      });
+      renderAdminRegistrations(filtered);
       renderAdminAssociates(associates.items || []);
       renderAdminPayments(registrations.items || []);
       adminUsersCache = Array.isArray(users.items) ? users.items : [];
@@ -849,11 +865,17 @@
     const refreshUsers = document.getElementById("refreshAdminUsers");
     const usersList = document.getElementById("usersList");
     const usersSearch = document.getElementById("adminUsersSearch");
+    const quickModal = document.getElementById("adminRegistrationQuickReviewModal");
+    const quickClose = document.getElementById("closeAdminRegistrationQuickReview");
 
     refreshRegs?.addEventListener("click", () => loadAdminData());
     refreshAssoc?.addEventListener("click", () => loadAdminData());
     refreshUsers?.addEventListener("click", () => loadAdminData());
     usersSearch?.addEventListener("input", () => renderAdminUsers(adminUsersCache));
+    quickClose?.addEventListener("click", () => quickModal?.classList.add("hidden"));
+    quickModal?.addEventListener("click", (event) => {
+      if (event.target === quickModal) quickModal.classList.add("hidden");
+    });
 
     regList?.addEventListener("change", async (event) => {
       const target = event.target;
@@ -878,10 +900,36 @@
 
     regList?.addEventListener("click", async (event) => {
       const target = event.target;
-      if (!(target instanceof HTMLElement) || target.dataset.action !== "delete") return;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.dataset.action === "review-evidence") {
+        const id = Number(target.dataset.id || 0);
+        if (!id) return;
+        const result = await window.appApiFetch(`/api/admin/registration-detail?id=${encodeURIComponent(id)}`);
+        openAdminEvidenceModal(result.item || null);
+        return;
+      }
+      if (target.dataset.action !== "delete") return;
       await window.appApiFetch(`/api/admin/registrations?id=${encodeURIComponent(target.dataset.id || '')}`, { method: "DELETE" });
       loadAdminData();
       window.refreshDashboardSummary();
+    });
+
+    quickModal?.addEventListener("click", async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !target.dataset.quick) return;
+      const [asset, status] = String(target.dataset.quick).split(":");
+      const registrationId = Number(target.dataset.id || 0);
+      const reason = (window.prompt("Motivo obligatorio para esta revisión:") || "").trim();
+      if (!reason) {
+        window.alert("El motivo es obligatorio.");
+        return;
+      }
+      await window.appApiFetch("/api/admin/registration-detail", {
+        method: "PATCH",
+        body: JSON.stringify({ registrationId, asset, status, reason })
+      });
+      quickModal.classList.add("hidden");
+      loadAdminData();
     });
 
     usersList?.addEventListener("click", async (event) => {
@@ -914,6 +962,23 @@
         setAdminUsersFeedback(error instanceof Error ? error.message : "No se pudo guardar los flags.", true);
       }
     });
+  }
+
+  function openAdminEvidenceModal(item) {
+    const modal = document.getElementById("adminRegistrationQuickReviewModal");
+    const body = document.getElementById("adminRegistrationQuickReviewBody");
+    if (!modal || !body || !item) return;
+    const img = item.payment_proof_preview ? `<img src="${item.payment_proof_preview}" class="max-h-64 rounded-lg border border-slate-200" alt="Comprobante">` : '<p class="text-rose-700">Sin evidencia de pago</p>';
+    const sig = item.signature_preview ? `<img src="${item.signature_preview}" class="max-h-40 rounded-lg border border-slate-200" alt="Firma">` : '<p class="text-rose-700">Sin firma</p>';
+    const history = (item.review_history || []).map((r) => `<li>${r.asset}: ${r.previous_status || 'pending'} → ${r.next_status} · ${r.reason} · ${r.actor_role} · ${r.created_at}</li>`).join("");
+    body.innerHTML = `<p class="font-bold">#${item.id} · ${item.full_name}</p>${img}${sig}
+      <div class="grid grid-cols-2 gap-2">
+      <button data-quick="payment_proof:approved" data-id="${item.id}" class="rounded bg-amber-600 px-2 py-1 text-xs font-bold text-white">Aprobar pago</button>
+      <button data-quick="payment_proof:rejected" data-id="${item.id}" class="rounded bg-rose-600 px-2 py-1 text-xs font-bold text-white">Rechazar pago</button>
+      <button data-quick="signature:approved" data-id="${item.id}" class="rounded bg-amber-600 px-2 py-1 text-xs font-bold text-white">Aprobar firma</button>
+      <button data-quick="signature:rejected" data-id="${item.id}" class="rounded bg-rose-600 px-2 py-1 text-xs font-bold text-white">Rechazar firma</button>
+      </div><ul class="text-xs">${history || '<li>Sin historial</li>'}</ul>`;
+    modal.classList.remove("hidden");
   }
 
 
@@ -1277,3 +1342,5 @@ async function loadReferralLink() {
     await loadUserBenefits();
   });
 })();
+    const registrationFilter = document.getElementById("adminRegistrationsFilter");
+    registrationFilter?.addEventListener("change", () => loadAdminData());

@@ -19,6 +19,9 @@ if ($method === 'GET') {
                 registrations.needs_cert, registrations.created_at,
                 registrations.payment_proof_name, registrations.payment_proof_mime,
                 registrations.payment_proof_size, registrations.payment_proof_base64,
+                registrations.signature_data_url, registrations.signature_data,
+                COALESCE(rar.payment_proof_status, "pending") AS payment_proof_status,
+                COALESCE(rar.signature_status, "pending") AS signature_status,
                 COALESCE(registration_admin_state.status, "pending") AS status,
                 registration_admin_state.note,
                 registration_admin_state.updated_by_user_id,
@@ -37,6 +40,7 @@ if ($method === 'GET') {
                 CASE WHEN registrations.payment_proof_base64 IS NOT NULL AND TRIM(registrations.payment_proof_base64) <> "" THEN 1 ELSE 0 END AS converted_to_purchase
          FROM registrations
          LEFT JOIN registration_admin_state ON registration_admin_state.registration_id = registrations.id
+         LEFT JOIN registration_asset_reviews rar ON rar.registration_id = registrations.id
          LEFT JOIN registration_meta ON registration_meta.registration_id = registrations.id
          LEFT JOIN users ON users.id = registration_meta.referrer_user_id
          ORDER BY registrations.id DESC'
@@ -49,6 +53,7 @@ if ($method === 'GET') {
         $row['payment_proof_preview'] = ($proofBase64 !== '' && $proofMime !== '')
             ? ('data:' . $proofMime . ';base64,' . $proofBase64)
             : null;
+        $row['has_real_signature'] = !empty($row['signature_data_url']) || !empty($row['signature_data']);
     }
     unset($row);
 

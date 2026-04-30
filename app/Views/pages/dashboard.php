@@ -187,9 +187,21 @@ ob_start();
  <div class="mb-4">
  <select id="adminRegistrationsFilter" class="px-4 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-50">
  <option value="all">Referidos: todos</option>
+ <option value="missing_signature">Faltante de firma</option>
+ <option value="payment_pending">Pago pendiente</option>
+ <option value="evidence_rejected">Evidencia rechazada</option>
  <option value="approved">Referidos aprobados</option>
   <option value="rejected">Referidos rechazados</option>
  </select>
+ </div>
+ <div id="adminRegistrationQuickReviewModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 p-4">
+  <div class="mx-auto max-w-3xl rounded-2xl bg-white p-6 shadow-2xl">
+   <div class="mb-4 flex items-center justify-between">
+    <h4 class="text-lg font-bold text-slate-900">Revisión rápida de evidencia</h4>
+    <button id="closeAdminRegistrationQuickReview" class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-bold">Cerrar</button>
+   </div>
+   <div id="adminRegistrationQuickReviewBody" class="space-y-4 text-sm text-slate-700"></div>
+  </div>
  </div>
  <div id="adminRegistrationsList" class="space-y-4">
  <p class="text-slate-500">Cargando inscripciones...</p>
