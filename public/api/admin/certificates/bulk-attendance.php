@@ -84,7 +84,8 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    api_error('Error al emitir certificados: ' . $e->getMessage(), 500, 'database_error');
+    error_log(sprintf('[api/admin/certificates/bulk-attendance] %s in %s:%d', $e->getMessage(), $e->getFile(), $e->getLine()));
+    api_error('Error interno del servidor', 500, 'database_error');
 }
 
 api_json([
