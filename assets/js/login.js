@@ -1,8 +1,16 @@
 (() => {
   const DEMO_CREDENTIALS = {
-    admin: { username: 'admin@psme.local', password: 'Admin123*' },
-    associate: { username: 'asociado@psme.local', password: 'Asociado123*' },
-    user: { username: 'usuario@psme.local', password: 'Usuario123*' }
+    admin: [
+      { username: 'admin@psme.local', password: 'Admin123*' }
+    ],
+    associate: [
+      { username: 'asociado@psme.local', password: 'Asociado123*' },
+      { username: 'asociada.red@psme.local', password: 'Demo1234*' }
+    ],
+    user: [
+      { username: 'usuario@psme.local', password: 'Usuario123*' },
+      { username: 'usuario.directo@psme.local', password: 'Demo1234*' }
+    ]
   };
 
   function showLoginFeedback(type, message) {
@@ -39,7 +47,7 @@
 
   window.fillDemoCredentials = (role) => {
     const normalizedRole = normalizeRole(role);
-    const creds = DEMO_CREDENTIALS[normalizedRole];
+    const creds = DEMO_CREDENTIALS[normalizedRole][0];
 
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
@@ -53,6 +61,42 @@
     showLoginFeedback('success', `Credenciales demo cargadas para ${normalizedRole.toUpperCase()}.`);
     submitBtn.focus();
   };
+
+  async function tryDemoLogin(role) {
+    const normalizedRole = normalizeRole(role);
+    const candidates = DEMO_CREDENTIALS[normalizedRole] || [];
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('loginSubmitBtn');
+
+    if (!usernameInput || !passwordInput || !submitBtn || candidates.length === 0) return false;
+
+    showLoginFeedback('success', `Probando credenciales demo para ${normalizedRole.toUpperCase()}...`);
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+
+    try {
+      for (const candidate of candidates) {
+        usernameInput.value = candidate.username;
+        passwordInput.value = candidate.password;
+
+        try {
+          await loginRequest({ username: candidate.username, email: candidate.username, password: candidate.password });
+          window.location.assign('/dashboard');
+          return true;
+        } catch (error) {
+          // Intentar siguiente credencial demo compatible.
+        }
+      }
+
+      showLoginFeedback('error', 'No se encontró una credencial demo válida para este perfil. Ejecutá: php scripts/seed.php');
+      return false;
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+    }
+  }
 
   function formatSchemaOutdatedError(payload, fallbackMessage) {
     const errorPayload = payload && typeof payload.error === "object" ? payload.error : null;
@@ -115,8 +159,9 @@
     const demoButtons = document.querySelectorAll('[data-demo-role]');
 
     demoButtons.forEach((button) => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
         window.fillDemoCredentials(button.getAttribute('data-demo-role') || 'user');
+        await tryDemoLogin(button.getAttribute('data-demo-role') || 'user');
       });
     });
 
