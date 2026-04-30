@@ -251,74 +251,25 @@ function api_set_current_user(array $user): void
 function api_require_db(): PDO
 {
     try {
-        $pdo = app_db_connection();
+        return app_db_connection();
     } catch (Throwable $exception) {
         api_error('No se pudo inicializar la base de datos.', 500, 'db_unavailable', [
-            'error' => $exception->getMessage(),
             'db_path' => app_db_path(),
         ]);
     }
+}
 
-    static $migrated = false;
-
-    if (!$migrated) {
-        $pdo->exec('CREATE TABLE IF NOT EXISTS schema_migrations (filename TEXT PRIMARY KEY, executed_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)');
-
-        $migrationFiles = glob(__DIR__ . '/../../database/migrations/*.sql') ?: [];
-        sort($migrationFiles, SORT_NATURAL);
-
-        $checkStmt = $pdo->prepare('SELECT 1 FROM schema_migrations WHERE filename = :filename LIMIT 1');
-        $insertStmt = $pdo->prepare('INSERT INTO schema_migrations (filename) VALUES (:filename)');
-
-        foreach ($migrationFiles as $file) {
-            $filename = basename($file);
-            $checkStmt->execute(['filename' => $filename]);
-            $alreadyExecuted = $checkStmt->fetchColumn() !== false;
-            if ($alreadyExecuted) {
-                continue;
-            }
-
-            if ($filename === '002_forum_detail.sql') {
-                $forumColumns = $pdo->query('PRAGMA table_info(forums)')->fetchAll(PDO::FETCH_ASSOC);
-                $forumColumnNames = array_map(static fn(array $column): string => (string)$column['name'], $forumColumns);
-                if (in_array('objective', $forumColumnNames, true)) {
-                    $insertStmt->execute(['filename' => $filename]);
-                    continue;
-                }
-            }
-
-            if ($filename === '003_registration_state_audit.sql') {
-                $stateColumns = $pdo->query('PRAGMA table_info(registration_admin_state)')->fetchAll(PDO::FETCH_ASSOC);
-                $stateColumnNames = array_map(static fn(array $column): string => (string)$column['name'], $stateColumns);
-                if (in_array('updated_by_user_id', $stateColumnNames, true) && in_array('updated_by_role', $stateColumnNames, true)) {
-                    $insertStmt->execute(['filename' => $filename]);
-                    continue;
-                }
-            }
-
-            $migrationSql = file_get_contents($file);
-            if ($migrationSql === false) {
-                throw new RuntimeException(sprintf('No se pudo leer la migración: %s', $filename));
-            }
-
-            try {
-                $pdo->exec($migrationSql);
-            } catch (Throwable $exception) {
-                api_error('Falló la ejecución de una migración SQL.', 500, 'migration_failed', [
-                    'filename' => $filename,
-                    'error' => $exception->getMessage(),
-                ]);
-            }
-
-            $insertStmt->execute(['filename' => $filename]);
-        }
-
-        app_initialize_demo_data($pdo);
-
-        $migrated = true;
+function api_assert_schema_ready(): void
+{
+    $pdo = api_require_db();
+    $schemaStatus = app_db_schema_status($pdo);
+    if (($schemaStatus['ok'] ?? false) === true) {
+        return;
     }
 
-    return $pdo;
+    api_error('Esquema de base de datos desactualizado. Ejecutá el comando de migración antes de iniciar la API.', 503, 'schema_outdated', [
+        'pending_migrations' => $schemaStatus['pending_migrations'] ?? [],
+    ]);
 }
 
 function api_audit(?int $userId, string $event): void
@@ -333,5 +284,6 @@ function api_audit(?int $userId, string $event): void
     ]);
 }
 
+api_assert_schema_ready();
 api_ensure_active_session();
 api_enforce_csrf();

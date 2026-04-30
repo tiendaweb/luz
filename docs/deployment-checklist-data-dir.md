@@ -17,12 +17,18 @@ Ejecutar antes de iniciar la API en cualquier entorno (dev/staging/prod):
 5. Verificar archivo `data/app.sqlite`:
    - Si no existe, crearlo: `touch data/app.sqlite`.
    - Verificar escritura: `test -w data/app.sqlite`.
-6. Validar espacio en disco suficiente para SQLite y archivos temporales.
-7. Probar inicialización de conexión en runtime:
+6. **Migrar esquema antes de levantar la API**:
+   - `php scripts/migrate.php`
+   - Confirmar salida final: `[migrate] Schema ready.`
+7. Validar que no queden migraciones pendientes:
+   - `php scripts/migrate.php` (idempotente; no debe fallar)
+8. Recién después de migrar, iniciar/reiniciar servicio web/API.
+9. Probar endpoint API de salud funcional:
    - Hacer una request a un endpoint API.
-   - Confirmar que no aparece `db_unavailable`.
-8. Si falla migración, revisar respuesta API para identificar:
-   - `error.code = migration_failed`
-   - `error.details.filename` con la migración exacta.
+   - Confirmar que no aparece `db_unavailable` ni `schema_outdated`.
+10. Si el esquema está desactualizado, la API devuelve error controlado:
+   - `error.code = schema_outdated`
+   - `error.message` operativo (sin stack trace)
+   - `error.details.pending_migrations` con archivos faltantes.
 
-> Nota: La API ahora responde errores controlados para problemas de permisos/ruta en DB, evitando fatal errors.
+> Nota: el startup de la API verifica versión de esquema en cada arranque/carga de bootstrap para alertar antes de procesar tráfico real.
