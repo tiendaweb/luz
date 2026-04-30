@@ -171,22 +171,22 @@
 
     const initialRole = document.body.getAttribute("data-active-role") || "guest";
     window.__auth.syncDashboardByRole(initialRole);
-    if (window.setDashTab) {
-      window.setDashTab(window.__navigation?.getDefaultDashTabByRole(initialRole) || "overview");
+    if (window.dashboardTabs?.set) {
+      window.dashboardTabs?.set(window.__navigation?.getDefaultDashTabByRole(initialRole) || "overview");
     }
     try {
       const me = await apiFetch("/api/auth/me");
       const sessionRole = me.user?.role || role;
       applyRoleUI(sessionRole, { redirectToDashboard: false });
       window.__auth.syncDashboardByRole(sessionRole);
-      if (window.setDashTab) {
-        window.setDashTab(window.__navigation?.getDefaultDashTabByRole(sessionRole) || "overview");
+      if (window.dashboardTabs?.set) {
+        window.dashboardTabs?.set(window.__navigation?.getDefaultDashTabByRole(sessionRole) || "overview");
       }
     } catch (_error) {
       applyRoleUI(role, { redirectToDashboard: false });
       window.__auth.syncDashboardByRole(role);
-      if (window.setDashTab) {
-        window.setDashTab(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
+      if (window.dashboardTabs?.set) {
+        window.dashboardTabs?.set(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
       }
     }
     if (window.__navigation?.updateHash) {
@@ -197,8 +197,8 @@
   window.addEventListener("app:role-changed", (event) => {
     const role = event.detail?.role || document.body.getAttribute("data-active-role") || "guest";
     window.__auth.syncDashboardByRole(role);
-    if (window.setDashTab) {
-      window.setDashTab(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
+    if (window.dashboardTabs?.set) {
+      window.dashboardTabs?.set(window.__navigation?.getDefaultDashTabByRole(role) || "overview");
     }
   });
 })();

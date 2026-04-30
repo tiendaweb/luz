@@ -65,7 +65,7 @@
     buttonElement?.querySelector("i")?.classList.toggle("rotate-180");
   };
 
-  window.setDashTab = (tabName) => {
+  const setDashboardTab = (tabName) => {
     const role = normalizeRole(document.body.getAttribute("data-active-role") || "guest");
     const allowedTabs = allowedTabsByRole[role] || allowedTabsByRole.guest;
     const normalizedTab = allowedTabs.includes(tabName) ? tabName : (window.__navigation?.getDefaultDashTabByRole(role) || "overview");
@@ -92,6 +92,7 @@
       selectedBtn.classList.add("text-amber-800");
     }
 
+    window.dashboardTabs?.loadData?.(normalizedTab);
     return normalizedTab;
   };
 
@@ -105,7 +106,18 @@
     return "overview";
   }
 
-  window.__navigation = { parseHashState, updateHash, closeMobileMenu, normalizeRole, normalizeView, getDefaultDashTabByRole };
+  window.__navigation = {
+    parseHashState,
+    updateHash,
+    closeMobileMenu,
+    normalizeRole,
+    normalizeView,
+    getDefaultDashTabByRole,
+    allowedTabsByRole
+  };
+
+  window.dashboardTabs = window.dashboardTabs || {};
+  window.dashboardTabs.set = setDashboardTab;
 
   window.addEventListener("hashchange", () => {
     const { view } = parseHashState();

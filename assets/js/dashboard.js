@@ -53,31 +53,10 @@ function initializeDashboard() {
     document.getElementById(menuId).style.display = 'block';
   }
 
-  setDashTab('overview');
+  window.dashboardTabs?.set?.('overview');
 }
 
-function setDashTab(tabName) {
-  document.querySelectorAll('main > div[id^="dashTab-"]').forEach(el => {
-    el.classList.add('hidden');
-  });
-
-  const tabContent = document.getElementById(`dashTab-${tabName}-content`);
-  if (tabContent) {
-    tabContent.classList.remove('hidden');
-  }
-
-  document.querySelectorAll('nav button[id^="dashTab-"]').forEach(btn => {
-    btn.classList.remove('bg-slate-100');
-  });
-  const activeBtn = document.getElementById(`dashTab-${tabName}`);
-  if (activeBtn) {
-    activeBtn.classList.add('bg-slate-100');
-  }
-
-  loadTabData(tabName);
-}
-
-async function loadTabData(tabName) {
+async function loadDashboardTabData(tabName) {
   try {
     switch(tabName) {
       case 'overview':
@@ -136,6 +115,9 @@ async function loadTabData(tabName) {
     console.error('Error loading tab data:', err);
   }
 }
+
+window.dashboardTabs = window.dashboardTabs || {};
+window.dashboardTabs.loadData = loadDashboardTabData;
 
 async function loadOverview() {
   if (currentRole === 'admin') {
