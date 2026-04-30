@@ -1,0 +1,179 @@
+{
+  "summary": {
+    "total": 17,
+    "passed": 15,
+    "failed": 2
+  },
+  "cases": [
+    {
+      "group": "Certificados",
+      "name": "Elegibilidad attendance",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/certificates.php?type=attendance",
+      "expected": "200 y lista con type=attendance",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "Certificados",
+      "name": "Elegibilidad completion",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/certificates.php?type=completion",
+      "expected": "200 y lista con type=completion",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "Certificados",
+      "name": "Generación única (1ra)",
+      "precondition": "Usuario elegible",
+      "request": "POST /api/admin/certificates.php attendance",
+      "expected": "200 y certificateId",
+      "actual": "200 cert=2",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "Certificados",
+      "name": "No duplicado (2da)",
+      "precondition": "Certificado ya emitido",
+      "request": "POST /api/admin/certificates.php attendance repetido",
+      "expected": "200 + mensaje ya existe",
+      "actual": "200 msg=Certificado ya existe",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "Certificados",
+      "name": "Visualización/descarga",
+      "precondition": "Certificado emitido",
+      "request": "GET /api/admin/certificate-view.php?id=...",
+      "expected": "200 HTML renderizado",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "Certificados",
+      "name": "Integridad plantilla/datos",
+      "precondition": "Template v1 y datos dinámicos",
+      "request": "Validación de HTML de certificado",
+      "expected": "Contiene estructura de certificado y datos renderizados",
+      "actual": "len=1827",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Users leer",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/users.php",
+      "expected": "200",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Registrations leer",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/registrations.php",
+      "expected": "200",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Blog leer",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/blog/list.php",
+      "expected": "200",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Pages leer",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/pages/list.php",
+      "expected": "200",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Settings leer",
+      "precondition": "Admin autenticado",
+      "request": "GET /api/admin/settings.php",
+      "expected": "200",
+      "actual": "200",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Blog crear",
+      "precondition": "Admin autenticado",
+      "request": "POST /api/admin/blog/create.php",
+      "expected": "201/200",
+      "actual": "422",
+      "result": "FAIL",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Pages crear",
+      "precondition": "Admin autenticado",
+      "request": "POST /api/admin/pages/create.php",
+      "expected": "201/200",
+      "actual": "422",
+      "result": "FAIL",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Users actualizar inexistente",
+      "precondition": "Admin autenticado",
+      "request": "PATCH /api/admin/users.php userId inexistente",
+      "expected": "404 controlado",
+      "actual": "404",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Settings validación 422",
+      "precondition": "Admin autenticado",
+      "request": "PATCH /api/admin/settings.php email inválido",
+      "expected": "422",
+      "actual": "422",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Registrations error 422",
+      "precondition": "Admin autenticado",
+      "request": "DELETE /api/admin/registrations.php?id=0",
+      "expected": "422",
+      "actual": "422",
+      "result": "PASS",
+      "details": ""
+    },
+    {
+      "group": "CRUD críticos",
+      "name": "Permisos por rol 403",
+      "precondition": "Usuario autenticado no admin",
+      "request": "GET /api/admin/users.php",
+      "expected": "403",
+      "actual": "403",
+      "result": "PASS",
+      "details": ""
+    }
+  ]
+}
