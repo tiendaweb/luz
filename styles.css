@@ -30,12 +30,12 @@ body { font-family: var(--font-family-base, 'Plus Jakarta Sans', sans-serif); fo
   border-radius: var(--radius-md, 16px);
   padding: var(--btn-pad-y, 12px) var(--btn-pad-x, 20px);
   color: var(--color-accent-contrast);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 78%, #000 22%);
+  border: 1px solid var(--color-accent-700);
   transition: all .2s ease;
 }
 .btn-primary:hover { background-color: var(--color-accent-700); transform: translateY(-1px); }
 .btn-primary:focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--color-accent) 40%, #fff 60%);
+  outline: 3px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -66,5 +66,12 @@ body[data-active-role="admin"] .admin-only.space-y-2,
 body[data-active-role="associate"] .associate-only.space-y-2,
 body[data-active-role="user"] .user-only.space-y-2 { display:flex !important; flex-direction:column; gap:.5rem; }
 
-.alert-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); border-color: color-mix(in srgb, var(--color-status-pending-text) 40%, #fff 60%); }
-.alert-rejected { background: var(--color-status-rejected-bg); color: var(--color-status-rejected-text); border-color: color-mix(in srgb, var(--color-status-rejected-text) 35%, #fff 65%); }
+.alert-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); border-color: var(--color-status-pending-text); }
+.alert-rejected { background: var(--color-status-rejected-bg); color: var(--color-status-rejected-text); border-color: var(--color-status-rejected-text); }
+
+@supports (color: color-mix(in srgb, white, black)) {
+  .btn-primary { border-color: color-mix(in srgb, var(--color-accent) 78%, #000 22%); }
+  .btn-primary:focus-visible { outline-color: color-mix(in srgb, var(--color-accent) 40%, #fff 60%); }
+  .alert-pending { border-color: color-mix(in srgb, var(--color-status-pending-text) 40%, #fff 60%); }
+  .alert-rejected { border-color: color-mix(in srgb, var(--color-status-rejected-text) 35%, #fff 65%); }
+}
