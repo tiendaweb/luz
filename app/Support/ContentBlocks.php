@@ -15,16 +15,17 @@ function content_blocks_for_context(string $context, string $locale = 'es'): arr
         return $contentBlockCache[$cacheKey];
     }
 
-    $pdo = db();
-
     try {
+        $pdo = app_db_connection();
         $stmt = $pdo->prepare('SELECT block_key, value, content_type, version FROM content_blocks WHERE context = :context AND locale = :locale');
         $stmt->execute(['context' => $context, 'locale' => $locale]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $exception) {
-        $message = strtolower($exception->getMessage());
-        if (strpos($message, 'no such table: content_blocks') === false) {
-            throw $exception;
+    } catch (Throwable $exception) {
+        if ($exception instanceof PDOException) {
+            $message = strtolower($exception->getMessage());
+            if (strpos($message, 'no such table: content_blocks') === false && strpos($message, 'unable to open database file') === false) {
+                throw $exception;
+            }
         }
 
         $contentBlockCache[$cacheKey] = [];
