@@ -16,7 +16,8 @@ $fullName = trim((string)($input['fullName'] ?? ''));
 $documentId = trim((string)($input['documentId'] ?? ''));
 $forumId = isset($input['forumId']) ? (int)$input['forumId'] : 0;
 $forumSlot = trim((string)($input['forumSlot'] ?? ''));
-$referralCode = trim((string)($input['referralCode'] ?? ''));
+$referralCode = trim((string)($input['referralCode'] ?? ($input['ref_code'] ?? '')));
+$countryCode = strtoupper(trim((string)($input['countryCode'] ?? ($input['country_code'] ?? ''))));
 $signatureDataUrl = trim((string)($input['signatureDataUrl'] ?? ''));
 $needsCert = (bool)($input['needsCert'] ?? false);
 
@@ -255,9 +256,10 @@ try {
 
     // Track referral if applicable - create registration_meta with referrer info
     $referrerUserId = null;
+    $networkId = null;
     if ($referralCode !== '') {
         $refStmt = $pdo->prepare(
-            'SELECT user_id FROM associate_offers
+            'SELECT user_id, id FROM associate_offers
              WHERE referral_code = :referral_code
              LIMIT 1'
         );
@@ -265,21 +267,26 @@ try {
         $refRow = $refStmt->fetch(PDO::FETCH_ASSOC);
         if (is_array($refRow)) {
             $referrerUserId = (int)$refRow['user_id'];
+            $networkId = (int)$refRow['id'];
         }
     }
 
     // Always create registration_meta record for this registration
     $metaStmt = $pdo->prepare(
-        'INSERT INTO registration_meta (registration_id, referral_code, referrer_user_id)
-         VALUES (:registration_id, :referral_code, :referrer_user_id)
+        'INSERT INTO registration_meta (registration_id, referral_code, referrer_user_id, network_id, country_code)
+         VALUES (:registration_id, :referral_code, :referrer_user_id, :network_id, :country_code)
          ON CONFLICT(registration_id) DO UPDATE SET
           referral_code = excluded.referral_code,
-          referrer_user_id = excluded.referrer_user_id'
+          referrer_user_id = excluded.referrer_user_id,
+          network_id = excluded.network_id,
+          country_code = excluded.country_code'
     );
     $metaStmt->execute([
         'registration_id' => $registrationId,
         'referral_code' => $referralCode !== '' ? $referralCode : null,
         'referrer_user_id' => $referrerUserId,
+        'network_id' => $networkId,
+        'country_code' => $countryCode !== '' ? $countryCode : null,
     ]);
 
     $pdo->commit();

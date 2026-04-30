@@ -152,7 +152,9 @@ async function loadAdminOverview() {
     const data = await window.appApiFetch('/api/admin/registrations', { method: 'GET' });
     if (!data) return;
 
-    const items = data.items || [];
+    const adminFilter = (document.getElementById('adminRegistrationsFilter')?.value || 'all');
+    const sourceItems = data.items || [];
+    const items = adminFilter === 'all' ? sourceItems : sourceItems.filter(r => r.status === adminFilter);
     const total = items.length;
     const pending = items.filter(r => r.status === 'pending').length;
     const approved = items.filter(r => r.status === 'approved').length;
@@ -187,7 +189,9 @@ async function loadAssociateOverview() {
     const data = await window.appApiFetch('/api/associate/registrations', { method: 'GET' });
     if (!data) return;
 
-    const items = data.items || [];
+    const adminFilter = (document.getElementById('adminRegistrationsFilter')?.value || 'all');
+    const sourceItems = data.items || [];
+    const items = adminFilter === 'all' ? sourceItems : sourceItems.filter(r => r.status === adminFilter);
     const total = items.length;
     const pending = items.filter(r => r.status === 'pending').length;
 
@@ -357,9 +361,11 @@ async function loadAssociateReferrals() {
 
 async function loadAssociateReferralsList() {
   try {
+    const filter = (document.getElementById('associateRegistrationsFilter')?.value || 'all');
     const data = await window.appApiFetch('/api/associate/registrations', { method: 'GET' });
 
-    const items = data.items || [];
+    const sourceItems = data.items || [];
+    const items = filter === 'all' ? sourceItems : sourceItems.filter(r => r.status === filter);
     let html = '';
     if (items.length === 0) {
       html = '<p class="text-slate-600">Aún no tienes referidos registrados.</p>';
@@ -372,7 +378,9 @@ async function loadAssociateReferralsList() {
               <p class="text-sm text-slate-600">Foro: ${reg.forum_slot}</p>
               <div class="mt-2 space-y-1 text-xs text-slate-600">
                 <p><strong>DNI:</strong> ${reg.document_id}</p>
-                <p><strong>Fecha inscripción:</strong> ${new Date(reg.created_at).toLocaleDateString('es-AR')}</p>
+                <p><strong>Fecha de alta:</strong> ${new Date(reg.created_at).toLocaleDateString('es-AR')}</p>
+              <p><strong>Quién refirió:</strong> ${reg.referrer_name || reg.referrer_email || 'N/D'}</p>
+                <p><strong>Conversión a compra:</strong> ${Number(reg.converted_to_purchase) === 1 ? 'Sí' : 'No'}</p>
               </div>
             </div>
             <span class="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
@@ -446,7 +454,10 @@ async function loadAdminRegistrations() {
             <p class="text-sm text-slate-600">Foro: ${reg.forum_slot}</p>
             <div class="mt-2 text-xs text-slate-600 space-y-1">
               <p><strong>DNI:</strong> ${reg.document_id}</p>
-              <p><strong>Inscripción:</strong> ${new Date(reg.created_at).toLocaleDateString('es-AR')}</p>
+              <p><strong>Fecha de alta:</strong> ${new Date(reg.created_at).toLocaleDateString('es-AR')}</p>
+            <p><strong>Quién refirió:</strong> ${reg.referrer_name || reg.referrer_email || 'Directo'}</p>
+              <p><strong>Estado referido:</strong> ${Number(reg.referred_is_approved) === 1 ? 'Aprobado' : 'No aprobado'}</p>
+              <p><strong>Conversión a compra:</strong> ${Number(reg.converted_to_purchase) === 1 ? 'Sí' : 'No'}</p>
             </div>
           </div>
           <div class="flex flex-col gap-2">
@@ -991,4 +1002,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('refreshCertificates')?.addEventListener('click', loadCertificates);
   document.getElementById('refreshViewCerts')?.addEventListener('click', loadViewCertificates);
   document.getElementById('refreshSignatures')?.addEventListener('click', loadSignatures);
+});
+
+
+document.addEventListener('change', (event) => {
+  if (event.target?.id === 'associateRegistrationsFilter') {
+    loadAssociateReferralsList();
+  }
+  if (event.target?.id === 'adminRegistrationsFilter') {
+    loadAdminRegistrations();
+  }
 });
