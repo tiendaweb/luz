@@ -1,0 +1,1 @@
+csrf_token|s:64:"a2b115b9d049013d07678e6ce26aa320804579624d501685411d39b80788816c";session_expires_at|i:1777095259;user_id|i:6;role|s:4:"user";auth_user|a:4:{s:2:"id";i:6;s:4:"name";s:18:"Expreso El Paquete";s:5:"email";s:17:"correo@correo.com";s:4:"role";s:4:"user";}

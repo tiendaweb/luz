@@ -1,0 +1,1 @@
+csrf_token|s:64:"07bb379e6da92a4aab20167bc920743c176ebf34e7077cf1b6cd8d93df05ec80";session_expires_at|i:1777083795;user_id|i:2;role|s:9:"associate";auth_user|a:4:{s:2:"id";i:2;s:4:"name";s:13:"Asociado Demo";s:5:"email";s:19:"asociado@psme.local";s:4:"role";s:9:"associate";}

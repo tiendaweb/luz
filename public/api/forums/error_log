@@ -1,0 +1,98 @@
+[23-Apr-2026 06:21:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 06:21:30 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 06:21:41 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 06:21:41 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 21:13:40 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 21:13:40 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:27:43 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:27:43 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:28:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:28:11 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:29:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:29:19 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:30:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/next.php(11): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
+[23-Apr-2026 23:30:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [14] unable to open database file in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php:15
+Stack trace:
+#0 /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php(15): PDO->__construct('sqlite:/workspa...', NULL, NULL, Array)
+#1 /home/qatpjhul/demoforoluz.aapp.space/public/api/_bootstrap.php(242): app_db_connection()
+#2 /home/qatpjhul/demoforoluz.aapp.space/public/api/forums/list.php(15): api_require_db()
+#3 {main}
+  thrown in /home/qatpjhul/demoforoluz.aapp.space/app/Database/connection.php on line 15
