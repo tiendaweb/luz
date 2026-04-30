@@ -23,68 +23,68 @@ ob_start();
 
  <nav class="space-y-2 border-t border-slate-100 pt-6">
  <!-- Common for all roles -->
- <button id="dashTab-overview" onclick="setDashTab('overview')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-all">
+ <button id="dashTab-overview" onclick="window.dashboardTabs.set('overview')" class="w-full text-left px-4 py-3 rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-all">
  <i class="fa-solid fa-chart-line mr-3"></i> <?= htmlspecialchars(content_block_value('dashboard','menu_overview','Resumen'), ENT_QUOTES, 'UTF-8') ?>
  </button>
 
  <!-- Mi Perfil para todos -->
- <button id="dashTab-profile" onclick="setDashTab('profile')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-profile" onclick="window.dashboardTabs.set('profile')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-user mr-3"></i> Mi Perfil
  </button>
 
  <!-- User tabs -->
  <div id="user-menu" class="user-only space-y-2">
- <button id="dashTab-myforums" onclick="setDashTab('myforums')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-myforums" onclick="window.dashboardTabs.set('myforums')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-calendar mr-3"></i> Mis Foros Activos
  </button>
- <button id="dashTab-ebooks" onclick="setDashTab('ebooks')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-ebooks" onclick="window.dashboardTabs.set('ebooks')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-book mr-3"></i> Materiales y Certificados
  </button>
  </div>
 
  <!-- Associate tabs -->
  <div id="associate-menu" class="associate-only space-y-2">
- <button id="dashTab-referrals" onclick="setDashTab('referrals')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-referrals" onclick="window.dashboardTabs.set('referrals')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-share-nodes mr-3"></i> Link Referido Grupo
  </button>
- <button id="dashTab-myreferrals" onclick="setDashTab('myreferrals')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-myreferrals" onclick="window.dashboardTabs.set('myreferrals')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-users mr-3"></i> Mis Referidos
  </button>
- <button id="dashTab-validatepayments" onclick="setDashTab('validatepayments')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-validatepayments" onclick="window.dashboardTabs.set('validatepayments')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-credit-card mr-3"></i> Validar Pagos
  </button>
  </div>
 
  <!-- Admin tabs -->
  <div id="admin-menu" class="admin-only space-y-2">
- <button id="dashTab-registrations" onclick="setDashTab('registrations')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-registrations" onclick="window.dashboardTabs.set('registrations')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-clipboard-list mr-3"></i> Gestión Inscripciones
  </button>
- <button id="dashTab-adminvalidate" onclick="setDashTab('adminvalidate')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-adminvalidate" onclick="window.dashboardTabs.set('adminvalidate')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-credit-card mr-3"></i> Validar Pagos
  </button>
- <button id="dashTab-blog" onclick="setDashTab('blog')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-blog" onclick="window.dashboardTabs.set('blog')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-newspaper mr-3"></i> Blog
  </button>
- <button id="dashTab-pages" onclick="setDashTab('pages')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-pages" onclick="window.dashboardTabs.set('pages')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-file-lines mr-3"></i> Páginas
  </button>
- <button id="dashTab-settings" onclick="setDashTab('settings')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-settings" onclick="window.dashboardTabs.set('settings')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-gear mr-3"></i> Ajustes
  </button>
- <button id="dashTab-associates" onclick="setDashTab('associates')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-associates" onclick="window.dashboardTabs.set('associates')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-handshake mr-3"></i> Asociados
  </button>
- <button id="dashTab-users" onclick="setDashTab('users')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-users" onclick="window.dashboardTabs.set('users')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-users mr-3"></i> Usuarios
  </button>
- <button id="dashTab-certificates" onclick="setDashTab('certificates')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-certificates" onclick="window.dashboardTabs.set('certificates')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-certificate mr-3"></i> Certificados
  </button>
- <button id="dashTab-viewcerts" onclick="setDashTab('viewcerts')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-viewcerts" onclick="window.dashboardTabs.set('viewcerts')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-file-pdf mr-3"></i> Ver Certificados
  </button>
- <button id="dashTab-signatures" onclick="setDashTab('signatures')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
+ <button id="dashTab-signatures" onclick="window.dashboardTabs.set('signatures')" class="w-full text-left px-4 py-3 rounded-xl font-bold text-slate-700 hover:bg-slate-100 transition-all">
  <i class="fa-solid fa-pen-fancy mr-3"></i> Firmas
  </button>
  </div>
