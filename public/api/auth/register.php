@@ -91,5 +91,6 @@ try {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-    api_error('Error al registrar usuario: ' . $e->getMessage(), 500, 'database_error');
+    error_log(sprintf('[api/auth/register] %s in %s:%d', $e->getMessage(), $e->getFile(), $e->getLine()));
+    api_error('Error interno del servidor', 500, 'database_error');
 }

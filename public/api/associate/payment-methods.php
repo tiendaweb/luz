@@ -140,5 +140,6 @@ try {
     api_json(['ok' => true, 'message' => 'Datos de pago guardados exitosamente']);
 } catch (Throwable $e) {
     if ($pdo->inTransaction()) $pdo->rollBack();
-    api_error('Error al guardar datos de pago: ' . $e->getMessage(), 500, 'database_error');
+    error_log(sprintf('[api/associate/payment-methods] %s in %s:%d', $e->getMessage(), $e->getFile(), $e->getLine()));
+    api_error('Error interno del servidor', 500, 'database_error');
 }
