@@ -17,7 +17,7 @@ ob_start();
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-24">
             <div class="lg:col-span-2 space-y-8">
-                <div class="bg-white rounded-3xl p-10 shadow-xl border border-stone-100">
+                <div class="card-surface rounded-3xl p-10 shadow-xl">
                     <h3 class="text-2xl font-bold mb-2 text-stone-800">Próximo foro publicado</h3>
                     <p class="text-sm text-stone-500 mb-6">Referencia temporal del servidor en UTC. La zona del foro se informa en cada registro.</p>
                     
@@ -49,12 +49,12 @@ ob_start();
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl p-10 shadow-xl border border-stone-100">
+                <div class="card-surface rounded-3xl p-10 shadow-xl">
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                         <h3 class="text-2xl font-bold text-stone-800">Agenda publicada</h3>
                         <div class="flex gap-2">
-                            <button id="forumsPrevPage" class="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 font-semibold text-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-                            <button id="forumsNextPage" class="px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 font-semibold text-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Siguiente</button>
+                            <button id="forumsPrevPage" class="px-4 py-2 rounded-xl btn-secondary font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+                            <button id="forumsNextPage" class="px-4 py-2 rounded-xl btn-secondary font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Siguiente</button>
                         </div>
                     </div>
                     <div id="forumsList" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
@@ -79,7 +79,7 @@ ob_start();
                             <span class="font-bold text-stone-200">20% OFF</span>
                         </div>
                     </div>
-                    <a href="/inscripcion" class="w-full bg-stone-500 hover:bg-stone-600 text-white font-extrabold py-4 rounded-2xl transition-all shadow-xl shadow-stone-900/20 flex items-center justify-center">
+                    <a href="/inscripcion" class="w-full btn-primary font-extrabold py-4 rounded-2xl transition-all shadow-xl shadow-stone-900/20 flex items-center justify-center">
                         Inscribirse Ahora
                     </a>
                 </div>

@@ -74,12 +74,12 @@ ob_start();
         </div>
 
         <button id="loginSubmitBtn" type="submit"
-          class="w-full rounded-2xl bg-amber-800 text-white px-5 py-3 font-bold hover:bg-amber-800 transition focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
+          class="w-full rounded-2xl btn-primary px-5 py-3 font-bold transition focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2">
           Ingresar
         </button>
       </form>
 
-      <p class="mt-6 text-center text-sm text-slate-500">¿Volver al sitio? <a class="font-bold text-amber-800 hover:text-amber-700" href="/">Ir al inicio</a></p>
+      <p class="mt-6 text-center text-sm text-slate-500">¿Volver al sitio? <a class="font-bold nav-link-accent" href="/">Ir al inicio</a></p>
     </section>
   </div>
 </main>
