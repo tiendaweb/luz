@@ -250,7 +250,15 @@ function api_set_current_user(array $user): void
 
 function api_require_db(): PDO
 {
-    $pdo = app_db_connection();
+    try {
+        $pdo = app_db_connection();
+    } catch (Throwable $exception) {
+        api_error('No se pudo inicializar la base de datos.', 500, 'db_unavailable', [
+            'error' => $exception->getMessage(),
+            'db_path' => app_db_path(),
+        ]);
+    }
+
     static $migrated = false;
 
     if (!$migrated) {
@@ -293,7 +301,15 @@ function api_require_db(): PDO
                 throw new RuntimeException(sprintf('No se pudo leer la migración: %s', $filename));
             }
 
-            $pdo->exec($migrationSql);
+            try {
+                $pdo->exec($migrationSql);
+            } catch (Throwable $exception) {
+                api_error('Falló la ejecución de una migración SQL.', 500, 'migration_failed', [
+                    'filename' => $filename,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+
             $insertStmt->execute(['filename' => $filename]);
         }
 
