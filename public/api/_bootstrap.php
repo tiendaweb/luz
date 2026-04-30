@@ -267,6 +267,20 @@ function api_assert_schema_ready(): void
         return;
     }
 
+    try {
+        app_db_run_migrations($pdo);
+    } catch (Throwable $exception) {
+        api_error('Esquema de base de datos desactualizado. Falló el intento de ejecutar migraciones automáticamente.', 503, 'schema_outdated', [
+            'pending_migrations' => $schemaStatus['pending_migrations'] ?? [],
+            'migration_error' => $exception->getMessage(),
+        ]);
+    }
+
+    $schemaStatus = app_db_schema_status($pdo);
+    if (($schemaStatus['ok'] ?? false) === true) {
+        return;
+    }
+
     api_error('Esquema de base de datos desactualizado. Ejecutá el comando de migración antes de iniciar la API.', 503, 'schema_outdated', [
         'pending_migrations' => $schemaStatus['pending_migrations'] ?? [],
     ]);
