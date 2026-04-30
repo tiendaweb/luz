@@ -29,10 +29,11 @@ if (!$forum) {
 $eligibleStmt = $pdo->prepare('
     SELECT DISTINCT registrations.user_id
     FROM registrations
-    INNER JOIN registration_admin_state ras
-      ON ras.registration_id = registrations.id
-     AND ras.status = "approved"
+    INNER JOIN forum_attendance
+      ON forum_attendance.registration_id = registrations.id
+     AND forum_attendance.forum_id = registrations.forum_id
     WHERE registrations.forum_id = :forum_id
+      AND forum_attendance.status IN ("present", "partial")
 ');
 $eligibleStmt->execute(['forum_id' => $forumId]);
 $userIds = array_map('intval', $eligibleStmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
@@ -43,7 +44,7 @@ if (empty($userIds)) {
         'created' => 0,
         'skipped' => 0,
         'forum' => ['id' => (int)$forum['id'], 'code' => $forum['code'], 'title' => $forum['title']],
-        'message' => 'No hay inscripciones aprobadas en este foro.',
+        'message' => 'No hay asistentes registrados en este foro.',
     ]);
 }
 

@@ -16,7 +16,11 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET') {
     $forumId = (int)($_GET['forum'] ?? 0);
     $viewGenerated = isset($_GET['generated']) && $_GET['generated'] === '1';
-    $type = CertificateRenderer::normalizeType($_GET['type'] ?? null);
+    $requestedType = isset($_GET['type']) ? strtolower(trim((string)$_GET['type'])) : null;
+    if ($requestedType !== null && $requestedType !== '' && !CertificateRenderer::isValidType($requestedType)) {
+        api_json(['ok' => false, 'error' => 'Tipo de certificado inválido'], 422);
+    }
+    $type = CertificateRenderer::normalizeType($requestedType);
 
     if ($type === 'attendance') {
         // Eligibles para asistencia: cualquier inscripción aprobada por admin/asociado
@@ -98,7 +102,11 @@ if ($method === 'POST') {
     $input = api_read_json();
     $userId = (int)($input['userId'] ?? 0);
     $forumId = (int)($input['forumId'] ?? 0);
-    $type = CertificateRenderer::normalizeType($input['type'] ?? 'completion');
+    $requestedType = isset($input['type']) ? strtolower(trim((string)$input['type'])) : 'completion';
+    if (!CertificateRenderer::isValidType($requestedType)) {
+        api_json(['ok' => false, 'error' => 'Tipo de certificado inválido'], 422);
+    }
+    $type = $requestedType;
 
     if ($userId < 1 || $forumId < 1) {
         api_json(['ok' => false, 'error' => 'Usuario o foro inválido'], 422);
