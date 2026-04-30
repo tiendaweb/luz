@@ -587,10 +587,10 @@ async function loadAdminSettings() {
     const form = document.getElementById('adminSettingsForm');
     Object.keys(data.settings || {}).forEach(key => {
       const field = form.querySelector(`[name="${key}"]`);
-      if (field) {
-        field.value = data.settings[key];
-      }
+      if (field) field.value = data.settings[key];
     });
+    await loadAdminTheme();
+    setSettingsSubtab('general');
   } catch (err) {
     console.error('Error loading settings:', err);
   }
@@ -1012,4 +1012,75 @@ document.addEventListener('change', (event) => {
   if (event.target?.id === 'adminRegistrationsFilter') {
     loadAdminRegistrations();
   }
+});
+
+let currentThemePayload = null;
+
+function setSettingsSubtab(name) {
+  const general = document.getElementById('adminSettingsForm');
+  const styles = document.getElementById('settingsStylesPanel');
+  document.getElementById('settings-subtab-general')?.classList.toggle('bg-slate-100', name === 'general');
+  document.getElementById('settings-subtab-styles')?.classList.toggle('bg-slate-100', name === 'styles');
+  if (general) general.classList.toggle('hidden', name !== 'general');
+  if (styles) styles.classList.toggle('hidden', name !== 'styles');
+}
+
+async function loadAdminTheme() {
+  const data = await window.appApiFetch('/api/admin/theme', { method: 'GET' });
+  const t = data.theme || {};
+  currentThemePayload = t;
+  const map = {
+    theme_colors_primary: t.colors?.primary, theme_colors_secondary: t.colors?.secondary, theme_colors_accent: t.colors?.accent,
+    theme_typography_font_family: t.typography?.font_family, theme_radius_md: t.radius?.md, theme_shadows_card: t.shadows?.card,
+    theme_spacing_md: t.spacing?.md, theme_buttons_size: t.buttons?.size,
+  };
+  Object.entries(map).forEach(([k,v])=>{ const el=document.querySelector(`[name="${k}"]`); if(el && v) el.value=v;});
+  applyThemePreview();
+}
+
+function applyThemePreview() {
+  const root = document.documentElement.style;
+  const get = (n) => document.querySelector(`[name="${n}"]`)?.value;
+  if (get('theme_colors_primary')) root.setProperty('--color-primary', get('theme_colors_primary'));
+  if (get('theme_colors_secondary')) root.setProperty('--color-primary-700', get('theme_colors_secondary'));
+  if (get('theme_colors_accent')) root.setProperty('--color-accent', get('theme_colors_accent'));
+  if (get('theme_typography_font_family')) root.setProperty('--font-family-base', `${get('theme_typography_font_family')}, sans-serif`);
+  if (get('theme_radius_md')) root.setProperty('--radius-md', get('theme_radius_md'));
+  if (get('theme_shadows_card')) root.setProperty('--shadow-card', get('theme_shadows_card'));
+  if (get('theme_spacing_md')) root.setProperty('--space-md', get('theme_spacing_md'));
+}
+
+document.addEventListener('input', (event) => {
+  if (event.target?.name?.startsWith('theme_')) applyThemePreview();
+});
+
+document.addEventListener('click', async (event) => {
+  if (event.target.id === 'saveThemeBtn') {
+    const theme = {
+      colors: {primary: document.querySelector('[name="theme_colors_primary"]').value, secondary: document.querySelector('[name="theme_colors_secondary"]').value, accent: document.querySelector('[name="theme_colors_accent"]').value},
+      typography: {font_family: document.querySelector('[name="theme_typography_font_family"]').value},
+      radius: {md: document.querySelector('[name="theme_radius_md"]').value},
+      shadows: {card: document.querySelector('[name="theme_shadows_card"]').value},
+      spacing: {md: document.querySelector('[name="theme_spacing_md"]').value},
+      buttons: {size: document.querySelector('[name="theme_buttons_size"]').value}
+    };
+    try { await window.appApiFetch('/api/admin/theme', { method:'PUT', body: JSON.stringify({theme})}); document.getElementById('themeStatus').textContent='Tema guardado.'; }
+    catch(err){ document.getElementById('themeStatus').textContent='Error al guardar tema.'; }
+  }
+  if (event.target.id === 'resetThemeBtn') {
+    try { await window.appApiFetch('/api/admin/theme', { method:'DELETE'}); await loadAdminTheme(); document.getElementById('themeStatus').textContent='Tema restablecido.'; }
+    catch(err){ document.getElementById('themeStatus').textContent='Error al restablecer tema.'; }
+  }
+});
+
+document.addEventListener('submit', async (event) => {
+  if (event.target?.id !== 'adminSettingsForm') return;
+  event.preventDefault();
+  const form = event.target;
+  const fd = new FormData(form);
+  const settings = Object.fromEntries(fd.entries());
+  try {
+    await window.appApiFetch('/api/admin/settings', { method: 'PATCH', body: JSON.stringify({ settings }) });
+    const st = document.getElementById('adminSettingsStatus'); if (st) st.textContent = 'Ajustes guardados correctamente.';
+  } catch (e) { const st = document.getElementById('adminSettingsStatus'); if (st) st.textContent = 'Error al guardar ajustes.'; }
 });

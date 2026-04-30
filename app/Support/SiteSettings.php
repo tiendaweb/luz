@@ -62,6 +62,7 @@ function app_public_site_settings(): array
         'contact_cta_text' => 'Escribinos para coordinar entrevistas, consultas o información de próximos foros.',
         'brand_color_primary' => '#0d9488',
         'brand_color_accent' => '#0f766e',
+        'theme_v1' => '',
     ];
 
     $result = [];
