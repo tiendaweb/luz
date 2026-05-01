@@ -14,34 +14,37 @@ ob_start();
 ?>
 
 <!-- Hero -->
-<div class="relative bg-gradient-to-br from-slate-50 via-white to-blue-50 pt-16 pb-32 overflow-hidden">
+<div class="relative pt-16 pb-32 overflow-hidden bg-slate-900">
+ <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=2000&q=80');"></div>
+ <div class="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-slate-900/85 to-blue-800/80"></div>
+ <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.35),transparent_45%)]"></div>
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center relative z-10">
  <div class="lg:w-1/2 text-center lg:text-left mb-16 lg:mb-0">
- <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand text-brand text-sm font-bold mb-6 border border-[var(--color-accent)]/20">
+ <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-blue-100 text-sm font-bold mb-6 border border-white/20 backdrop-blur-sm">
  <span class="flex h-2 w-2 rounded-full bg-[var(--color-accent)] animate-pulse"></span>
  <span data-content-key="hero_badge" data-content-context="home" data-content-type="text"><?= htmlspecialchars(content_block_value('home','hero_badge','Inscripciones Abiertas - Ciclo Mayo 2026'), ENT_QUOTES, 'UTF-8') ?></span>
  </div>
- <h1 class="text-5xl lg:text-7xl font-extrabold text-slate-900 mb-8 leading-[1.1]">
+ <h1 class="text-5xl lg:text-7xl font-extrabold text-white mb-8 leading-[1.1] drop-shadow-lg">
  <span data-content-key="hero_title" data-content-context="home" data-content-type="text"><?= htmlspecialchars(content_block_value('home','hero_title','Foros Internacionales de Salud Mental.'), ENT_QUOTES, 'UTF-8') ?></span>
  </h1>
- <p class="text-xl text-slate-600 mb-10 max-w-xl leading-relaxed">
+ <p class="text-xl text-blue-100/90 mb-10 max-w-xl leading-relaxed">
  <span data-content-key="hero_subtitle" data-content-context="home" data-content-type="textarea"><?= htmlspecialchars(content_block_value('home','hero_subtitle','Únete a la comunidad de debate, teoría y reflexión grupal más activa de LATAM.'), ENT_QUOTES, 'UTF-8') ?></span>
  </p>
  <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
- <a href="/inscripcion" class="btn-primary px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-[color:color-mix(in_srgb,var(--color-accent)_35%,transparent)] flex items-center justify-center gap-3">
+ <a href="/inscripcion" class="btn-primary px-10 py-5 rounded-2xl font-bold text-lg shadow-xl shadow-black/30 flex items-center justify-center gap-3">
  Inscribirse al Foro <i class="fa-solid fa-arrow-right"></i>
  </a>
- <a href="/foros" class="bg-white border-2 border-slate-200 text-slate-700 px-10 py-5 rounded-2xl font-bold text-lg hover:border-[var(--color-accent)] hover:text-brand transition-all text-center">
+ <a href="/foros" class="bg-white/10 border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-white hover:text-slate-900 hover:border-white transition-all text-center backdrop-blur-sm">
  Ver Agenda y Ejes
  </a>
  </div>
  </div>
  <div class="lg:w-1/2 relative">
- <div class="absolute -top-20 -right-20 w-96 h-96 bg-brand rounded-full blur-3xl opacity-50"></div>
- <div class="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white transform rotate-2">
+ <div class="absolute -top-20 -right-20 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl opacity-80"></div>
+ <div class="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white/90 transform rotate-2">
  <img src="https://images.unsplash.com/photo-1603201667141-532f6668ff2f?auto=format&fit=crop&w=1200&q=80" alt="Reunión profesional virtual por videollamada" class="w-full h-full object-cover">
  </div>
- <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
+ <div class="absolute -bottom-6 -left-6 bg-white/95 p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
  <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white">
  <i class="fa-solid fa-users"></i>
  </div>
