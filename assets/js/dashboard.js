@@ -571,6 +571,8 @@ async function loadAdminSettings() {
       const field = form.querySelector(`[name="${key}"]`);
       if (field) field.value = data.settings[key];
     });
+    const logoPreview = document.getElementById('adminLogoPreview');
+    if (logoPreview && data.settings?.brand_logo_path) logoPreview.src = data.settings.brand_logo_path + '?v=' + Date.now();
     await loadAdminTheme();
     setSettingsSubtab('general');
   } catch (err) {
@@ -1065,4 +1067,27 @@ document.addEventListener('submit', async (event) => {
     await window.appApiFetch('/api/admin/settings', { method: 'PATCH', body: JSON.stringify({ settings }) });
     const st = document.getElementById('adminSettingsStatus'); if (st) st.textContent = 'Ajustes guardados correctamente.';
   } catch (e) { const st = document.getElementById('adminSettingsStatus'); if (st) st.textContent = 'Error al guardar ajustes.'; }
+});
+
+
+document.addEventListener('click', async (event) => {
+  if (event.target?.id !== 'uploadAdminLogoBtn') return;
+  const input = document.getElementById('adminLogoInput');
+  const status = document.getElementById('adminSettingsStatus');
+  const file = input?.files?.[0];
+  if (!file) { if (status) status.textContent = 'Selecciona un archivo de logo.'; return; }
+
+  const form = new FormData();
+  form.append('logo', file);
+
+  try {
+    const result = await fetch('/api/admin/settings-logo', { method: 'POST', body: form, credentials: 'same-origin', headers: { 'X-CSRF-Token': window.__csrfToken || '' } });
+    const payload = await result.json();
+    if (!result.ok || !payload?.ok) throw new Error(payload?.error?.message || 'No se pudo cargar el logo');
+    const preview = document.getElementById('adminLogoPreview');
+    if (preview) preview.src = payload.logo_path + '?v=' + Date.now();
+    if (status) status.textContent = 'Logo guardado correctamente.';
+  } catch (e) {
+    if (status) status.textContent = 'Error al cargar el logo.';
+  }
 });

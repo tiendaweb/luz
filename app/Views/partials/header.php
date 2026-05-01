@@ -29,7 +29,7 @@ $directorName = (string)($siteSettings['director_name'] ?? 'María Luz Genovese'
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
  <div class="flex justify-between h-20">
  <a class="flex items-center cursor-pointer" href="/">
- <img src="/uploads/logo.jpg" alt="Foros PSME" class="w-11 h-11 rounded-xl shadow-lg mr-4 object-cover">
+ <img src="<?= htmlspecialchars((string)($siteSettings['brand_logo_path'] ?? '/uploads/logo.jpg'), ENT_QUOTES, 'UTF-8') ?>" alt="Foros PSME" class="w-11 h-11 rounded-xl shadow-lg mr-4 object-cover">
  <div>
  <h1 class="text-xl font-extrabold text-slate-800 tracking-tight leading-none">Foros PSME</h1>
  <p class="text-[10px] uppercase tracking-widest font-bold mt-1" style="color: var(--color-accent);">Dir. <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></p>

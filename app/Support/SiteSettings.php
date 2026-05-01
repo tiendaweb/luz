@@ -63,6 +63,7 @@ function app_public_site_settings(): array
         'brand_color_primary' => '#0d9488',
         'brand_color_accent' => '#0f766e',
         'theme_v1' => '',
+        'brand_logo_path' => '/uploads/logo.jpg',
     ];
 
     $result = [];

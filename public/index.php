@@ -44,6 +44,7 @@ $routes = [
     'api/admin/content-prompts/delete' => __DIR__ . '/api/admin/content-prompts/delete.php',
     'api/admin/content-blocks' => __DIR__ . '/api/admin/content-blocks.php',
     'api/admin/settings' => __DIR__ . '/api/admin/settings.php',
+    'api/admin/settings-logo' => __DIR__ . '/api/admin/settings-logo.php',
     'api/admin/users' => __DIR__ . '/api/admin/users.php',
     'api/admin/certificates' => __DIR__ . '/api/admin/certificates.php',
     'api/admin/signatures' => __DIR__ . '/api/admin/signatures.php',
