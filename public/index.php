@@ -51,6 +51,32 @@ $routes = [
 
 $routeKey = null;
 
+$canonicalRoutes = [
+    '' => '/',
+    'index' => '/',
+    'index.php' => '/',
+    'login.php' => '/login',
+    'foros.php' => '/foros',
+    'blog.php' => '/blog',
+    'directora.php' => '/directora',
+    'dashboard.php' => '/dashboard',
+    'inscripcion.php' => '/inscripcion',
+    'contacto.php' => '/directora',
+    'dashboard-admin.php' => '/dashboard',
+    'dashboard-asociado.php' => '/dashboard',
+    'dashboard-usuario.php' => '/dashboard',
+];
+
+$canonicalKey = strtolower(trim($path, '/'));
+if (isset($canonicalRoutes[$canonicalKey])) {
+    $target = $canonicalRoutes[$canonicalKey];
+    if (($path === '' ? '/' : '/' . trim($path, '/')) !== $target) {
+        header('Location: ' . $target, true, 301);
+        exit;
+    }
+}
+
+
 if (is_string($action) && isset($routes[$action])) {
     $routeKey = $action;
 } else {
