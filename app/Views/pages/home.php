@@ -42,7 +42,7 @@ ob_start();
  <img src="https://images.unsplash.com/photo-1603201667141-532f6668ff2f?auto=format&fit=crop&w=1200&q=80" alt="Reunión profesional virtual por videollamada" class="w-full h-full object-cover">
  </div>
  <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
- <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white">
+ <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white">
  <i class="fa-solid fa-users"></i>
  </div>
  <div>

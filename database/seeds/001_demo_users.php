@@ -31,10 +31,22 @@ return static function (PDO $pdo): void {
             'password' => 'Asociado123*',
         ],
         [
+            'full_name' => 'Asociada Red Demo',
+            'email' => 'asociada.red@psme.local',
+            'role' => 'associate',
+            'password' => 'Demo1234*',
+        ],
+        [
             'full_name' => 'Usuario Demo',
             'email' => 'usuario@psme.local',
             'role' => 'user',
             'password' => 'Usuario123*',
+        ],
+        [
+            'full_name' => 'Usuario Directo Demo',
+            'email' => 'usuario.directo@psme.local',
+            'role' => 'user',
+            'password' => 'Demo1234*',
         ],
     ];
 

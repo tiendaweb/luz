@@ -4,12 +4,10 @@
       { username: 'admin@psme.local', password: 'Admin123*' }
     ],
     associate: [
-      { username: 'asociado@psme.local', password: 'Asociado123*' },
-      { username: 'asociada.red@psme.local', password: 'Demo1234*' }
+      { username: 'asociado@psme.local', password: 'Asociado123*' }
     ],
     user: [
-      { username: 'usuario@psme.local', password: 'Usuario123*' },
-      { username: 'usuario.directo@psme.local', password: 'Demo1234*' }
+      { username: 'usuario@psme.local', password: 'Usuario123*' }
     ]
   };
 
@@ -19,17 +17,17 @@
 
     box.classList.remove(
       'hidden',
-      'bg-amber-50',
-      'text-amber-800',
+      'bg-blue-50',
+      'text-blue-800',
       'border',
-      'border-amber-200',
+      'border-blue-200',
       'bg-rose-50',
       'text-rose-700',
       'border-rose-200'
     );
 
     if (type === 'success') {
-      box.classList.add('bg-amber-50', 'text-amber-800', 'border', 'border-amber-200');
+      box.classList.add('bg-blue-50', 'text-blue-800', 'border', 'border-blue-200');
     } else {
       box.classList.add('bg-rose-50', 'text-rose-700', 'border', 'border-rose-200');
     }
