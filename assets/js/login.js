@@ -4,10 +4,15 @@
       { username: 'admin@psme.local', password: 'Admin123*' }
     ],
     associate: [
-      { username: 'asociado@psme.local', password: 'Asociado123*' }
+      { username: 'asociado@psme.local', password: 'Asociado123*' },
+      { username: 'asociada.red@psme.local', password: 'demo1234' },
+      { username: 'asociado', password: 'Asociado123*' }
     ],
     user: [
-      { username: 'usuario@psme.local', password: 'Usuario123*' }
+      { username: 'usuario@psme.local', password: 'Usuario123*' },
+      { username: 'usuario.directo@psme.local', password: 'demo1234' },
+      { username: 'referido.aprobado@psme.local', password: 'demo1234' },
+      { username: 'usuario', password: 'Usuario123*' }
     ]
   };
 
