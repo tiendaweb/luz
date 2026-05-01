@@ -39,7 +39,7 @@ ob_start();
  <div class="lg:w-1/2 relative">
  <div class="absolute -top-20 -right-20 w-96 h-96 bg-brand rounded-full blur-3xl opacity-50"></div>
  <div class="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white transform rotate-2">
- <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80" alt="Foros Psicosociales" class="w-full h-full object-cover">
+ <img src="/uploads/marialuz.jpg" alt="María Luz Genovese" class="w-full h-full object-cover">
  </div>
  <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
  <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white">
