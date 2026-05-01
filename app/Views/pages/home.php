@@ -15,7 +15,7 @@ ob_start();
 
 <!-- Hero -->
 <div class="relative pt-16 pb-32 overflow-hidden bg-slate-900">
- <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=2000&q=80');"></div>
+ <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://demoforoluz.aapp.space/uploads/bg.jpg');"></div>
  <div class="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-slate-900/85 to-blue-800/80"></div>
  <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.35),transparent_45%)]"></div>
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center relative z-10">
@@ -42,7 +42,7 @@ ob_start();
  <div class="lg:w-1/2 relative">
  <div class="absolute -top-20 -right-20 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl opacity-80"></div>
  <div class="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white/90 transform rotate-2">
- <img src="https://images.unsplash.com/photo-1603201667141-532f6668ff2f?auto=format&fit=crop&w=1200&q=80" alt="Reunión profesional virtual por videollamada" class="w-full h-full object-cover">
+ <img src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=1200&q=80" alt="MacBook Air mostrando una reunión virtual" class="w-full h-full object-cover">
  </div>
  <div class="absolute -bottom-6 -left-6 bg-white/95 p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
  <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white">
