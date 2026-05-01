@@ -18,7 +18,7 @@ function render_main_layout(array $config): void
     $siteSettings = is_array($config['siteSettings'] ?? null) ? $config['siteSettings'] : app_public_site_settings();
 
     $themeDefaults = [
-        'colors' => ['primary' => '#faf5f0', 'secondary' => '#d9b9a0', 'accent' => '#8a5a2b', 'surface' => '#ffffff', 'text' => '#0f172a'],
+        'colors' => ['primary' => '#03357C', 'secondary' => '#022a63', 'accent' => '#03357C', 'surface' => '#ffffff', 'text' => '#0f172a'],
         'typography' => ['font_family' => 'Plus Jakarta Sans', 'font_size_base' => '16px'],
         'radius' => ['sm' => '8px', 'md' => '16px', 'lg' => '24px'],
         'shadows' => ['card' => '0 10px 25px rgba(15,23,42,0.1)', 'modal' => '0 20px 45px rgba(15,23,42,0.2)'],
@@ -45,16 +45,16 @@ function render_main_layout(array $config): void
                 extend: {
                     colors: {
                         teal: {
-                            50: '#faf5f0',
-                            100: '#f0e6d8',
-                            200: '#e5d4b8',
-                            300: '#d9b9a0',
-                            400: '#c9a67e',
-                            500: '#b8925c',
-                            600: '#9e7d50',
-                            700: '#876946',
-                            800: '#6d5437',
-                            900: '#563f2a'
+                            50: '#e8eef8',
+                            100: '#c6d6ef',
+                            200: '#9fb9e3',
+                            300: '#799cd7',
+                            400: '#5885ce',
+                            500: '#03357C',
+                            600: '#022f6d',
+                            700: '#02295f',
+                            800: '#022251',
+                            900: '#011a40'
                         }
                     }
                 }
