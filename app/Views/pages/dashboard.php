@@ -435,7 +435,7 @@ ob_start();
  <!-- Tab: Associate - Link Referido Grupo -->
  <div id="dashTab-referrals-content" class="hidden associate-only space-y-8">
  <div class="bg-white rounded-3xl p-8 shadow-lg border border-slate-100">
- <h3 class="text-2xl font-bold text-slate-900 mb-6">Mi Link de Referido</h3>
+ <h3 class="text-2xl font-bold text-slate-900 mb-6">Mi Enlace de Inscripción Referida</h3>
  <div class="space-y-6">
  <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
  <div class="flex gap-4 items-center mb-4">
@@ -444,7 +444,7 @@ ob_start();
  <i class="fa-solid fa-copy"></i> Copiar
  </button>
  </div>
- <p class="text-sm text-amber-900">Comparte este link para que otros profesionales se registren a través de tu referido y obtengas comisión.</p>
+ <p class="text-sm text-amber-900">Comparte este enlace de inscripción (ya incluye tu código) para que otros profesionales se registren con tu referido y puedas recibir comisión.</p>
  </div>
 
  <div class="border-t border-slate-200 pt-6">

@@ -493,7 +493,7 @@ declare(strict_types=1);
                                     <div id="associateRegistrationsList" class="space-y-2 text-sm text-slate-700"></div>
                                 </div>
                                 <form id="associateOfferForm" class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-white rounded-2xl p-4 border border-amber-200">
-                                    <input name="referralCode" placeholder="Código referido (ASOCIADO2026)" class="rounded-xl border border-slate-200 px-3 py-2" required>
+                                    <input name="referralCode" placeholder="Tu código de referido (ej: ASOCIADO2026)" class="rounded-xl border border-slate-200 px-3 py-2" required>
                                     <input name="currencyCode" placeholder="Moneda (USD, ARS)" maxlength="3" class="rounded-xl border border-slate-200 px-3 py-2" required>
                                     <input name="priceAmount" type="number" min="0.01" step="0.01" placeholder="Precio" class="rounded-xl border border-slate-200 px-3 py-2" required>
                                     <input name="paymentMethod" placeholder="Método de cobro" class="rounded-xl border border-slate-200 px-3 py-2" required>
@@ -502,7 +502,7 @@ declare(strict_types=1);
                                         <button type="submit" class="bg-amber-700 text-white px-4 py-2 rounded-xl font-bold text-sm">Guardar configuración</button>
                                         <span id="associateOfferStatus" class="text-xs font-bold text-amber-600"></span>
                                     </div>
-                                    <p class="md:col-span-2 text-xs text-slate-500">Link de referido: <span id="associateReferralPreview" class="font-bold text-amber-600"></span></p>
+                                    <p class="md:col-span-2 text-xs text-slate-500">Enlace de inscripción con tu referido: <span id="associateReferralPreview" class="font-bold text-amber-600"></span></p>
                                 </form>
                             </div>
                             <div class="user-only hidden bg-amber-50 border border-amber-100 p-6 rounded-3xl">
