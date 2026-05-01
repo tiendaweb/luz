@@ -25,30 +25,34 @@ $directorName = (string)($siteSettings['director_name'] ?? 'María Luz Genovese'
 
 ?>
  <!-- NAVBAR -->
- <nav class="glass fixed w-full z-50 border-b border-slate-100">
+ <nav class="glass fixed w-full z-50 border-b border-white/20" style="background-color:#03357C;">
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
  <div class="flex justify-between h-20">
  <a class="flex items-center cursor-pointer" href="/">
  <img src="<?= htmlspecialchars((string)($siteSettings['brand_logo_path'] ?? '/uploads/logo.jpg'), ENT_QUOTES, 'UTF-8') ?>" alt="Foros PSME" class="w-11 h-11 rounded-xl shadow-lg mr-4 object-cover">
  <div>
- <h1 class="text-xl font-extrabold text-slate-800 tracking-tight leading-none">Foros PSME</h1>
- <p class="text-[10px] uppercase tracking-widest font-bold mt-1" style="color: var(--color-accent);">Dir. <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></p>
+ <h1 class="text-xl font-extrabold text-white tracking-tight leading-none">Foros PSME</h1>
+ <p class="text-[10px] uppercase tracking-widest font-bold mt-1 text-blue-100">Dir. <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></p>
  </div>
  </a>
 
  <!-- Desktop Menu -->
  <div class="hidden md:flex items-center space-x-8">
- <a href="/" class="text-sm font-semibold hover:text-brand transition-colors">Inicio</a>
- <a href="/foros" class="text-sm font-semibold hover:text-brand transition-colors">Foros y Agenda</a>
- <a href="/directora" class="text-sm font-semibold hover:text-brand transition-colors">La Directora</a>
- <a href="/blog" class="text-sm font-semibold hover:text-brand transition-colors">Blog</a>
+ <a href="/" class="text-sm font-semibold text-white hover:text-blue-100 transition-colors">Inicio</a>
+ <a href="/foros" class="text-sm font-semibold text-white hover:text-blue-100 transition-colors">Foros y Agenda</a>
+ <a href="/directora" class="text-sm font-semibold text-white hover:text-blue-100 transition-colors">La Directora</a>
+ <a href="/blog" class="text-sm font-semibold text-white hover:text-blue-100 transition-colors">Blog</a>
+
+ <div class="hidden lg:flex items-center justify-center w-10 h-10 rounded-full bg-white/10 text-white border border-white/20" title="Neurociencia y salud mental">
+ <i class="fa-solid fa-brain"></i>
+ </div>
 
  <?php if ($_viewIsLoggedIn): ?>
  <a href="/dashboard" class="user-access-btn bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-brand transition-all flex items-center gap-2">
  <i class="fa-solid fa-circle-user"></i> Mi Área
  </a>
  <?php else: ?>
- <a href="/login" class="font-semibold px-5 py-2.5 rounded-full text-sm transition-colors flex items-center gap-2 border" style="color: var(--color-accent); border-color: var(--color-accent);">
+ <a href="/login" class="font-semibold px-5 py-2.5 rounded-full text-sm transition-colors flex items-center gap-2 border text-white border-white/70 hover:bg-white/10">
  <i class="fa-solid fa-right-to-bracket"></i> Ingresar
  </a>
  <?php endif; ?>
@@ -60,7 +64,7 @@ $directorName = (string)($siteSettings['director_name'] ?? 'María Luz Genovese'
 
  <!-- Mobile menu button -->
  <div class="flex items-center md:hidden">
- <button onclick="toggleMobileMenu()" class="text-slate-600 p-2">
+ <button onclick="toggleMobileMenu()" class="text-white p-2">
  <i class="fa-solid fa-bars-staggered text-2xl"></i>
  </button>
  </div>

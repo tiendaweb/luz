@@ -14,7 +14,7 @@ ob_start();
 ?>
 
 <!-- Hero -->
-<div class="relative bg-white pt-16 pb-32 overflow-hidden">
+<div class="relative bg-gradient-to-br from-slate-50 via-white to-blue-50 pt-16 pb-32 overflow-hidden">
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center relative z-10">
  <div class="lg:w-1/2 text-center lg:text-left mb-16 lg:mb-0">
  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand text-brand text-sm font-bold mb-6 border border-[var(--color-accent)]/20">
@@ -39,7 +39,7 @@ ob_start();
  <div class="lg:w-1/2 relative">
  <div class="absolute -top-20 -right-20 w-96 h-96 bg-brand rounded-full blur-3xl opacity-50"></div>
  <div class="relative rounded-3xl overflow-hidden shadow-2xl border-8 border-white transform rotate-2">
- <img src="/uploads/marialuz.jpg" alt="María Luz Genovese" class="w-full h-full object-cover">
+ <img src="https://images.unsplash.com/photo-1603201667141-532f6668ff2f?auto=format&fit=crop&w=1200&q=80" alt="Reunión profesional virtual por videollamada" class="w-full h-full object-cover">
  </div>
  <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce">
  <div class="w-12 h-12 bg-amber-600 rounded-full flex items-center justify-center text-white">

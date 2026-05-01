@@ -42,7 +42,15 @@
   }
 
   function buildApiPath(path) {
-    return path.startsWith('/api/') ? path : `/api/${path.replace(/^\/+/, '')}`;
+    const normalized = path.replace(/^\/+/, '');
+    const cleanPath = normalized.startsWith('api/') ? normalized.slice(4) : normalized;
+
+    return [
+      `/api/${cleanPath}`,
+      `/public/api/${cleanPath}`,
+      `api/${cleanPath}`,
+      `public/api/${cleanPath}`
+    ];
   }
 
   window.fillDemoCredentials = (role) => {
@@ -131,26 +139,36 @@
   }
 
   async function loginRequest(payload) {
-    const loginUrl = buildApiPath('/api/auth/login');
     const requestConfig = {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     };
+    const candidateUrls = buildApiPath('/api/auth/login');
+    let lastError = null;
 
-    const response = await fetch(loginUrl, requestConfig);
-    const data = await response.json().catch(() => ({}));
+    for (const loginUrl of candidateUrls) {
+      const response = await fetch(loginUrl, requestConfig);
+      const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || data.ok === false) {
-      throw new Error(getErrorMessage(data));
+      if (response.status === 404) {
+        lastError = new Error('Endpoint de autenticación no encontrado.');
+        continue;
+      }
+
+      if (!response.ok || data.ok === false) {
+        throw new Error(getErrorMessage(data));
+      }
+
+      if (data?.csrfToken) {
+        window.__csrfToken = data.csrfToken;
+      }
+
+      return data;
     }
 
-    if (data?.csrfToken) {
-      window.__csrfToken = data.csrfToken;
-    }
-
-    return data;
+    throw lastError || new Error('No se pudo conectar con la API de autenticación.');
   }
 
   document.addEventListener('DOMContentLoaded', () => {
