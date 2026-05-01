@@ -28,12 +28,8 @@ $directorName = (string)($siteSettings['director_name'] ?? 'María Luz Genovese'
  <nav class="glass fixed w-full z-50 border-b border-white/20" style="background-color:#03357C;">
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
  <div class="flex justify-between h-20">
- <a class="flex items-center cursor-pointer" href="/">
- <img src="<?= htmlspecialchars((string)($siteSettings['brand_logo_path'] ?? '/uploads/logo.jpg'), ENT_QUOTES, 'UTF-8') ?>" alt="Foros PSME" class="w-11 h-11 rounded-xl shadow-lg mr-4 object-cover">
- <div>
- <h1 class="text-xl font-extrabold text-white tracking-tight leading-none">Foros PSME</h1>
- <p class="text-[10px] uppercase tracking-widest font-bold mt-1 text-blue-100">Dir. <?= htmlspecialchars($directorName, ENT_QUOTES, 'UTF-8') ?></p>
- </div>
+ <a class="flex items-center cursor-pointer" href="/" aria-label="Inicio">
+ <img src="/uploadas/logo2.png" alt="Foros PSME" class="h-12 w-auto object-contain">
  </a>
 
  <!-- Desktop Menu -->
