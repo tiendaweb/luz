@@ -3,6 +3,25 @@
 declare(strict_types=1);
 
 $projectRoot = dirname(__DIR__);
+
+function web_ensure_data_ready(string $projectRoot): void
+{
+    require_once $projectRoot . '/app/Database/connection.php';
+    require_once $projectRoot . '/app/Database/DemoDataInitializer.php';
+
+    $pdo = app_db_connection();
+    app_db_run_migrations($pdo);
+    app_initialize_demo_data($pdo);
+}
+
+try {
+    web_ensure_data_ready($projectRoot);
+} catch (Throwable $exception) {
+    http_response_code(503);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo 'No se pudo inicializar la base de datos automáticamente. Revisá migraciones y permisos del archivo SQLite.';
+    exit;
+}
 $action = $_GET['action'] ?? null;
 $path = trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?? '/', '/');
 
@@ -104,6 +123,27 @@ if ($normalizedPath === 'admin/certificate-view' || $normalizedPath === 'certifi
     exit;
 }
 
+
+
+if (preg_match('#^foros/([a-z0-9]+(?:-[a-z0-9]+)*)$#', $path, $matches) === 1) {
+    $slug = (string)$matches[1];
+    $pdo = app_db_connection();
+    $stmt = $pdo->prepare(
+        'SELECT id FROM forums WHERE slug = :slug AND status = "published" LIMIT 1'
+    );
+    $stmt->execute(['slug' => $slug]);
+    $forumId = (int)$stmt->fetchColumn();
+
+    if ($forumId <= 0) {
+        http_response_code(404);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo 'Foro no encontrado';
+        exit;
+    }
+
+    header('Location: /foros#view-forum-detail?forum=' . $forumId, true, 302);
+    exit;
+}
 
 if (preg_match('#^p/([a-z0-9]+(?:-[a-z0-9]+)*)$#', $path, $matches) === 1) {
     require_once $projectRoot . '/app/Database/connection.php';
