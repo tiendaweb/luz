@@ -300,6 +300,15 @@ ob_start();
  <div><label class="block text-sm font-bold text-slate-700 mb-2">Color principal</label><input name="brand_color_primary" type="color" class="w-full h-12 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
  <div><label class="block text-sm font-bold text-slate-700 mb-2">Color acento</label><input name="brand_color_accent" type="color" class="w-full h-12 rounded-xl border border-slate-300 bg-slate-50 font-medium"></div>
  </div>
+ <div class="mt-6">
+ <label class="block text-sm font-bold text-slate-700 mb-2">Logo del sitio</label>
+ <div class="flex flex-col md:flex-row md:items-center gap-4">
+ <img id="adminLogoPreview" src="/uploads/logo.jpg" alt="Logo actual" class="w-16 h-16 rounded-xl border border-slate-200 object-cover">
+ <input id="adminLogoInput" type="file" accept="image/png,image/jpeg,image/webp" class="block w-full text-sm text-slate-700">
+ <button id="uploadAdminLogoBtn" type="button" class="px-4 py-2 rounded-lg btn-secondary font-bold">Cargar y guardar logo</button>
+ </div>
+ <p class="text-xs text-slate-500 mt-2">Formatos: JPG, PNG o WEBP. Máximo 2MB.</p>
+ </div>
  </div>
  <p id="adminSettingsStatus" class="text-sm text-slate-600">Cargando valores...</p>
  <button type="submit" class="w-full px-6 py-3 rounded-xl btn-primary font-bold transition-all">
