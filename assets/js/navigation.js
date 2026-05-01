@@ -83,13 +83,13 @@
 
     // Update button highlighting
     document.querySelectorAll("aside nav button").forEach((btn) => {
-      btn.classList.remove("bg-slate-100", "text-amber-800");
+      btn.classList.remove("bg-slate-100", "text-blue-800");
       btn.classList.add("text-slate-700");
     });
     const selectedBtn = document.getElementById(`dashTab-${normalizedTab}`);
     if (selectedBtn) {
       selectedBtn.classList.add("bg-slate-100");
-      selectedBtn.classList.add("text-amber-800");
+      selectedBtn.classList.add("text-blue-800");
     }
 
     window.dashboardTabs?.loadData?.(normalizedTab);
